@@ -1,0 +1,6 @@
+const Stripe=require('stripe');
+const stripe=()=>{if(!process.env.STRIPE_SECRET_KEY)throw Error('Stripe server configuration missing');return new Stripe(process.env.STRIPE_SECRET_KEY)};
+async function auth(req){const token=(req.headers.authorization||'').replace(/^Bearer\s+/i,'');if(!token)throw Error('Sign in required');const url=process.env.SUPABASE_URL||'https://jssfjaggsjtwppokjpns.supabase.co';const key=process.env.SUPABASE_PUBLISHABLE_KEY;if(!key)throw Error('Supabase server configuration missing');const r=await fetch(url+'/auth/v1/user',{headers:{apikey:key,Authorization:'Bearer '+token}});if(!r.ok)throw Error('Invalid or expired login');const user=await r.json();if(!user.id)throw Error('Invalid login');return user;}
+async function customer(st,user,create=false){const found=await st.customers.search({query:`metadata['qn_user_id']:'${user.id}'`,limit:1});if(found.data.length)return found.data[0];if(!create)return null;return st.customers.create({email:user.email||undefined,metadata:{qn_user_id:user.id}})}
+function error(res,e){res.status(/sign in|invalid login|expired login/i.test(e.message)?401:500).json({error:e.message.includes('configuration')?'Payment setup is not complete.':e.message})}
+module.exports={stripe,auth,customer,error};
