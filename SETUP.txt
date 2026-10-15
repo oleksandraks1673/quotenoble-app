@@ -1,0 +1,18 @@
+QUOTE.NOBLE STRIPE INTEGRATION — PREVIEW ONLY, NOT DEPLOYED
+
+This package is an integration candidate based on the uploaded v10 preview HTML. It does not replace production automatically. Back up production files and data before deployment.
+
+1. Deploy this folder to a PREVIEW of existing Vercel project indigo-basket; do not change domain or project. If existing project uses a different build or routing structure, merge files instead of replacing the whole project. Existing manifest.webmanifest and sw.js assets must be retained from the current production project.
+2. In Vercel, configure production and preview as appropriate:
+ STRIPE_PRICE_MONTHLY=price_1UQrAhQ2ijRuSuN5cyNWA39l
+ STRIPE_PRICE_YEARLY=price_1UQrDxQ2ijRuSuN5BVKDAMA6
+ STRIPE_SECRET_KEY=your Stripe LIVE secret key (sensitive, enter in Vercel only)
+ SUPABASE_PUBLISHABLE_KEY=your Supabase publishable key
+ SUPABASE_URL=https://jssfjaggsjtwppokjpns.supabase.co
+ STRIPE_WEBHOOK_SECRET=signing secret from Stripe webhook endpoint (enter in Vercel only)
+3. Stripe webhook URL: https://www.quotenoble.com/api/stripe/webhook. Subscribe to checkout.session.completed, customer.subscription.created, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed. Configure Stripe Billing customer portal.
+4. Test authentication, checkout, yearly/monthly amounts, cancellation, failed payment, portal and Stripe status. A signed-in user is required. The /api/stripe/status endpoint is server-authoritative.
+5. IMPORTANT: This integration does NOT gate existing app features based on status; it provides a trustworthy status endpoint only. Define Pro-only features and enforce server-side permissions before calling it a fully paid SaaS. The original file still includes beta/free feature wording.
+6. IMPORTANT: Preview deploys using live Stripe keys could charge real money. Use Stripe test keys and test price IDs for testing, with a separate test configuration, before production.
+7. The original v10 file includes Supabase sign-in and cloud backup logic. Verify it is compatible with production before release; do not overwrite newer production work blindly.
+8. The webhook verifies Stripe signatures but does not persist events; status queries Stripe directly. Production-scale billing should add idempotent event processing and durable subscription records.
