@@ -1,0 +1,37 @@
+name: Audit cloud synchronization
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/audit-cloud-sync.yml']
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate safe synchronization diagnostic
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text()
+          lines=s.splitlines()
+          terms=['cloudSave','cloudSync','syncToCloud','syncFromCloud','supabase.from','localStorage.setItem','localStorage.getItem','beforeunload','visibilitychange','qn-cloud']
+          out=['CLOUD SYNC AUDIT (code lines redacted for secrets)']
+          for term in terms:
+            hits=[i for i,line in enumerate(lines) if term.lower() in line.lower()]
+            out.append(f'{term}: {len(hits)} hits, line numbers: '+','.join(str(i+1) for i in hits[:25]))
+          for i,line in enumerate(lines):
+            if re.search(r'(async function|function|const|let)\s+\w*(cloud|sync|persist|saveData|loadData)\w*',line,re.I):
+              snippet=line[:220]
+              snippet=re.sub(r'(?i)(key|token|secret|password)\s*[:=]\s*[^,; ]+',r'\1=[REDACTED]',snippet)
+              out.append(f'FUNCTION {i+1}: {snippet}')
+          Path('cloud-sync-audit.txt').write_text('\n'.join(out)+'\n')
+          PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloud-sync-audit.txt
+          git diff --cached --quiet || (git commit -m "Document cloud sync implementation locations" && git push)
