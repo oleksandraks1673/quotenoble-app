@@ -1,0 +1,34 @@
+name: Repair Quote.Noble auth startup
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/repair-auth-startup.yml']
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair undefined auth endpoint and validate
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          url='https://jssfjaggsjtwppokjpns.supabase.co'
+          for name in ('index.html','app.html'):
+            p=Path(name)
+            s=p.read_text()
+            marker='sb=window.supabase.createClient(SUPABASE_ENDPOINT,KEY)'
+            assert s.count(marker)==1, (name,'unexpected auth initialization')
+            s=s.replace(marker,'sb=window.supabase.createClient('+repr(url)+',KEY)',1)
+            assert s.count('sb=window.supabase.createClient(')==1
+            assert 'signInWithPassword' in s
+            p.write_text(s)
+            print(name,'auth endpoint repaired, billing code retained')
+          PY
+      - name: Commit repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Fix undefined Supabase endpoint blocking login" && git push)
