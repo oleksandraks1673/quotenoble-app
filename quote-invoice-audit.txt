@@ -1,0 +1,28 @@
+QUOTE AND INVOICE AUDIT — code references only, no customer data
+function print: 0 matches at lines 
+function export: 2 matches at lines 1390,1863
+  1390: function exportBackup() {
+  1863:  function exportCSV(){
+window.print: 0 matches at lines 
+@media print: 0 matches at lines 
+printQuote: 0 matches at lines 
+printInvoice: 0 matches at lines 
+quote-preview: 0 matches at lines 
+invoice-preview: 0 matches at lines 
+html2pdf: 0 matches at lines 
+jsPDF: 6 matches at lines 17,1170,1171,1176,1714,1715
+  17: <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  1170:   const NS=window.jspdf;
+  1171:   if(!NS||!NS.jsPDF){alert("PDF library could not load. Please check your internet connection.");return;}
+pdf: 74 matches at lines 14,15,17,393,412,547,565,965,1131,1163,1166,1169,1170,1171,1176,1179,1180,1181,1184,1185,1186,1190,1191,1192,1196,1199,1202,1206,1210,1212
+  14: <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAEAAElEQVR42uz9aZhl13UdCK597n0x5IxEAkjME0EABAdRIilSEsVBKkvW0JZKlmyVqizLpWp/Hsqutl0ut7/213JV2d3usst2e6iSZVmeumV5kDVQE0WKNEdxBCcABEBMCSSQiUTOmRHx3rtnr
+  15: <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAACcKElEQVR42uz9d4BkRdU+jj+nqu693T15ZjPL7rJkWHIUlCSCgAqKvoioYMCcAwYQVF5UBEQERfRFQAQzKoogOYjkLEte2JwmT6d7b1Wd3x91U/fMLIuf7+8/22Ht
+  17: <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+quoteTotal: 12 matches at lines 660,789,806,839,899,1083,1104,1139,1175,1308,1851,1865
+  660: function quoteTotals(q) {
+  789:  const pipeline=DB.quotes.filter(q=>q.status==='sent').reduce((sum,q)=>sum+quoteTotals(q).total,0);
+  806:   DB.quotes.forEach(q=>{ if ((q.createdAt||"").slice(0,7)===m && q.status!=="declined") quotedMonth += quoteTotals(q).total; });
+invoiceTotal: 17 matches at lines 665,673,779,791,808,839,1004,1036,1053,1139,1175,1308,1841,1842,1853,1857,1866
+  665: function invoiceTotals(inv) {
+  673:   const t = invoiceTotals(inv);
+  779:  DB.invoices.filter(i=>invoiceStatus(i)==='overdue').forEach(i=>tasks.push({type:'Overdue',title:i.number+' · '+clientName(i.clientId),detail:money(invoiceTotals(i).balance)+' outstanding',kind:'i',id:i.id}));
