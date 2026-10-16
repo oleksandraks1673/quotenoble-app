@@ -1,0 +1,33 @@
+name: Responsive Android and iOS billing
+on:
+  push:
+    branches: [fix/billing-on-working-login-20261016]
+    paths: ['.github/workflows/responsive-mobile-billing.yml']
+permissions:
+  contents: write
+jobs:
+  responsive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add safe responsive overrides without changing sign-in
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          css="/* Mobile cross-platform layout — Android Chrome and iOS Safari */\n:root{--qn-safe-bottom:env(safe-area-inset-bottom,0px);--qn-safe-top:env(safe-area-inset-top,0px)}\nhtml{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}\nbody{max-width:100%;overflow-x:hidden;padding-bottom:var(--qn-safe-bottom)}\nbutton,input,select,textarea{font-family:inherit}\nbutton,[role=\"button\"]{-webkit-tap-highlight-color:transparent;touch-action:manipulation}\ninput,select,textarea{font-size:max(16px,1rem)}\nimg,video,canvas,svg{max-width:100%}\n#view-plans,.qn-bill,.qn-bill *{box-sizing:border-box}\n.qn-bill{width:min(100%,760px);margin-inline:auto}\n.qn-bill-heading,.qn-bill-line{min-width:0}\n.qn-bill-heading>div,.qn-bill-line>strong{min-width:0;overflow-wrap:anywhere}\n.qn-bill-option{min-height:112px;touch-action:manipulation}\n.qn-bill-primary,.qn-bill-secondary,.qn-bill-back{min-height:48px;touch-action:manipulation}\n.qn-bill-primary:focus-visible,.qn-bill-secondary:focus-visible,.qn-bill-option:focus-visible{outline:3px solid #d7821a;outline-offset:3px}\n@media(max-width:600px){\n #view-plans{padding-inline:12px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}\n .qn-bill{margin:8px auto 24px;padding:18px 15px;border-radius:20px}\n .qn-bill-heading h2{font-size:clamp(1.22rem,5vw,1.5rem);line-height:1.2}\n .qn-bill-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n .qn-bill-option{padding:13px 11px}\n .qn-bill-option strong{font-size:clamp(1.15rem,5vw,1.55rem)}\n .qn-bill-actions{grid-template-columns:1fr;gap:10px}\n .qn-bill-current{padding:16px}\n}\n@media(max-width:340px){\n .qn-bill-options{grid-template-columns:1fr}\n .qn-bill-option{min-height:90px}\n .qn-bill-line{align-items:flex-start;flex-direction:column}\n}\n@media(min-width:601px) and (max-width:1024px){\n #view-plans{padding-inline:24px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))}\n .qn-bill{padding:28px}\n}\n@media(hover:none){.qn-bill-primary:active,.qn-bill-secondary:active,.qn-bill-option:active{filter:brightness(.96)}}\n@media(prefers-reduced-motion:reduce){.qn-bill *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}\n"
+          block='<style id="qn-mobile-ios-android">\n'+css+'\n</style>'
+          for filename in ('app.html','index.html'):
+              path=Path(filename)
+              html=path.read_text()
+              if 'id="qn-mobile-ios-android"' in html: continue
+              if '</head>' not in html: raise RuntimeError('Missing head in '+filename)
+              html=html.replace('</head>',block+'\n</head>',1)
+              path.write_text(html)
+              print('Updated responsive layout in',filename)
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html index.html
+          git diff --cached --quiet || (git commit -m "Improve Android and iOS responsive billing layout" && git push)
