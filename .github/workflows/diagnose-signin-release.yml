@@ -16,7 +16,7 @@ jobs:
           from pathlib import Path
           import re
           out=[]
-          terms=['Sign-in service is not available','createClient','window.supabase','supabase-js','signInWithPassword','SUPABASE_PUBLISHABLE_KEY']
+          terms=['Sign-in service is not available','createClient','window.supabase','supabase-js','signInWithPassword' ,'SUPABASE_PUBLISHABLE_KEY','SUPABASE_ENDPOINT','const KEY','start();','start().catch','async function start']
           for f in ['index.html','app.html']:
             s=Path(f).read_text()
             out.append(f'FILE {f} length {len(s)}')
