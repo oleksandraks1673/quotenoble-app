@@ -1,18 +1,42 @@
-QUOTE.NOBLE STRIPE INTEGRATION — PREVIEW ONLY, NOT DEPLOYED
+QUOTE.NOBLE — SAFE STRIPE INTEGRATION CHECKLIST (PREVIEW ONLY)
 
-This package is an integration candidate based on the uploaded v10 preview HTML. It does not replace production automatically. Back up production files and data before deployment.
+MAIN WEBSITE: https://www.quotenoble.com
+GITHUB SOURCE: https://github.com/oleksandraks1673/quotenoble-app
+Do not use older project names such as indigo-basket or final-final for this release.
+Confirm the currently connected Vercel project and its Git branch before any deployment.
+Do not create another production project, move domains, delete old projects, or overwrite customer data.
 
-1. Deploy this folder to a PREVIEW of existing Vercel project indigo-basket; do not change domain or project. If existing project uses a different build or routing structure, merge files instead of replacing the whole project. Existing manifest.webmanifest and sw.js assets must be retained from the current production project.
-2. In Vercel, configure production and preview as appropriate:
- STRIPE_PRICE_MONTHLY=price_1UQrAhQ2ijRuSuN5cyNWA39l
- STRIPE_PRICE_YEARLY=price_1UQrDxQ2ijRuSuN5BVKDAMA6
- STRIPE_SECRET_KEY=your Stripe LIVE secret key (sensitive, enter in Vercel only)
- SUPABASE_PUBLISHABLE_KEY=your Supabase publishable key
- SUPABASE_URL=https://jssfjaggsjtwppokjpns.supabase.co
- STRIPE_WEBHOOK_SECRET=signing secret from Stripe webhook endpoint (enter in Vercel only)
-3. Stripe webhook URL: https://www.quotenoble.com/api/stripe/webhook. Subscribe to checkout.session.completed, customer.subscription.created, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed. Configure Stripe Billing customer portal.
-4. Test authentication, checkout, yearly/monthly amounts, cancellation, failed payment, portal and Stripe status. A signed-in user is required. The /api/stripe/status endpoint is server-authoritative.
-5. IMPORTANT: This integration does NOT gate existing app features based on status; it provides a trustworthy status endpoint only. Define Pro-only features and enforce server-side permissions before calling it a fully paid SaaS. The original file still includes beta/free feature wording.
-6. IMPORTANT: Preview deploys using live Stripe keys could charge real money. Use Stripe test keys and test price IDs for testing, with a separate test configuration, before production.
-7. The original v10 file includes Supabase sign-in and cloud backup logic. Verify it is compatible with production before release; do not overwrite newer production work blindly.
-8. The webhook verifies Stripe signatures but does not persist events; status queries Stripe directly. Production-scale billing should add idempotent event processing and durable subscription records.
+CURRENT STATE
+- api/stripe/checkout.js, portal.js, status.js, webhook.js, and _common.js are present.
+- Checkout, portal and status fixes are staged in the fix/stripe-checkout-safe-preview branch.
+- The changes are NOT confirmed working in a deployed preview.
+- The webhook verifies signatures but does not persist events or grant Pro.
+- Server-side enforcement of Pro-only actions, cloud sync, and navigation persistence are NOT verified.
+- This repository may contain an older app.html/index.html version than the live site; compare before merging.
+
+SERVER-ONLY ENVIRONMENT VARIABLES
+STRIPE_SECRET_KEY: Stripe secret key for the SAME MODE as price IDs (sk_test_ for test, sk_live_ for live).
+STRIPE_PRICE_MONTHLY: active recurring CAD 14.99/month price for the selected mode.
+STRIPE_PRICE_YEARLY: active recurring CAD 149.99/year price for the selected mode.
+SUPABASE_URL: URL of the existing Quote.Noble Supabase project.
+SUPABASE_PUBLISHABLE_KEY: publishable/anon key for the existing Supabase project.
+STRIPE_WEBHOOK_SECRET: signing secret for the correct webhook endpoint and Stripe mode.
+QUOTENOBLE_APP_URL: origin for redirects, e.g. the actual preview URL during preview testing and https://www.quotenoble.com in production.
+
+Never expose Stripe secret keys, webhook secrets or Supabase service role keys in browser code, screenshots, GitHub or chat.
+Never use live Stripe keys in a test purchase. Do not mix test-mode and live-mode price IDs.
+Vercel preview env vars must be reviewed independently of production env vars.
+
+RELEASE GATES — ALL MUST PASS BEFORE MERGE OR PRODUCTION DEPLOYMENT
+1. Confirm repository branch and Vercel preview are connected to the intended existing main project.
+2. Confirm preview contains the Stripe API functions (not static HTML only).
+3. Sign in to the preview and test test-mode monthly and yearly Checkout.
+4. Verify successful checkout returns to the PREVIEW URL, and status reports Pro from Stripe.
+5. Test portal access, cancellation, renewal and failed-payment state.
+6. Verify webhook signature validation and actual event delivery. Never grant Pro merely from a success query parameter.
+7. Test free-tier limits and server-side Pro-only enforcement; currently unverified.
+8. Test sign-up, sign-in, cloud data saving, reload on same page, quotes, invoices, and job ordering.
+9. Back up existing production data and compare the candidate frontend with the actual production version.
+10. Review preview with the owner, then obtain explicit approval to merge and deploy to the live domain.
+
+IMPORTANT: No source edit alone proves the billing integration works. Keep live production unchanged until the above checks are complete.
