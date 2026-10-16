@@ -1,0 +1,36 @@
+name: Inspect sync warning safely
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/audit-cloud-sync.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect warning code without changing app
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          lines=s.splitlines()
+          terms=['Sync needs review','export both copies','sync needs','syncReview','syncConflict','syncBanner','syncStatus']
+          out=['Sync warning inspection - expanded context']
+          for term in terms:
+            matches=list(re.finditer(re.escape(term),s,re.I))
+            out.append(f'\nTERM {term}: {len(matches)}')
+            for m in matches[:6]:
+              fragment=s[max(0,m.start()-1700):min(len(s),m.end()+2900)]
+              fragment=re.sub(r'(?i)(sk_live_|sk_test_|whsec_|eyJ)[A-Za-z0-9_./-]+','[REDACTED]',fragment)
+              out.append(fragment)
+          Path('sync-warning-inspection.txt').write_text('\n'.join(out)[:26000])
+          PY
+      - name: Save inspection report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sync-warning-inspection.txt
+          git diff --cached --quiet || (git commit -m "Inspect sync warning handlers without modifying app" && git push)

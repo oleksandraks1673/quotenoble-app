@@ -48,7 +48,10 @@ module.exports = async (req, res) => {
       });
     }
 
-    const origin = 'https://quotenoblev13stripeintegrationprevi.vercel.app';
+    const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').toLowerCase();
+    const allowed = host === 'www.quotenoble.com' || host === 'quotenoble.com' || /^quotenoblev13stripeintegrationpreview-[a-z0-9-]+\.vercel\.app$/.test(host);
+    if (!allowed) return res.status(400).json({ error: 'Invalid checkout return host' });
+    const origin = 'https://' + host;
 
     const session = await st.checkout.sessions.create({
       mode: 'subscription',

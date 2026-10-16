@@ -1,0 +1,515 @@
+34: .app-header h1{color:#fff; margin:0; font-size:1.25rem;}
+35: .app-header p{margin:2px 0 0; font-size:.8rem; opacity:.8;}
+36: main{padding:16px 16px 96px; max-width:720px; margin:0 auto;}
+37: .view{display:none;} .view.active{display:block;}
+38: .card{background:#fff; border-radius:var(--radius); padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.08);}
+39: .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;}
+40: .stat{background:#fff; border-radius:var(--radius); padding:14px; box-shadow:0 1px 3px rgba(0,0,0,.08); border-top:4px solid var(--orange);}
+41: .stat .label{font-size:.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+42: .stat .value{font-size:1.4rem; font-weight:800; color:var(--blue); margin-top:4px;}
+43: .stat.warn{border-top-color:var(--red);} .stat.warn .value{color:var(--red);}
+44: .stat.ok{border-top-color:var(--green);} .stat.ok .value{color:var(--green);}
+45: .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:48px; padding:12px 20px; border:none; border-radius:var(--radius); font-size:1rem; font-weight:700; cursor:pointer; text-decoration:none;}
+46: .btn-primary{background:var(--orange); color:var(--blue-dark); width:100%;}
+47: .btn-primary:active{background:var(--orange-dark);}
+48: .btn-blue{background:var(--blue); color:#fff; width:100%;}
+124: .btn{transition:transform .12s,filter .12s;box-shadow:0 2px 5px #0000000a}.btn:active{transform:scale(.985)}
+125: .btn:focus-visible,#tabbar button:focus-visible,input:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+126: #tabbar{box-shadow:0 -5px 24px #11182712}#tabbar button.active{background:#fff7ed}
+127: .field input,.field select,.field textarea{background:#fff;border-color:#dce1e8}
+128: @media(max-width:390px){main{padding:12px 12px 95px}.btn-row{flex-wrap:wrap}.btn-row .btn{min-width:145px}.doc-body{padding:14px}.doc-table td,.doc-table th{padding:6px;font-size:.78rem}}
+129: @media(min-width:800px){main{max-width:850px}.stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+130: @media(prefers-reduced-motion:reduce){.btn{transition:none}}
+131: 
+132: /* Scope-of-work: wide, readable editor and document layout */
+133: .item-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(65px,85px) minmax(90px,115px) 44px;align-items:start;gap:8px}
+134: .item-row .service{grid-column:1/-1;width:100%;min-height:48px;font-weight:700}.item-row .desc{grid-column:1/-1;width:100%;min-height:145px;resize:vertical;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+135: .item-row .qty,.item-row .price{max-width:none;width:100%}
+136: .item-row .rm{grid-column:4;grid-row:2}
+137: .item-row .qty{grid-column:2;grid-row:2}.item-row .price{grid-column:3;grid-row:2}
+138: .doc-table{table-layout:fixed}.doc-table td:first-child{white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;line-height:1.55}
+139: .doc-table th:first-child{width:58%}.doc-table th:nth-child(2){width:10%}.doc-table th:nth-child(3){width:15%}.doc-table th:nth-child(4){width:17%}
+140: @media(max-width:600px){
+141: .doc-table,.doc-table tbody,.doc-table tr,.doc-table td{display:block;width:100%}
+142: .doc-table thead{display:none}
+188: .qn-job-form .qn-field label{font-size:13px;font-weight:750;color:#383334;margin:0}
+189: .qn-job-form .qn-field label span{color:#e17900}
+190: .qn-job-form input,.qn-job-form select,.qn-job-form textarea{box-sizing:border-box;width:100%;min-width:0;max-width:100%;border:1px solid #dcdfe5;border-radius:12px;background:#fff;color:#26252a;padding:12px 13px;font:inherit;font-size:15px;line-height:1.35;min-height:48px;outline:none;box-shadow:none}
+191: .qn-job-form textarea{resize:vertical;min-height:100px}
+192: .qn-job-form input:focus,.qn-job-form select:focus,.qn-job-form textarea:focus{border-color:#ed940f;box-shadow:0 0 0 3px rgba(237,148,15,.13)}
+193: .qn-job-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+194: .qn-job-actions{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin-top:5px}
+195: .qn-job-actions .btn{margin:0;min-height:50px;border-radius:13px;font-size:15px;font-weight:750}
+196: /* Job form mobile fix: keep action buttons in view while fields scroll. */
+197: #modal-root .modal-back:has(#qn-j-title){align-items:center;padding:12px;box-sizing:border-box;}
+198: #modal-root .modal:has(#qn-j-title){max-height:calc(100dvh - 36px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:0;scroll-padding-bottom:95px;-webkit-overflow-scrolling:touch;}
+199: #modal-root .modal:has(#qn-j-title) .qn-job-actions{position:sticky;bottom:0;z-index:3;background:#fff;padding:14px 0 max(18px,env(safe-area-inset-bottom));margin:8px 0 0;box-shadow:0 -9px 18px rgba(255,255,255,.95);}
+200: @media(max-width:440px){#modal-root .modal-back:has(#qn-j-title){padding:10px;}#modal-root .modal:has(#qn-j-title){max-height:calc(100dvh - 24px);}}
+201: @media(max-width:440px){#modal-root .modal:has(#qn-j-title){padding:22px 18px;border-radius:22px}.qn-job-grid{grid-template-columns:1fr}.qn-job-actions{grid-template-columns:1fr 1fr}#view-jobs #qn-new-job{width:100%}}
+202: </style>
+203: <style>
+204: 
+205: /* Quote.Noble 2026 unified interface: responsive, accessible, clean */
+206: :root{--blue:#b45309;--blue-dark:#78350f;--orange:#e87917;--orange-dark:#c65c0c;--blue-light:#fff7ed;--gray:#f7f8fa;--gray-border:#e5e7eb;--text:#17212f;--muted:#657184;--radius:14px}
+207: body{background:#f7f8fa;color:var(--text);letter-spacing:-.005em}
+208: h1,h2,h3{color:#202a38;letter-spacing:-.025em}
+209: .app-header{background:#fff;color:#111827;border-bottom:1px solid #e9edf2;box-shadow:0 2px 16px rgba(20,30,45,.025);padding:14px 20px}
+210: .app-header h1{color:#17212f;font-size:1.18rem}.app-header p{color:#64748b;opacity:1}
+225: .modal-back{background:rgba(13,24,39,.55);backdrop-filter:blur(3px)}.modal{box-shadow:0 25px 80px rgba(0,0,0,.16)}
+226: .doc-header{background:#fff;border-bottom:3px solid #e87917}
+227: #tabbar{box-shadow:0 -5px 24px rgba(20,30,45,.05);border-top:1px solid #e8ebef}
+228: #tabbar button{font-weight:600;transition:color .15s,background .15s}#tabbar button.active{color:#b45309}
+229: .qn-page-intro{margin:0 0 18px;padding:0 2px}.qn-page-intro h2{margin:0 0 4px;font-size:1.5rem;color:#182437;letter-spacing:-.04em}.qn-page-intro p{margin:0;color:#64748b;font-size:.9rem}
+230: .qn-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 20px}.qn-quick-actions button{width:100%;border:1px solid #e8ebef;border-radius:14px;background:#fff;min-height:60px;font:650 .93rem inherit;color:#344054;cursor:pointer;box-shadow:0 3px 12px rgba(16,24,40,.035)}.qn-quick-actions button:hover{border-col
+231: button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
+232: @media(min-width:900px){body{padding-left:226px}.app-header{position:sticky;top:0;padding:18px 30px}main{padding:30px 36px 80px;margin:0 auto;max-width:1200px}#tabbar{position:fixed;top:0;bottom:0;left:0;right:auto;width:226px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:106px 12px 20px;background:#fff;b
+233: @media(max-width:600px){main{padding:18px 14px calc(105px + env(safe-area-inset-bottom))}.card{padding:16px}.stat{padding:14px}.stat .value{font-size:1.4rem}.app-header{padding:12px 16px}.qn-page-intro h2{font-size:1.35rem}.qn-quick-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.qn-quick-actions button{min-height:66px;padding:8px 5p
+234: @media(prefers-reduced-motion:reduce){.btn,.list-item,#tabbar button{transition:none}}
+235: 
+236: </style>
+237: <style>.qn-template-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}.qn-template-tools select{min-width:0;width:100%;padding:12px;border:1px solid #d7dce4;border-radius:10px;background:white;font:inherit}.qn-template-tools button{grid-column:1/-1}.qn-flow-stage{background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:10px 12px
+238: /* Restored compact header create menu */
+239: .app-header .brand{display:flex;align-items:center;width:100%;gap:10px}
+240: .qn-create-wrap{position:relative;margin-left:auto;flex-shrink:0}
+241: #qn-create-toggle{border:0;border-radius:10px;background:#d97706;color:white;padding:10px 15px;font:700 14px inherit;min-height:42px;cursor:pointer;white-space:nowrap}
+242: #qn-create-menu{position:absolute;right:0;top:calc(100% + 9px);width:190px;background:#fff;border:1px solid #e5e7eb;border-radius:13px;box-shadow:0 12px 32px #11182724;padding:6px;z-index:90}
+243: #qn-create-menu[hidden]{display:none!important}
+244: #qn-create-menu button{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:8px;padding:12px;font:600 14px inherit;color:#17212f;cursor:pointer}
+245: #qn-create-menu button:hover,#qn-create-menu button:focus-visible{background:#fff7ed}
+246: @media(max-width:400px){.app-header .brand p{font-size:10px}.app-header .brand h1{font-size:16px}#qn-create-toggle{padding:9px 11px}}
+253: </style><style>
+254: /* Quote.Noble premium management refinements */
+255: .qn-premium-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:16px}
+256: .qn-premium-heading h2{margin:0 0 3px;font-size:1.14rem;color:#17212f}.qn-premium-heading p{margin:0;font-size:.84rem;color:#667085}
+257: .qn-pro-label{font-size:.61rem;letter-spacing:.09em;font-weight:800;color:#a45410;background:#fff7ed;border:1px solid #ffedd5;border-radius:7px;padding:6px 8px;white-space:nowrap}
+258: .qn-insights-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+259: .qn-insight{background:#fafbfc;border:1px solid #e9edf2;border-radius:12px;padding:14px;min-width:0}
+260: .qn-insight span,.qn-insight small{display:block;color:#667085;font-size:.74rem}.qn-insight strong{display:block;font-size:1.38rem;color:#182437;margin:7px 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.qn-insight small{line-height:1.35}
+261: .qn-insight-subhead{margin:22px 0 10px;font-size:.98rem}.qn-insight-disclaimer,.qn-insight-empty{font-size:.76rem;line-height:1.5;color:#7a8494;margin:14px 0 0}
+262: .qn-attention-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:13px 3px;border:0;border-bottom:1px solid #eef0f3;background:#fff;text-align:left;cursor:pointer;color:#17212f}.qn-attention-item:last-child{border:0}.qn-attention-item strong,.qn-attention-item small{display:block}.qn-attention-item strong{
+263: .qn-followup-row{display:flex;gap:8px}.qn-followup-row input{flex:1;min-width:0;border:1px solid #d7dce4;border-radius:9px;padding:8px;font:inherit}.qn-followup-row button{flex:0 0 auto}
+264: .qn-profit{display:flex;justify-content:space-between;align-items:center;padding:12px;margin:10px 0;border:1px solid #e9edf2;background:#fafbfc;border-radius:10px;font-size:.86rem;color:#667085}.qn-profit strong{color:#17212f;font-size:1rem}
+265: #qn-attention-card[hidden]{display:none!important}
+266: @media(min-width:650px){.qn-insights-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+267: @media(max-width:380px){.qn-insight strong{font-size:1.14rem}.qn-pro-label{display:none}}
+268: </style>
+269: 
+270: <style id="qn-premium-header-final">
+271: /* Final polished masthead: comfortable touch targets, no overflow */
+272: .app-header{padding:13px clamp(12px,3vw,28px)!important;background:#fff!important;border-bottom:1px solid #e8edf3!important}
+273: .app-header .brand{width:100%;display:grid!important;grid-template-columns:68px minmax(0,1fr) auto;gap:13px!important;align-items:center;max-width:1200px;margin:0 auto}
+274: .app-header .logo{width:64px!important;height:64px!important;min-width:64px;overflow:hidden;border-radius:17px!important;background:#fff!important;padding:3px!important;border:1px solid #f2e2d3;box-shadow:0 5px 18px rgba(166,82,10,.15),0 0 0 3px #fff7ed!important}
+275: .app-header .logo img{width:100%;height:100%;object-fit:contain;display:block;border-radius:13px}
+276: .app-header .brand>div:nth-child(2){min-width:0}
+277: .app-header .brand h1{font-size:clamp(18px,2.6vw,23px)!important;font-weight:800;letter-spacing:-.04em;line-height:1.15;white-space:nowrap}
+278: .app-header .brand p{font-size:clamp(10px,1.9vw,13px)!important;line-height:1.4;margin-top:4px;color:#788494!important;white-space:normal}
+279: .app-header .qn-create-wrap{margin-left:0!important;justify-self:end;right:0}
+280: #qn-create-toggle{min-height:45px!important;padding:11px 18px!important;border-radius:14px!important;background:#e98b27!important;color:#fff!important;box-shadow:0 4px 13px rgba(217,119,6,.12)!important;font-size:14px!important;letter-spacing:.01em;transition:background .15s,box-shadow .15s,transform .15s}
+281: #qn-create-toggle:hover{background:#d97706!important;box-shadow:0 6px 16px rgba(217,119,6,.18)!important}
+282: #qn-create-toggle:active{transform:scale(.98)}
+283: #qn-create-menu{border-radius:15px!important;box-shadow:0 16px 42px rgba(24,32,46,.14)!important}
+284: @media(max-width:440px){
+285:  .app-header{padding:11px 12px!important}
+286:  .app-header .brand{grid-template-columns:55px minmax(0,1fr) auto;gap:9px!important}
+287:  .app-header .logo{width:53px!important;height:53px!important;min-width:53px;border-radius:14px!important}
+288:  .app-header .brand h1{font-size:17px!important}
+289:  .app-header .brand p{font-size:10px!important}
+290:  #qn-create-toggle{padding:10px 12px!important;min-height:43px!important;font-size:13px!important}
+291: }
+292: @media(max-width:355px){.app-header .brand{grid-template-columns:49px minmax(0,1fr) auto;gap:7px!important}.app-header .logo{width:47px!important;height:47px!important;min-width:47px}.app-header .brand h1{font-size:15px!important}.app-header .brand p{font-size:9px!important}#qn-create-toggle{padding:9px!important;font-size:12px!important}}
+293: </style>
+294: <style id="qn-completed-job-style">
+295: #view-jobs .qn-job-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+296: #view-jobs .qn-completed-stat{border-left:4px solid #e9a34d}
+297: #view-jobs .qn-completed-stat .value{color:#ad590f}
+298: @media(max-width:600px){#view-jobs .qn-job-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#view-jobs .qn-completed-stat{grid-column:1/-1}#view-jobs .qn-completed-stat .value{font-size:32px}}
+299: </style><style id="qn-final-refinement">
+300: :root{--orange:#e99034;--orange-dark:#d97706;--blue-light:#fff8f1}
+301: .app-header{background:#fff!important;border-bottom:1px solid #f1e9e1!important;box-shadow:0 3px 14px rgba(54,37,20,.025)!important}
+302: .app-header .logo{box-shadow:0 5px 16px rgba(184,103,32,.12)!important}
+303: #qn-create-toggle{background:#e99034!important;border-radius:14px!important;box-shadow:0 5px 14px rgba(222,124,38,.12)!important}
+304: #qn-create-toggle:hover{background:#dc7f21!important}
+305: .card,.stat,.list-item{box-shadow:0 4px 18px rgba(27,35,46,.035)!important;border-color:#eee9e4!important}
+306: .qn-job-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+307: .qn-job-stats .stat{min-width:0;padding:14px!important}.qn-job-stats .stat .label{font-size:11px!important;line-height:1.4}.qn-job-stats .stat .value{font-size:clamp(22px,3vw,30px)!important}
+308: .qn-job .btn{margin-top:8px}.qn-job .btn-outline{border-color:#e7d7c9;color:#8c4b16}
+309: .list-item{cursor:pointer}.list-item:focus-visible{outline:3px solid #e99034;outline-offset:2px}
+310: @media(max-width:390px){.qn-job-stats{gap:7px!important}.qn-job-stats .stat{padding:10px!important}.qn-job-stats .stat .label{font-size:10px!important}}
+311: </style><style id="qn-auth-brand-final">
+312: #qn-auth-screen{padding:clamp(16px,4vw,28px);background:linear-gradient(155deg,#23160e 0%,#6e320e 57%,#ed8a0c 100%)}
+313: #qn-auth-screen .qn-auth-card{max-width:520px;border-radius:26px;padding:clamp(24px,5vw,34px);box-shadow:0 22px 65px rgba(25,12,5,.22)}
+314: #qn-auth-screen .qn-auth-brand{display:flex;align-items:center;gap:clamp(12px,3vw,20px);margin-bottom:22px;min-width:0}
+315: #qn-auth-screen .qn-auth-logo{width:clamp(76px,22vw,112px);height:clamp(76px,22vw,112px);flex:none;object-fit:contain;border-radius:22px}
+325: @media(max-width:390px){#qn-auth-screen .qn-auth-brand{gap:10px}#qn-auth-screen .qn-auth-brand h1{font-size:clamp(24px,6.6vw,30px);letter-spacing:-1.1px}}
+326: </style>
+327: <style>
+328: /* Compact, legible header: logo and title on left, Create on right. */
+329: .app-header{padding:12px 16px!important}
+330: .app-header .brand{display:grid!important;grid-template-columns:66px minmax(0,1fr) auto!important;gap:11px!important;align-items:center!important;width:100%!important}
+331: .app-header .logo{width:66px!important;height:66px!important;min-width:66px!important;border-radius:14px!important}
+332: .app-header .logo img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:13px!important}
+333: .app-header .brand h1{font-size:22px!important;line-height:1.13!important;letter-spacing:-.45px!important;margin:0!important}
+334: .app-header .brand p{font-size:13px!important;line-height:1.25!important;margin-top:4px!important;overflow-wrap:anywhere!important}
+335: .app-header .qn-create-wrap{grid-column:3!important;grid-row:1!important;justify-self:end!important;margin-left:0!important;position:relative!important}
+336: #qn-create-toggle{font-size:14px!important;padding:10px 13px!important;min-height:42px!important;white-space:nowrap!important}
+337: @media(max-width:390px){.app-header{padding:10px 11px!important}.app-header .brand{grid-template-columns:58px minmax(0,1fr) auto!important;gap:8px!important}.app-header .logo{width:58px!important;height:58px!important;min-width:58px!important}.app-header .brand h1{font-size:19px!important}.app-header .brand p{font-size:12px!important}#qn-create-tog
+338: </style>
+339: <style id="qn-balanced-header-v2">
+340: /* Three explicit columns prevent the title or Create action from collapsing left. */
+341: .app-header{padding:12px 18px!important;background:#fff!important}
+342: .app-header .brand{display:grid!important;grid-template-columns:60px minmax(0,1fr) max-content!important;gap:12px!important;align-items:center!important;width:100%!important;max-width:1200px!important;margin:0 auto!important}
+343: .app-header .brand>.logo{grid-column:1!important;grid-row:1!important;width:60px!important;height:60px!important;min-width:0!important;border-radius:15px!important}
+344: .app-header .brand>.logo img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:14px!important}
+345: .app-header .brand>.qn-brand-copy{grid-column:2!important;grid-row:1!important;min-width:0!important;align-self:center!important;text-align:left!important}
+346: .app-header .brand>.qn-brand-copy h1{font-size:clamp(18px,2.4vw,24px)!important;line-height:1.13!important;letter-spacing:-.65px!important;margin:0!important;white-space:nowrap!important}
+347: .app-header .brand>.qn-brand-copy p{font-size:clamp(11px,1.45vw,14px)!important;line-height:1.3!important;margin:4px 0 0!important;overflow-wrap:normal!important;max-width:290px!important}
+348: .app-header .brand>.qn-create-wrap{grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:center!important;min-width:max-content!important;margin:0!important}
+349: .app-header #qn-create-toggle{font-size:14px!important;font-weight:700!important;min-height:45px!important;padding:10px 16px!important;white-space:nowrap!important;border-radius:13px!important}
+350: @media(max-width:440px){.app-header{padding:12px 13px!important}.app-header .brand{grid-template-columns:55px minmax(0,1fr) max-content!important;gap:9px!important}.app-header .brand>.logo{width:55px!important;height:55px!important}.app-header .brand>.qn-brand-copy h1{font-size:19px!important}.app-header .brand>.qn-brand-copy p{font-size:11.5px!imp
+351: @media(max-width:355px){.app-header{padding:10px!important}.app-header .brand{grid-template-columns:48px minmax(0,1fr) max-content!important;gap:7px!important}.app-header .brand>.logo{width:48px!important;height:48px!important}.app-header .brand>.qn-brand-copy h1{font-size:17px!important}.app-header .brand>.qn-brand-copy p{font-size:10.5px!importan
+352: </style>
+353: <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Quote.Noble">
+354: <style id="qn-reports-style">
+355: :root{--qn-report-orange:#ff681b;--qn-report-ink:#15171c}
+356: .qn-report-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:10px 0 18px}.qn-report-heading h1{font-size:clamp(28px,4vw,36px);margin:4px 0}.qn-report-heading p,.qn-report-sub{color:#68717f;font-size:14px}.qn-report-kicker{font-size:11px;letter-spacing:2px;color:#bd4c0d;font-weight:800}.qn-report-filters{display:f
+357: .qn-report-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:17px}.qn-report-stat{background:white;border:1px solid #e8e9ed;border-radius:17px;padding:20px 17px;border-top:3px solid var(--qn-report-orange)}.qn-report-stat:nth-child(2){border-top-color:#18191e}.qn-report-stat:nth-child(3){border-top-color:#26a07
+358: @media(max-width:900px){.qn-report-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.qn-report-cols{grid-template-columns:1fr}.qn-report-heading{align-items:flex-start}.qn-report-heading .btn{white-space:nowrap;font-size:12px}.qn-report-stat{padding:15px 12px}.qn-report-stat strong{font-size:23px}.qn-report-chart{gap:5px
+359: [REDACTED]
+360: [REDACTED]
+361: [REDACTED]
+362: [REDACTED]
+363: [REDACTED]
+364: [REDACTED]
+365: [REDACTED]
+366: [REDACTED]
+367: [REDACTED]
+370: .qn-more-clean{--qm:#ff681b}.qn-more-header{margin:4px 0 20px}.qn-more-header h1{font-size:29px;letter-spacing:-.8px;margin:0 0 5px;color:#1b1d23}.qn-more-header p{margin:0;color:#808591;font-size:14px}.qn-more-business-banner{display:flex;align-items:center;gap:13px;padding:19px 16px;background:#1b1d23;border-radius:18px;color:#fff;margin-bottom:2
+371: </style><style>
+372: /* Quote.Noble billing experience */
+373: .qn-billing-shell{max-width:560px;margin:14px auto 32px;padding:24px 20px;background:#fff;border:1px solid #e9e9e9;border-radius:22px;box-shadow:0 12px 35px rgba(15,23,42,.055);color:#172233}
+374: .qn-billing-heading{text-align:center;margin-bottom:24px}.qn-billing-eyebrow{font-size:.73rem;font-weight:800;letter-spacing:.15em;color:#c77513}.qn-billing-heading h2{font-size:1.65rem;line-height:1.2;margin:8px 0}.qn-billing-heading p{font-size:.94rem;color:#64748b;line-height:1.5;margin:0}
+375: .qn-plan-choices{display:grid;grid-template-columns:1fr 1fr;gap:11px}.qn-plan-option{appearance:none;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;text-align:left;padding:17px 13px;display:flex;flex-direction:column;gap:5px;color:#172233;min-width:0;cursor:pointer}.qn-plan-option.selected{border:2px solid #e9902e;background:#fffaf4;
+376: .qn-plan-benefits{background:#f7f8fa;border-radius:14px;padding:15px 17px;margin:20px 0;color:#253348}.qn-plan-benefits p{font-size:.9rem;margin:8px 0;line-height:1.4}.qn-plan-continue{width:100%;border:0;border-radius:13px;background:#e9902e;color:#fff;padding:16px 12px;font-size:1rem;font-weight:800;cursor:pointer}.qn-plan-continue:disabled{opaci
+377: @media(max-width:390px){.qn-billing-shell{padding:19px 13px}.qn-plan-option{padding:14px 10px}.qn-plan-option strong{font-size:1.4rem}}
+378: </style>
+379: <style id="qn-billing-mobile-repair">#qn-pro-actions:not([hidden]){display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important}#qn-pro-actions .btn{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;white-space:normal!important}#qn-pro-action
+380: .qn-td-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:2147483000;display:grid;place-items:center;padding:18px}
+381: .qn-td-card{width:min(100%,430px);background:#fff;color:#111827;border-radius:26px;box-shadow:0 24px 70px rgba(0,0,0,.2);padding:32px 24px 24px;position:relative;text-align:center;font-family:inherit}
+382: .qn-td-icon{width:90px;height:90px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;font-size:42px;background:#e9f8ef;color:#19875a}
+383: .qn-td-icon.warn{background:#fff2e6;color:#e68413}
+384: .qn-td-card h2{font-size:25px;line-height:1.2;margin:0 0 12px;color:#10182c}
+385: .qn-td-card p{font-size:16px;line-height:1.55;color:#596272;margin:0 0 22px}
+386: .qn-td-btn{width:100%;border:0;border-radius:14px;background:#e88919;color:white;font-size:17px;font-weight:700;min-height:54px;cursor:pointer;margin:0 0 10px}
+387: .qn-td-btn.secondary{background:#fff;color:#172033;border:1px solid #d7dce4}
+388: .qn-td-close{position:absolute;right:14px;top:12px;border:0;background:transparent;font-size:27px;color:#64748b;padding:5px 12px;cursor:pointer}
+610:   return {
+611:     profile: { businessName: "", phone: "", email: "", taxRate: 13, taxLabel: "HST" },
+612:     clients: [],
+613:     quotes: [],
+614:     invoices: [],
+615:     smartTemplates: [],
+616:     seq: { quote: 1001, invoice: 2001 }
+617:   };
+618: }
+619: 
+620: let DB = storage.load();
+621: if (!DB || typeof DB!=="object") { DB = seedDB(); storage.save(DB); }
+622: DB.clients=Array.isArray(DB.clients)?DB.clients:[];
+623: DB.quotes=Array.isArray(DB.quotes)?DB.quotes:[];
+624: DB.invoices=Array.isArray(DB.invoices)?DB.invoices:[];
+625: DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+626: DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+627: DB.seq=DB.seq||{quote:1001,invoice:2001};
+628: DB.profile=DB.profile||seedDB().profile;
+629: function save() { const stored=storage.save(DB); window.qnSaveFailed=!stored; window.qnCloudSave?.(); }
+630: 
+631: /* ================= UTILS ================= */
+632: 
+633: // Consistent newest-first ordering for every record list.
+634: // Use creation time rather than appointment/due dates; legacy IDs contain timestamps.
+635: function qnCreatedMs(record){
+900:     return '<div class="list-item" role="button" tabindex="0" data-open-doc="q:'+x.id+'"><div class="top"><div><div class="title">'+esc(x.number)+
+901:       (x.sample?' <span class="badge sample">sample</span>':'')+'</div><div class="sub">'+esc(clientName(x.clientId))+" · "+fmtDate(x.createdAt)+'</div></div><div style="text-align:right"><div class="amt">'+money(t.total)+'</div><span class="badge '+x.status+'">'+STATUS_LABEL[x.status]+'</span></div></div></div>';
+902:   }).join("");
+903: }
+904: /* Private quote materials: stored only on quote object; never used by customer document renderer. */
+905: function qnMaterialRows(items){return (items||[]).map((m,i)=>'<div class="qn-mat-row" style="display:grid;grid-template-columns:minmax(0,1fr) 62px 88px 36px;gap:6px;margin-bottom:8px;align-items:center"><input class="qn-mat-name" aria-label="Material" placeholder="Material name" value="'+esc(m.name||'')+'"><input class="qn-mat-qty" aria-label="Quan
+906: function qnReadMaterials(body){return [...body.querySelectorAll('.qn-mat-row')].map(r=>({name:r.querySelector('.qn-mat-name').value.trim(),qty:Number(r.querySelector('.qn-mat-qty').value||0),unit:r.querySelector('.qn-mat-unit').value})).filter(m=>m.name);}
+907: function qnBindMaterials(body){const wrap=body.querySelector('#qn-material-wrap');body.querySelector('#qn-add-material').onclick=()=>{const current=qnReadMaterials(body);wrap.innerHTML=qnMaterialRows([...current,{name:'',qty:1,unit:'pcs'}]);wrap.querySelector('.qn-mat-row:last-child .qn-mat-name')?.focus();};wrap.onclick=e=>{if(e.target.closest('.q
+908: function qnCopyMaterials(q){const lines=(q.materials||[]).map(m=>`${m.qty} ${m.unit} — ${m.name}`);if(q.materialNotes)lines.push('',q.materialNotes);const value=lines.join('\n');if(navigator.clipboard?.writeText)navigator.clipboard.writeText(value).then(()=>alert('Private material list copied.')).catch(()=>prompt('Copy material list:',value));else 
+909: function qnBindSmartTemplates(body){
+910:   const select=body.querySelector("#qn-smart-select");
+911:   if(!select)return;
+912:   function populate(){
+913:     const previous=select.value;
+914:     select.innerHTML='<option value="">Choose a saved template</option>';
+915:     (DB.smartTemplates||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(t=>select.add(new Option(t.name,t.id)));
+916:     if((DB.smartTemplates||[]).some(t=>t.id===previous))select.value=previous;
+917:   }
+918:   populate();
+919:   body.querySelector("#qn-smart-save").onclick=()=>{
+920:     const items=readItems(body);
+921:     if(!items.length){alert("Add at least one line item before saving a template.");return;}
+922:     const raw=prompt("Name this template (for example, Shingle roof replacement):");
+923:     if(raw===null)return;
+924:     const name=raw.trim().slice(0,90);
+925:     if(!name){alert("Enter a template name.");return;}
+926:     const match=(DB.smartTemplates||[]).find(t=>t.name.toLowerCase()===name.toLowerCase());
+927:     if(match&&!confirm("Replace the existing template named "+name+"?"))return;
+928:     const record={id:match?.id||uid("tpl"),name,items:items.map(x=>({...x})),
+929:       materials:qnReadMaterials(body),materialNotes:body.querySelector("#qn-material-notes").value,
+930:       notes:body.querySelector("#f-notes").value,updatedAt:new Date().toISOString()};
+931:     if(match)Object.assign(match,record);
+932:     else { DB.smartTemplates=DB.smartTemplates||[]; DB.smartTemplates.push(record); }
+933:     save();populate();select.value=record.id;
+934:     if(window.qnSaveFailed)alert("Template is only in memory. Storage is unavailable; export a backup before leaving.");
+935:     else alert("Template saved. It can be used on future quotes.");
+936:   };
+937:   body.querySelector("#qn-smart-apply").onclick=()=>{
+938:     const t=(DB.smartTemplates||[]).find(x=>x.id===select.value);
+939:     if(!t){alert("Choose a saved template first.");return;}
+940:     const current=readItems(body);
+941:     if((current.length||qnReadMaterials(body).length||body.querySelector("#f-notes").value.trim()||body.querySelector("#qn-material-notes").value.trim())&&!confirm("Replace the current quote items, notes and private materials with this template?"))return;
+942:     body.querySelector("#items-wrap").innerHTML=itemRowsHTML((t.items||[]).map(x=>({...x})));
+943:     const materialWrap=body.querySelector("#qn-material-wrap");
+944:     if(materialWrap)materialWrap.innerHTML=qnMaterialRows(t.materials||[]);
+945:     body.querySelector("#qn-material-notes").value=t.materialNotes||"";
+946:     body.querySelector("#f-notes").value=t.notes||"";
+947:     updateLiveTotals(body);
+948:   };
+949:   body.querySelector("#qn-smart-delete").onclick=()=>{
+950:     const t=(DB.smartTemplates||[]).find(x=>x.id===select.value);
+951:     if(!t)return alert("Choose a saved template first.");
+952:     if(!confirm('Delete template "'+t.name+'"? Existing quotes will not be changed.'))return;
+953:     DB.smartTemplates=DB.smartTemplates.filter(x=>x.id!==t.id);
+954:     save();populate();select.value="";
+955:   };
+956: }
+957: function openQuoteForm(existing, presetClientId) {
+958:   if (!DB.clients.length) { alert("Add a client first (Clients tab), then make a quote."); showView("clients"); return; }
+959:   const q = existing || { clientId: presetClientId||DB.clients[0].id, items:[{desc:"",qty:1,price:0}], materials:[], materialNotes:"", notes:"", validUntil:"", status:"draft" };
+960:   const body = openModal(existing?("Edit "+q.number):"New quote",
+961:     '<div class="field"><label>Client</label><select id="f-client">'+clientOptionsHTML(q.clientId)+'</select></div>' +
+962:     '<div class="field" style="padding:14px;border:1px solid var(--border,#dce2eb);border-radius:12px"><label style="font-weight:750">⭐ My saved templates</label><div class="hint" style="margin:5px 0 10px">Reuse your own scope, prices, notes and private materials. Templates are private to your account.</div><select id="qn-smart-select" style="width
+963:     '<div class="field"><label>Line items</label><div id="items-wrap">'+itemRowsHTML(q.items)+'</div>' +
+964:     '<button type="button" class="btn btn-outline btn-small" id="add-item" style="margin-top:8px;">+ Add line</button></div>' +
+965:     '<div class="field" style="margin-top:18px;padding:15px;border:1px solid var(--border,#dce2eb);border-radius:12px;background:var(--surface,#fff)"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><label style="font-size:16px;font-weight:750">🔒 Materials list</label><span style="font-size:12px;col
+966:     '<div class="totals-box" id="live-totals"></div>' +
+967:     '<div class="field"><label>Notes for the client</label><textarea id="f-notes" placeholder="e.g. Price includes cleanup and haul-away.">'+esc(q.notes)+'</textarea></div>' +
+968:     '<div class="field"><label>Valid until</label><input id="f-valid" type="date" value="'+esc(q.validUntil||"")+'"></div>' +
+969:     '<div class="field"><label>Status</label><select id="f-status">' +
+970:       ["draft","sent","accepted","declined"].map(s=>'<option value="'+s+'"'+(q.status===s?" selected":"")+'>'+STATUS_LABEL[s]+'</option>').join("") +
+971:     '</select></div>' +
+972:     modalFooter(existing?"Save changes":"Create quote","f-save"));
+973:   bindItemRows(body); updateLiveTotals(body); qnBindMaterials(body); qnBindSmartTemplates(body);
+974:   body.querySelector("#f-save").addEventListener("click", ()=>{
+975:     const items = readItems(body);
+976:     if (!items.length) { alert("Add a service name or scope of work for at least one line item."); return; }
+977:     const data = { clientId: body.querySelector("#f-client").value, items, materials:qnReadMaterials(body), materialNotes:body.querySelector("#qn-material-notes").value.trim(),
+978:       notes: body.querySelector("#f-notes").value.trim(), validUntil: body.querySelector("#f-valid").value,
+979:       status: body.querySelector("#f-status").value };
+980:     if (existing) Object.assign(existing, data, {updatedAtTime:new Date().toISOString()});
+981:     else { const n = DB.seq.quote++; DB.quotes.push(Object.assign({id:uid("q"), number:"Q-"+n, createdAt:todayStr(),createdAtTime:new Date().toISOString()}, data)); }
+982:     save(); closeModal(); renderQuotes(); if (document.getElementById("view-home").classList.contains("active")) renderDashboard();
+1550:     DB=storage.load()||seedDB();
+1551:     DB.clients=Array.isArray(DB.clients)?DB.clients:[];
+1552:     DB.quotes=Array.isArray(DB.quotes)?DB.quotes:[];
+1553:     DB.invoices=Array.isArray(DB.invoices)?DB.invoices:[];
+1554:     DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+1555:     DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+1556:     DB.profile=DB.profile||seedDB().profile;
+1557:     DB.seq=DB.seq||{quote:1001,invoice:2001};
+1558:     document.body.classList.add("qn-authenticated");
+1559:     $("qn-auth-screen").style.display="none";
+1560:     if (!$("qn-logout")) {
+1561:       const b=document.createElement("button");
+1562:       b.id="qn-logout"; b.textContent="Log out";
+1563:       b.addEventListener("click",async()=>{await sb.auth.signOut(); location.reload();});
+1564:       document.querySelector(".app-header .brand").appendChild(b);
+1628:   setMode("signup");
+1629:   start().catch(e=>msg("Unable to connect to Supabase: "+e.message));
+1630: })();
+1631: </script>
+1632: <style>
+1633: #view-jobs .qn-job{border-left:5px solid #f59e0b}#view-jobs .qn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}#view-jobs input,#view-jobs select,#view-jobs textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;font:inherit}#view-jobs label{display:block;font-size:13px;font-weight:700;margin:10px 0 4p
+1634: 
+1635: /* Bigger mobile brand identity: readable on phones without crowding Create */
+1636: .app-header .brand{gap:12px;min-width:0;flex:1}
+1637: .app-header .brand>div:nth-child(2){min-width:0}
+1638: .app-header .logo{width:66px!important;height:66px!important;min-width:66px;border-radius:16px!important;flex-shrink:0}
+1639: .app-header .logo img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:15px!important}
+1640: .app-header h1{font-size:clamp(1.3rem,4.6vw,1.75rem)!important;line-height:1.14;font-weight:800}
+1641: .app-header p{font-size:clamp(.88rem,2.9vw,1.05rem)!important;line-height:1.3;opacity:1!important;margin-top:5px!important}
+1642: @media(max-width:430px){
+1648:  .qn-create-wrap button{white-space:nowrap}
+1649: }
+1650: @media(max-width:360px){.app-header .logo{width:54px!important;height:54px!important;min-width:54px}.app-header h1{font-size:1.15rem!important}.app-header p{font-size:.78rem!important}}
+1651: 
+1652: /* Final mobile header sizing override — after all earlier responsive rules. */
+1653: .app-header .brand{display:grid!important;grid-template-columns:92px minmax(0,1fr) auto!important;gap:16px!important;align-items:center!important}
+1654: .app-header .logo{width:92px!important;height:92px!important;min-width:92px!important;border-radius:19px!important}
+1655: .app-header .logo img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:18px!important}
+1656: .app-header .brand h1{font-size:28px!important;line-height:1.12!important;font-weight:850!important;letter-spacing:-.6px!important}
+1657: .app-header .brand p{font-size:17px!important;line-height:1.3!important;opacity:1!important;color:#64748b!important;margin-top:7px!important}
+1658: @media(max-width:650px){
+1659:  .app-header{padding:14px 16px!important}
+1660:  .app-header .brand{grid-template-columns:92px minmax(0,1fr)!important;column-gap:14px!important;row-gap:12px!important}
+1661:  .app-header .logo{width:92px!important;height:92px!important;min-width:92px!important}
+1662:  .app-header .brand h1{font-size:27px!important}
+1663:  .app-header .brand p{font-size:16px!important}
+1664:  .app-header .qn-create-wrap{grid-column:2!important;justify-self:start!important;position:relative!important}
+1665:  #qn-create-toggle{font-size:16px!important;padding:11px 20px!important;white-space:nowrap!important}
+1666: }
+1667: @media(max-width:365px){
+1668:  .app-header .brand{grid-template-columns:82px minmax(0,1fr)!important;gap:10px!important}
+1669:  .app-header .logo{width:82px!important;height:82px!important;min-width:82px!important}
+1670:  .app-header .brand h1{font-size:24px!important}
+1671:  .app-header .brand p{font-size:15px!important}
+1672: }
+1673: 
+1674: /* Quote.Noble usability patch: preserves original design. */
+1675: @media(max-width:899px){
+1676:  #tabbar button{font-size:clamp(.72rem,2.6vw,.83rem);min-height:66px;gap:4px;padding:9px 2px 8px;white-space:nowrap}
+1677:  #tabbar button .ico{font-size:1.45rem}
+1905:     if(!warning && (message.includes("✓") || message==="Saving…")) {
+1906:       statusHideTimer=setTimeout(()=>{ if(statusNode)statusNode.style.display="none"; },message==="Saving…"?3500:1800);
+1907:     }
+1908:   }
+1909:   function hasRecords(db){
+1910:     return !!(db && ((db.clients||[]).length||(db.quotes||[]).length||(db.invoices||[]).length||(db.jobs||[]).length||(db.smartTemplates||[]).length||db.profile?.businessName));
+1911:   }
+1912:   function localSnapshot(){
+1913:     try { return JSON.stringify(DB); } catch(e) { status("Save failed: invalid document data",true); return null; }
+1914:   }
+1915:   async function push(){
+1916:     if(!ready||!client||!uid||running)return;
+1917:     if(!navigator.onLine){status("Saved on device · waiting for internet",true);return;}
+1918:     const snapshot=localSnapshot();
+1919:     if(!snapshot||snapshot===lastSnapshot)return;
+1972:           }
+1973:           // The phone has not changed since the last successful cloud save.
+1974:           if(baseline===old){
+1975:             DB=remote;
+1976:             DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+1977:             DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+1978:             storage.save(DB);
+1979:             lastSnapshot=JSON.stringify(DB);
+1980:             try{localStorage.setItem(baselineKey,lastSnapshot)}catch(e){}
+1981:             ready=true;
+1982:             status("Cloud data restored ✓");
+1983:             return;
+1984:           }
+1985:           // First run or a genuinely diverged state: reconcile records by stable ID.
+1986:           // Never silently overwrite different versions of the SAME record.
+1987:           const merged=JSON.parse(JSON.stringify(remote));
+1988:           let conflict=false;
+1989:           for(const key of ["clients","quotes","invoices","jobs","smartTemplates"]){
+1990:             const fromCloud=Array.isArray(remote[key])?remote[key]:[];
+1991:             const fromPhone=Array.isArray(DB[key])?DB[key]:[];
+1992:             const index=new Map(fromCloud.map((r,i)=>[String(r.id),i]));
+1993:             merged[key]=fromCloud.map(r=>({...r}));
+1994:             for(const item of fromPhone){
+1995:               const at=index.get(String(item.id));
+1996:               if(at===undefined){
+1997:                 merged[key].push(item);
+1998:               }else if(JSON.stringify(merged[key][at])!==JSON.stringify(item)){
+2076:           window.qnCloudSave();
+2077:           return;
+2078:         }
+2079:         DB=remote;
+2080:         DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+2081:         DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+2082:         DB.seq=DB.seq||{quote:1001,invoice:2001};
+2083:         DB.profile=DB.profile||seedDB().profile;
+2084:         storage.save(DB);
+2085:         lastSnapshot=JSON.stringify(DB);
+2086:         try{localStorage.setItem("qn_last_cloud_snapshot_"+uid,lastSnapshot)}catch(e){}
+2087:         if(typeof showView==="function"){
+2088:           const active=document.querySelector(".view.active");
+2089:           const name=active?.id?.replace(/^view-/,"")||"home";
+2090:           showView(name);
+2196:  window.qnRefreshBilling=refresh;
+2197:  choose('yearly');
+2198:  setTimeout(()=>{if(document.getElementById('view-plans')?.classList.contains('active'))refresh();},300);
+2199: })();
+2200: </script>
+2201: <script id="qn-template-dialog-js">
+2202: (function(){
+2203:   if(window.__qnTemplateDialogInstalled)return;
+2204:   window.__qnTemplateDialogInstalled=true;
+2205:   const nativeAlert=window.alert.bind(window);
+2206:   function closeDialog(){const old=document.getElementById('qn-template-dialog');if(old)old.remove();}
+2207:   function dialog(success){
+2208:     closeDialog();
+2209:     const root=document.createElement('div');root.className='qn-td-backdrop';root.id='qn-template-dialog';
+2210:     root.innerHTML='<section class="qn-td-card" role="alertdialog" aria-modal="true" aria-labelledby="qn-td-title" aria-describedby="qn-td-desc"><button class="qn-td-close" type="button" aria-label="Close dialog">×</button><div class="qn-td-icon '+(success?'':'warn')+'">'+(success?'✓':'!')+'</div><h2 id="qn-td-title">'+(success?'Template saved!':'C
+2211:     document.body.appendChild(root);
+2212:     const buttons=root.querySelectorAll('.qn-td-btn');
+2213:     root.querySelector('.qn-td-close').onclick=closeDialog;
+2214:     buttons[0].onclick=()=>{closeDialog();if(!success){const select=document.querySelector('#view-quotes select[id*="template"],select[id*="template"]');if(select)select.focus();}};
+2215:     buttons[1].onclick=()=>{closeDialog();if(success){const select=document.querySelector('#view-quotes select[id*="template"],select[id*="template"]');if(select){select.scrollIntoView({behavior:'smooth',block:'center'});select.focus();}}};
+2216:     root.addEventListener('click',e=>{if(e.target===root)closeDialog();});
+2217:     root.addEventListener('keydown',e=>{if(e.key==='Escape')closeDialog();});
+2218:     buttons[0].focus();
+2219:   }
+2220:   window.alert=function(message){
+2221:     const t=String(message||'').trim();
+2222:     if(/^Template saved\./i.test(t)){dialog(true);return;}
+2223:     if(/^Choose a saved template first\.?$/i.test(t)){dialog(false);return;}
+2224:     return nativeAlert(message);
+2225:   };
+2226: })();
+2227: </script><script id="qn-template-apply-dialog">
+2228: (function(){
+2229:   const nativeConfirm=window.confirm.bind(window);
+2230:   let pending=false;
+2231:   window.confirm=function(message){
+2232:     if(!/Replace the current quote items, notes and private materials with this template/i.test(String(message)))return nativeConfirm(message);
+2233:     if(pending)return false;
+2234:     pending=true;
+2235:     const root=document.createElement('div');
+2236:     root.id='qn-template-dialog';root.className='qn-td-backdrop';
+2237:     root.innerHTML='<section class="qn-td-card" role="alertdialog" aria-modal="true" aria-labelledby="qn-td-title"><button type="button" class="qn-td-close" aria-label="Close">×</button><div class="qn-td-icon warn">!</div><h2 id="qn-td-title">Apply saved template?</h2><p>Replace the current quote items, notes and private materials with the selected
+2238:     document.body.appendChild(root);
+2239:     const close=()=>{root.remove();pending=false;};
+2240:     root.querySelector('.qn-td-close').onclick=close;
+2241:     root.querySelector('.secondary').onclick=close;
+2242:     root.querySelector('.qn-td-btn:not(.secondary)').onclick=()=>{
+2243:       close();
+2244:       const use=[...document.querySelectorAll('button')].find(x=>/^Use template$/i.test(x.textContent.trim()));
+2245:       if(!use)return;
+2246:       const prev=window.confirm;
+2247:       window.confirm=(m)=>/Replace the current quote items, notes and private materials with this template/i.test(String(m))?true:prev(m);
+2248:       try{use.click();}finally{window.confirm=prev;}
+2249:     };
+2250:     return false;
+2251:   };
+2252: })();
+2253: </script><script id="qn-template-create-dialog">
+2254: (function(){
+2255:   if(window.__qnTemplateCreateDialog)return;
+2256:   window.__qnTemplateCreateDialog=true;
+2257:   const nativePrompt=window.prompt.bind(window);
+2258:   window.prompt=function(message,defaultValue){
+2259:     return nativePrompt(message,defaultValue);
+2260:   };
+2261:   let resumed=false;
+2262:   document.addEventListener('click',function(e){
+2263:     if(resumed)return;
+2264:     const btn=e.target.closest('button');
+2265:     if(!btn)return;
+2266:     const label=(btn.textContent||'').trim().replace(/\s+/g,' ').toLowerCase();
+2267:     if(!/^(create new template|save as template|save current as template|create template)$/.test(label))return;
+2268:     e.preventDefault();e.stopImmediatePropagation();
+2269:     const old=document.getElementById('qn-template-dialog');if(old)old.remove();
+2270:     const root=document.createElement('div');root.id='qn-template-dialog';root.className='qn-td-backdrop';
+2271:     root.innerHTML='<section class="qn-td-card" role="dialog" aria-modal="true" aria-labelledby="qn-td-title"><button type="button" class="qn-td-close" aria-label="Close">×</button><div class="qn-td-icon">✎</div><h2 id="qn-td-title">Create new template</h2><p>Give this template a name so you can reuse it in future quotes.</p><input id="qn-template-
+2272:     document.body.appendChild(root);
+2273:     const input=root.querySelector('input');
+2274:     const close=()=>root.remove();
+2275:     root.querySelector('.qn-td-close').onclick=close;
+2276:     root.querySelector('.secondary').onclick=close;
+2277:     root.querySelector('.qn-td-btn:not(.secondary)').onclick=()=>{
+2278:       const name=input.value.trim();if(!name){input.focus();input.style.borderColor='#dc2626';return;}
+2279:       close();
+2280:       const original=window.prompt;

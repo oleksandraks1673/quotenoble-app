@@ -1,0 +1,16 @@
+CLOUD SYNC AUDIT (code lines redacted for secrets)
+cloudSave: 9 hits, line numbers: 629,1935,1938,1970,2069,2076,2097,2107,2108
+cloudSync: 0 hits, line numbers: 
+syncToCloud: 0 hits, line numbers: 
+syncFromCloud: 0 hits, line numbers: 
+supabase.from: 0 hits, line numbers: 
+localStorage.setItem: 11 hits, line numbers: 600,685,1413,1927,1957,1980,2035,2036,2067,2086,2119
+localStorage.getItem: 7 hits, line numbers: 594,1497,1574,1964,2037,2038,2118
+beforeunload: 0 hits, line numbers: 
+visibilitychange: 2 hits, line numbers: 2109,2140
+qn-cloud: 0 hits, line numbers: 
+FUNCTION 1706:     function persist(){report.summary=document.getElementById('qn-report-summary').value;DB.reports[id]=report;try{save();return true}catch(e){alert('Storage is full. Remove some photos and try again.');return false}}
+FUNCTION 1797:     const cloud=document.getElementById('cloud-logout');
+FUNCTION 1990:             const fromCloud=Array.isArray(remote[key])?remote[key]:[];
+FUNCTION 2001:                 let oldCloud;
+FUNCTION 2034:             const cloudKey=[REDACTED];

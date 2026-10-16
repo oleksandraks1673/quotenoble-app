@@ -1,0 +1,53 @@
+name: Fix existing subscriber billing UI
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/fix-subscriber-ui.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hide checkout for subscribers and show billing portal
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            marker='/* Quote.Noble subscription client: verified status, no browser alerts. */'
+            assert s.count(marker)==1
+            start=s.index(marker)
+            end=s.index('</script>',start)
+            code=s[start:end]
+            needle="const status=()=>document.getElementById('qn-pro-status');"
+            assert needle in code
+            code=code.replace(needle,needle+"""
+            function showSubscriberState(pro){
+              const checkout=document.getElementById('qn-pro-continue');
+              const manage=document.getElementById('qn-pro-actions');
+              if(checkout){checkout.hidden=!!pro;checkout.style.display=pro?'none':'';}
+              if(manage){manage.hidden=!pro;manage.style.display=pro?'flex':'none';}
+              const choices=document.querySelectorAll('[data-qn-plan]');
+              choices.forEach(el=>{el.style.display=pro?'none':'';el.setAttribute('aria-hidden',String(!!pro));});
+            }
+            """)
+            # Refresh function is responsible for subscription status; show controls based on returned status.
+            # Insert immediately after successful status response parse, without changing backend or Stripe pricing.
+            import re
+            m=re.search(r'const\s+(\w+)\s*=\s*await\s+(\w+)\.json\(\)',code)
+            if not m:
+              print('CODE SNIPPET',code[0:3000])
+              raise Exception('Expected JSON parse not found: '+filename)
+            variable=m.group(1)
+            code=code[:m.end()]+f";showSubscriberState(!!{variable}.pro)"+code[m.end():]
+            s=s[:start]+code+s[end:]
+            p.write_text(s)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Show management controls for existing subscribers" && git push)

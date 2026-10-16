@@ -1,0 +1,61 @@
+name: Fix template dialog interception
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/fix-template-dialog-interception.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix apply and save actions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            # The original handler is sometimes attached directly to the button:
+            # button.click() during a capture listener can be swallowed or re-intercepted.
+            # Preserve the original event flow and intercept only native confirmation.
+            a=s.index('<script id="qn-template-apply-dialog">')
+            b=s.index('</script>',a)+len('</script>')
+            s=s[:a]+'''<script id="qn-template-apply-dialog">
+          (function(){
+            const nativeConfirm=window.confirm.bind(window);
+            let pending=false;
+            window.confirm=function(message){
+              if(!/Replace the current quote items, notes and private materials with this template/i.test(String(message)))return nativeConfirm(message);
+              if(pending)return false;
+              pending=true;
+              const root=document.createElement('div');
+              root.id='qn-template-dialog';root.className='qn-td-backdrop';
+              root.innerHTML='<section class="qn-td-card" role="alertdialog" aria-modal="true" aria-labelledby="qn-td-title"><button type="button" class="qn-td-close" aria-label="Close">×</button><div class="qn-td-icon warn">!</div><h2 id="qn-td-title">Apply saved template?</h2><p>Replace the current quote items, notes and private materials with the selected template?</p><button type="button" class="qn-td-btn">Apply template</button><button type="button" class="qn-td-btn secondary">Cancel</button></section>';
+              document.body.appendChild(root);
+              const close=()=>{root.remove();pending=false;};
+              root.querySelector('.qn-td-close').onclick=close;
+              root.querySelector('.secondary').onclick=close;
+              root.querySelector('.qn-td-btn:not(.secondary)').onclick=()=>{
+                close();
+                const use=[...document.querySelectorAll('button')].find(x=>/^Use template$/i.test(x.textContent.trim()));
+                if(!use)return;
+                const prev=window.confirm;
+                window.confirm=(m)=>/Replace the current quote items, notes and private materials with this template/i.test(String(m))?true:prev(m);
+                try{use.click();}finally{window.confirm=prev;}
+              };
+              return false;
+            };
+          })();
+          </script>'''+s[b:]
+            # Save current as template: make sure original prompt receives the entered name.
+            assert 'id="qn-template-create-dialog"' in s
+            p.write_text(s)
+            print(filename,'patched')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Fix template confirmation event interception" && git push)

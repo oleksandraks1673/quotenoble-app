@@ -1,0 +1,39 @@
+name: Repair modern billing preview
+on:
+  push:
+    branches: [fix/billing-design-preview-20261016]
+    paths: ['.github/workflows/repair-modern-billing.yml']
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch both entrypoints without replacing app design
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          for filename in ('app.html','index.html'):
+              p=Path(filename);s=p.read_text()
+              if 'id="qn-pro-manage"' not in s or 'id="qn-pro-continue"' not in s: raise Exception(filename+' billing elements missing')
+              s=s.replace('const URL=\'https://jssfjaggsjtwppokjpns.supabase.co\';','const SUPABASE_ENDPOINT=\'https://jssfjaggsjtwppokjpns.supabase.co\';')
+              s=s.replace('window.supabase.createClient(URL,KEY)','window.supabase.createClient(SUPABASE_ENDPOINT,KEY)')
+              s=s.replace('new URL(r.url)','new window.URL(r.url)')
+              s=s.replace('id="qn-pro-manage">Manage subscription</button>','id="qn-pro-manage">Manage subscription →</button>')
+              s=s.replace('<div class="qn-plan-actions" id="qn-pro-actions" hidden><button type="button" class="btn btn-primary" id="qn-pro-manage">Manage subscription →</button></div>', '<div class="qn-plan-actions" id="qn-pro-actions" hidden><button type="button" class="btn btn-primary" id="qn-pro-manage">Manage subscription →</button><p class="qn-billing-help">Change your plan, update payment details, or cancel securely through Stripe.</p><div class="qn-manage-grid"><button type="button" class="btn btn-outline" id="qn-change-plan">Change plan ↗</button><button type="button" class="btn btn-outline" id="qn-cancel-plan">Cancel subscription ↗</button></div></div>')
+              s=s.replace("if(e.target.closest('#qn-pro-manage,#cloud-portal'))", "if(e.target.closest('#qn-pro-manage,#qn-change-plan,#qn-cancel-plan,#cloud-portal'))")
+              s=s.replace("if(e.target.closest('[data-view=\"plans\"], [data-action=\"plans\"]'))", "if(e.target.closest('[data-view=\"plans\"], [data-action=\"plans\"], [data-qn-more-go=\"plans\"]'))")
+              s=s.replace("choose('yearly');\n})();", "choose('yearly');\n setTimeout(()=>{if(document.getElementById('view-plans')?.classList.contains('active'))refresh();},300);\n})();")
+              css='<style id="qn-billing-mobile-repair">#qn-pro-actions:not([hidden]){display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important}#qn-pro-actions .btn{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;white-space:normal!important}#qn-pro-actions .qn-billing-help{margin:0!important;font-size:14px!important;line-height:1.5!important;color:#657181!important}#qn-pro-actions .qn-manage-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;width:100%}#qn-pro-continue[hidden],#qn-pro-actions[hidden]{display:none!important}</style>'
+              if 'id="qn-billing-mobile-repair"' not in s:s=s.replace('</head>',css+'</head>',1)
+              if 'id="qn-pro-manage"' not in s or 'qn-change-plan' not in s:raise Exception(filename+' patch failed')
+              p.write_text(s)
+          PY
+      - name: Commit preview only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html index.html
+          git diff --cached --quiet || (git commit -m "Repair modern billing controls and mobile layout" && git push)
