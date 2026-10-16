@@ -2251,5 +2251,41 @@ document.addEventListener("click",function(event){
     root.querySelector('.qn-td-btn:not(.secondary)').focus();
   },true);
 })();
+</script><script id="qn-template-create-dialog">
+(function(){
+  if(window.__qnTemplateCreateDialog)return;
+  window.__qnTemplateCreateDialog=true;
+  const nativePrompt=window.prompt.bind(window);
+  window.prompt=function(message,defaultValue){
+    return nativePrompt(message,defaultValue);
+  };
+  let resumed=false;
+  document.addEventListener('click',function(e){
+    if(resumed)return;
+    const btn=e.target.closest('button');
+    if(!btn)return;
+    const label=(btn.textContent||'').trim().replace(/\s+/g,' ').toLowerCase();
+    if(!/^(create new template|save as template|create template)$/.test(label))return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const old=document.getElementById('qn-template-dialog');if(old)old.remove();
+    const root=document.createElement('div');root.id='qn-template-dialog';root.className='qn-td-backdrop';
+    root.innerHTML='<section class="qn-td-card" role="dialog" aria-modal="true" aria-labelledby="qn-td-title"><button type="button" class="qn-td-close" aria-label="Close">×</button><div class="qn-td-icon">✎</div><h2 id="qn-td-title">Create new template</h2><p>Give this template a name so you can reuse it in future quotes.</p><input id="qn-template-name" maxlength="100" autocomplete="off" placeholder="e.g. Roof repair" style="box-sizing:border-box;width:100%;min-height:52px;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;font:inherit;margin-bottom:15px;color:#172033"><button type="button" class="qn-td-btn">Save template</button><button type="button" class="qn-td-btn secondary">Cancel</button></section>';
+    document.body.appendChild(root);
+    const input=root.querySelector('input');
+    const close=()=>root.remove();
+    root.querySelector('.qn-td-close').onclick=close;
+    root.querySelector('.secondary').onclick=close;
+    root.querySelector('.qn-td-btn:not(.secondary)').onclick=()=>{
+      const name=input.value.trim();if(!name){input.focus();input.style.borderColor='#dc2626';return;}
+      close();
+      const original=window.prompt;
+      window.prompt=function(msg,fallback){return name;};
+      resumed=true;
+      try{btn.click();}finally{resumed=false;window.prompt=original;}
+    };
+    input.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();root.querySelector('.qn-td-btn:not(.secondary)').click();}if(ev.key==='Escape')close();});
+    input.focus();
+  },true);
+})();
 </script></body>
 </html>
