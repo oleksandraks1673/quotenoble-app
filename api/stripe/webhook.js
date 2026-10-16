@@ -2,8 +2,6 @@ const { stripe } = require('./_common');
 
 // Stripe signatures must be verified against the exact raw request bytes.
 // Disable Vercel's default JSON body parser for this endpoint.
-module.exports.config = { api: { bodyParser: false } };
-
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -51,3 +49,5 @@ module.exports = async (req, res) => {
     return res.status(400).send('Webhook signature invalid');
   }
 };
+
+module.exports.config = { api: { bodyParser: false } };
