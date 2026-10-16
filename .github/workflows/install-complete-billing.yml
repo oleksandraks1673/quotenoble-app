@@ -1,0 +1,97 @@
+name: Install complete billing screen
+on:
+  push:
+    branches: [fix/billing-on-working-login-20261016]
+    paths: ['.github/workflows/install-complete-billing.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install UI while preserving login
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for fn in ('app.html','index.html'):
+           p=Path(fn);s=p.read_text()
+           a=s.index('<!-- PLANS: Stripe checkout requires server configuration -->')
+           b=s.index('<!-- HELP -->',a)
+           new='''<!-- PLANS: modern billing -->
+          <section id="view-plans" class="view">
+          <div class="qn-bill">
+          <div class="qn-bill-heading"><span class="qn-bill-icon">✦</span><div><h2>Billing &amp; Subscription</h2><p>Your membership, payments and plans in one place.</p></div></div>
+          <div class="qn-bill-current"><div class="qn-bill-label">CURRENT PLAN</div><div class="qn-bill-line"><strong id="qn-current-plan">Checking…</strong><span id="qn-plan-badge">Checking</span></div><p id="qn-renewal">Verifying your subscription securely.</p></div>
+          <div class="qn-bill-section"><h3>Quote.Noble Pro</h3><p>Choose monthly or yearly billing in Canadian dollars.</p><div class="qn-bill-options">
+          <button type="button" class="qn-bill-option selected" data-qn-plan="monthly"><span>Monthly Pro</span><strong>$14.99</strong><small>CAD / month</small></button>
+          <button type="button" class="qn-bill-option" data-qn-plan="yearly"><span>Yearly Pro</span><strong>$149.99</strong><small>CAD / year</small></button></div></div>
+          <div id="qn-bill-unknown"><p id="qn-pro-status" role="status">Checking subscription…</p><button type="button" class="qn-bill-secondary" id="qn-pro-refresh">Refresh status</button></div>
+          <div id="qn-bill-free" hidden><button type="button" class="qn-bill-primary" id="qn-pro-continue">Subscribe to Monthly Pro →</button></div>
+          <div id="qn-bill-active" hidden><p class="qn-bill-hint">Manage your existing Pro subscription securely through Stripe.</p><button type="button" class="qn-bill-primary" id="qn-pro-manage">Manage subscription →</button><div class="qn-bill-actions"><button type="button" class="qn-bill-secondary" id="qn-change-plan">Change plan ↗</button><button type="button" class="qn-bill-secondary" id="qn-cancel-plan">Cancel subscription ↗</button></div></div>
+          <button type="button" class="qn-bill-back" data-action="back-more">← Back to More</button>
+          </div></section>
+          '''
+           s=s[:a]+new+s[b:]
+           s=s.replace('data-qn-more-panel="qn-more-membership"','data-qn-more-go="plans"',1)
+           s=s.replace('<strong>Membership</strong><small>Free and Pro plan information</small>','<strong>Billing &amp; Subscription</strong><small>Current plan, payments and cancellation</small>',1)
+           begin=s.index('<script>\n/* Quote.Noble subscription client:')
+           end=s.index('</script>',begin)+len('</script>')
+           js='''<script>
+          /* Billing only. Existing authentication and navigation remain untouched. */
+          (()=>{
+          const url='https://jssfjaggsjtwppokjpns.supabase.co',key='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
+          let selected='monthly',known=false,pro=false;
+          const el=id=>document.getElementById(id);
+          const toggle=(id,on)=>{const x=el(id);if(x)x.hidden=!on};
+          const msg=t=>{if(el('qn-pro-status'))el('qn-pro-status').textContent=t};
+          async function request(path,body={}){
+           if(!window.supabase?.createClient)throw Error('Sign-in library unavailable. Refresh the page.');
+           const client=window.supabase.createClient(url,key);
+           const {data,error}=await client.auth.getSession();
+           if(error||!data?.session?.access_token)throw Error('Sign in first to manage billing.');
+           const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+data.session.access_token},body:JSON.stringify(body)});
+           const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Billing unavailable');return j;
+          }
+          async function refresh(){
+           known=false;toggle('qn-bill-unknown',true);toggle('qn-bill-free',false);toggle('qn-bill-active',false);msg('Checking subscription…');
+           try{
+           const r=await request('/api/stripe/status');known=true;pro=!!r.pro;
+           el('qn-current-plan').textContent=pro?(r.plan==='yearly'?'Yearly Pro':r.plan==='monthly'?'Monthly Pro':'Pro (active)'):'Free';
+           el('qn-plan-badge').textContent=pro?(r.cancel_at_period_end?'Cancellation scheduled':'Active'):'Free';
+           el('qn-renewal').textContent=pro?(r.current_period_end?'Current billing period ends '+new Date(r.current_period_end*1000).toLocaleDateString('en-CA'):'Subscription verified'):'Upgrade when ready.';
+           toggle('qn-bill-unknown',false);toggle('qn-bill-active',pro);toggle('qn-bill-free',!pro);
+           }catch(e){el('qn-current-plan').textContent='Could not verify';el('qn-plan-badge').textContent='Unknown';msg(e.message)}
+          }
+          async function go(path,body){
+           try{
+           if(!known)throw Error('Refresh subscription status first.');
+           if(path.endsWith('checkout')&&pro)throw Error('You already have Pro. Select Manage subscription.');
+           if(path.endsWith('portal')&&!pro)throw Error('No active subscription found.');
+           const r=await request(path,body);const dest=new URL(r.url);if(dest.protocol!=='https:')throw Error('Invalid billing link');window.location.assign(dest.href);
+           }catch(e){msg(e.message);toggle('qn-bill-unknown',true)}
+          }
+          document.addEventListener('click',e=>{
+           const p=e.target.closest('[data-qn-plan]');if(p){selected=p.dataset.qnPlan;document.querySelectorAll('[data-qn-plan]').forEach(b=>b.classList.toggle('selected',b===p));el('qn-pro-continue').textContent='Subscribe to '+(selected==='yearly'?'Yearly':'Monthly')+' Pro →';return}
+           if(e.target.closest('#qn-pro-continue'))return void go('/api/stripe/checkout',{plan:selected});
+           if(e.target.closest('#qn-pro-manage,#qn-change-plan,#qn-cancel-plan,#cloud-portal'))return void go('/api/stripe/portal');
+           if(e.target.closest('#qn-pro-refresh'))return void refresh();
+           if(e.target.closest('[data-qn-more-go="plans"],[data-action="view-plans"]'))setTimeout(refresh,120);
+          });
+          window.qnSubscriptionStatus=()=>request('/api/stripe/status');
+          window.qnRefreshBilling=refresh;
+          })();
+          </script>'''
+           s=s[:begin]+js+s[end:]
+           css='''.qn-bill{box-sizing:border-box;max-width:740px;margin:12px auto 32px;padding:24px;background:#fff;border:1px solid #e8e9ed;border-radius:24px;box-shadow:0 10px 30px #1e293b0a}.qn-bill *{box-sizing:border-box}.qn-bill-heading{display:flex;align-items:center;gap:14px;margin-bottom:22px}.qn-bill-icon{display:grid;place-items:center;background:#fff1e0;border-radius:15px;color:#d47812;width:50px;height:50px;font-size:27px;flex-shrink:0}.qn-bill-heading h2{font-size:1.45rem;margin:0 0 5px}.qn-bill-heading p,.qn-bill-section>p{margin:0;color:#697386;font-size:.9rem}.qn-bill-current{background:#fff8f0;border:1px solid #f0d6b7;border-radius:18px;padding:18px;margin-bottom:24px}.qn-bill-label{font-size:.7rem;font-weight:800;letter-spacing:.09em;color:#99591c}.qn-bill-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0}.qn-bill-line strong{font-size:1.28rem}.qn-bill-line span{background:#fff;border-radius:99px;padding:6px 9px;font-size:.75rem;font-weight:700}.qn-bill-current p,.qn-bill-hint{font-size:.84rem;color:#687385;margin:0}.qn-bill-section h3{margin:0 0 5px}.qn-bill-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0 20px}.qn-bill-option{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;min-height:110px;padding:16px;border:2px solid #e2e5ea;border-radius:16px;background:#fff;color:#192437;text-align:left;cursor:pointer}.qn-bill-option.selected{border-color:#df811a;background:#fffaf5}.qn-bill-option span{font-weight:800}.qn-bill-option strong{font-size:1.55rem}.qn-bill-option small{color:#64748b}.qn-bill-primary,.qn-bill-secondary{display:block!important;width:100%!important;min-height:48px!important;box-sizing:border-box!important;border-radius:12px;padding:13px 10px!important;text-align:center;font-size:.95rem;font-weight:800;white-space:normal;cursor:pointer}.qn-bill-primary{background:#e27c13;color:#fff;border:0}.qn-bill-secondary{background:#f8fafc;color:#253145;border:1px solid #d9dee7}.qn-bill-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.qn-bill-hint{line-height:1.5;margin:0 0 12px}.qn-bill-back{display:block;margin:20px auto 0;background:transparent;border:0;color:#65748b;font-weight:750;padding:12px}.qn-bill #qn-pro-status{text-align:center;color:#64748b;font-size:.86rem}#qn-bill-active[hidden],#qn-bill-free[hidden],#qn-bill-unknown[hidden]{display:none!important}@media(max-width:600px){#view-plans{padding:0 10px calc(85px + env(safe-area-inset-bottom,0px))}.qn-bill{padding:17px 14px;border-radius:18px}.qn-bill-heading h2{font-size:1.24rem}.qn-bill-option{padding:12px}.qn-bill-option strong{font-size:1.24rem}.qn-bill-actions{grid-template-columns:1fr}}@media(max-width:340px){.qn-bill-options{grid-template-columns:1fr}.qn-bill-line{flex-direction:column;align-items:flex-start}}'''
+           s=s.replace('</head>','<style id="qn-billing-installed">'+css+'</style></head>',1)
+           assert 'id="qn-current-plan"' in s and 'id="qn-pro-continue"' in s
+           p.write_text(s);print('patched',fn)
+          
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html index.html
+          git diff --cached --quiet || (git commit -m "Install full modern billing screen" && git push)
