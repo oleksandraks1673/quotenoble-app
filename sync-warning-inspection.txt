@@ -1,4 +1,4 @@
-Sync warning inspection - no application changes
+Sync warning inspection - expanded context
 
 TERM Sync needs review: 1
 ON.stringify(previous)===JSON.stringify(item)){
