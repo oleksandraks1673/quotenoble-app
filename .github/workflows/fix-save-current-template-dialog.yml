@@ -1,0 +1,32 @@
+name: Fix save current template dialog
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/fix-save-current-template-dialog.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add save-current-template action to modern naming dialog
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            old="^(create new template|save as template|create template)$"
+            new="^(create new template|save as template|save current as template|create template)$"
+            assert old in s, filename
+            assert 'id="qn-template-create-dialog"' in s,filename
+            s=s.replace(old,new,1)
+            p.write_text(s)
+            print('updated',filename)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Modernize Save current as template prompt" && git push)
