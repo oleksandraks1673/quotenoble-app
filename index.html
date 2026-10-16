@@ -498,7 +498,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
     <div id="qn-more-membership" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Membership</h2>    <div class="card" id="membership-card">
       <h2>Quote.Noble membership</h2>
       <p style="color:var(--muted);font-size:.92rem;line-height:1.55">You're using the <strong>free beta</strong>. All existing tools remain available while we test reliability. No credit card required.</p>
-      <div class="btn-row"><button class="btn btn-primary" data-action="view-plans">View Free &amp; Pro plans</button></div>
+      <p id="qn-membership-status" role="status" aria-live="polite" style="font-weight:650">Checking Stripe subscription…</p><div class="btn-row"><button class="btn btn-primary" data-action="view-plans">View Free &amp; Pro plans</button></div>
     </div>
 </div>
     <div id="qn-more-advanced" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Advanced Settings</h2>    <div class="card" id="qn-install-card" style="border:1px solid #f1dfc7;background:#fffaf3;margin-bottom:16px">
@@ -518,7 +518,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
     </div>
 </div>
   </section>
-  <!-- PLANS: informational only; no payment provider connected -->
+  <!-- PLANS: Stripe checkout requires server configuration -->
   <section id="view-plans" class="view">
     <div class="card" style="text-align:center">
       <h2 style="font-size:1.55rem">Simple pricing for every business</h2>
@@ -526,15 +526,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
       <div style="text-align:left;border:1px solid #e3e6ea;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Free</strong><strong style="font-size:1.4rem">$0</strong></div>
         <p style="color:var(--muted)">Planned launch tier</p>
-        <p>✓ Up to 3 quotes / month<br>✓ Up to 3 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
+        <p>✓ Up to 10 quotes / month<br>✓ Up to 10 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
       </div>
       <div style="text-align:left;border:2px solid #d97706;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Pro</strong><strong style="font-size:1.4rem">$14.99<span style="font-size:.8rem">/mo CAD</span></strong></div>
-        <p style="color:var(--muted)">Monthly $14.99 CAD · Yearly $199.99 CAD</p>
+        <p style="color:var(--muted)">CAD $149.99/year · Save compared with monthly billing</p>
         <p>✓ Unlimited quotes and invoices<br>✓ Business logo on PDFs<br>✓ Detailed scope of work<br>✓ Payment tracking<br>✓ Client management</p>
-        <button class="btn btn-outline" style="width:100%" id="qn-pro-start">Choose Pro plan</button>
+        <div class="btn-row"><button type="button" class="btn btn-primary" id="qn-pro-monthly">Subscribe monthly · $14.99 CAD</button><button type="button" class="btn btn-outline" id="qn-pro-yearly">Subscribe yearly · $149.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;color:var(--muted)">Sign in to view subscription status.</p>
       </div>
-      <p style="font-size:.83rem;color:var(--muted)"><strong>Beta notice:</strong> All current features remain free during testing. Pro billing is available after the secure Stripe API is configured. Paid access is verified by the server; existing beta features remain available.</p>
+      <p style="font-size:.83rem;color:var(--muted)"><strong>Billing preview:</strong> Checkout requires configured Vercel Stripe functions. Existing app features are not yet restricted by plan. Do not launch paid access until entitlements are enforced and verified.</p>
       <div class="btn-row"><button class="btn btn-outline" data-action="back-more">← Back to More</button></div>
     </div>
   </section>
@@ -2025,7 +2025,21 @@ document.addEventListener("click",function(event){
           if(!backedUp || conflict){
             ready=false;
             status(!backedUp?"Sync paused · backup failed":
-              "Sync needs review · both versions preserved",true);
+              "Sync needs review · tap here to export both copies",true);
+            if(backedUp){
+              const notice=document.getElementById("qn-save-status");
+              if(notice){
+                notice.style.cursor="pointer";
+                notice.title="Download both saved versions for safe review";
+                notice.onclick=()=>{
+                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
+                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
+                  const url=URL.createObjectURL(blob);
+                  const a=document.createElement("a");a.href=url;a.download="QuoteNoble_Sync_Review_"+new Date().toISOString().slice(0,10)+".json";
+                  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+                };
+              }
+            }
             return;
           }
           DB=merged;
@@ -2124,26 +2138,75 @@ document.addEventListener("click",function(event){
   window.addEventListener("load",()=>setTimeout(restore,700));
 })();
 </script>
-
 <script>
-/* Quote.Noble Stripe: authenticated checkout and server-verified status. */
+/* Quote.Noble subscription client: server verifies Supabase JWT and Stripe status. */
 (()=>{
- const URL='https://jssfjaggsjtwppokjpns.supabase.co', KEY='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
- const sb=()=>window.supabase?.createClient(URL,KEY);
+ const URL='https://jssfjaggsjtwppokjpns.supabase.co';
+ const KEY='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
+ const status=()=>document.getElementById('qn-pro-status');
+ function notice(t){if(status())status().textContent=t;const m=document.getElementById('qn-membership-status');if(m)m.textContent=t;}
  async function request(path,body){
-  const client=sb();if(!client)throw Error('Sign-in service unavailable');
-  const {data:{session}}=await client.auth.getSession();
-  if(!session?.access_token)throw Error('Sign in to Quote.Noble before subscribing.');
-  const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify(body||{})});
-  const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Payment service unavailable');return j;
+   if(!window.supabase?.createClient)throw Error('Sign-in service unavailable');
+   const client=window.supabase.createClient(URL,KEY);
+   const {data,error}=await client.auth.getSession();
+   if(error||!data?.session?.access_token)throw Error('Please sign in before subscribing.');
+   const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
+   const json=await response.json().catch(()=>({}));
+   if(!response.ok)throw Error(json.error||'Billing service unavailable');return json;
  }
- async function checkout(plan){try{const j=await request('/api/stripe/checkout',{plan});if(j.url)location.assign(j.url);}catch(e){alert(e.message)}}
- async function portal(){try{const j=await request('/api/stripe/portal');if(j.url)location.assign(j.url);}catch(e){alert(e.message)}}
+ async function go(path,body){try{notice('Connecting to secure billing…');const r=await request(path,body);if(r.url&&new URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Checkout link unavailable');}catch(e){notice(e.message)}}
+ let latestStatus=null;
+ async function refresh(){
+   try{
+     notice('Checking subscription…');
+     const r=await request('/api/stripe/status');
+     latestStatus=r;
+     if(r.pro){
+       notice('✓ Pro Active · '+(r.status==='trialing'?'Trial':'Subscribed')+' · Unlimited quotes & invoices');
+     }else{
+       notice('Free plan · Subscription status: '+(r.status||'none'));
+     }
+     document.documentElement.dataset.qnPlan=r.pro?'pro':'free';
+     for(const id of ['qn-pro-monthly','qn-pro-yearly']){const b=document.getElementById(id);if(b)b.hidden=!!r.pro;}
+     const manage=document.getElementById('qn-pro-manage');if(manage)manage.hidden=!r.pro;
+     return r;
+   }catch(e){
+     notice('Unable to verify subscription: '+e.message);
+     document.documentElement.dataset.qnPlan='unknown';
+     return null;
+   }
+ }
+ // Stripe redirects back with checkout=success. Always ask the server for
+ // authoritative subscription status, never trust the URL as proof of payment.
+ const params=new URLSearchParams(location.search);
+ if(params.get('checkout')==='success'){
+   const show=()=>{
+     if(typeof showView==='function')showView('plans');
+     refresh();
+   };
+   if(document.readyState==='complete')setTimeout(show,600);
+   else window.addEventListener('load',()=>setTimeout(show,600),{once:true});
+   params.delete('checkout');params.delete('session_id');
+   history.replaceState(history.state,'',location.pathname+(params.toString()?'?'+params:'')+location.hash);
+ }
+ // Keep Billing up to date when opened and after returning from Stripe.
  document.addEventListener('click',e=>{
-  if(e.target.closest('#qn-pro-start,#cloud-checkout')){const plan=confirm('Quote.Noble Pro\nOK: $14.99 CAD per month\nCancel: choose yearly plan');if(plan)checkout('monthly');else if(confirm('Subscribe for $199.99 CAD per year?'))checkout('yearly');}
-  if(e.target.closest('#cloud-portal'))portal();
+   if(e.target.closest('[data-action="view-plans"],[data-qn-more-go="plans"],[data-qn-more-go="membership"]')){
+     setTimeout(refresh,100);
+   }
  });
- window.qnSubscriptionStatus=async()=>request('/api/stripe/status');
+ window.addEventListener('focus',()=>{
+   if(document.getElementById('view-plans')?.classList.contains('active'))refresh();
+ });
+
+ document.addEventListener('click',e=>{
+   if(e.target.closest('#qn-pro-monthly,#cloud-checkout'))go('/api/stripe/checkout',{plan:'monthly'});
+   if(e.target.closest('#qn-pro-yearly'))go('/api/stripe/checkout',{plan:'yearly'});
+   if(e.target.closest('#qn-pro-manage,#cloud-portal'))go('/api/stripe/portal');
+   if(e.target.closest('#qn-pro-refresh'))refresh();
+ });
+ window.addEventListener('load',()=>setTimeout(refresh,1200),{once:true});
+ window.qnSubscriptionStatus=refresh;
 })();
 </script>
 </body>

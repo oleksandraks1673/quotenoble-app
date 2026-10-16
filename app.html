@@ -498,7 +498,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
     <div id="qn-more-membership" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Membership</h2>    <div class="card" id="membership-card">
       <h2>Quote.Noble membership</h2>
       <p style="color:var(--muted);font-size:.92rem;line-height:1.55">You're using the <strong>free beta</strong>. All existing tools remain available while we test reliability. No credit card required.</p>
-      <div class="btn-row"><button class="btn btn-primary" data-action="view-plans">View Free &amp; Pro plans</button></div>
+      <p id="qn-membership-status" role="status" aria-live="polite" style="font-weight:650">Checking Stripe subscription…</p><div class="btn-row"><button class="btn btn-primary" data-action="view-plans">View Free &amp; Pro plans</button></div>
     </div>
 </div>
     <div id="qn-more-advanced" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Advanced Settings</h2>    <div class="card" id="qn-install-card" style="border:1px solid #f1dfc7;background:#fffaf3;margin-bottom:16px">
@@ -526,13 +526,13 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
       <div style="text-align:left;border:1px solid #e3e6ea;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Free</strong><strong style="font-size:1.4rem">$0</strong></div>
         <p style="color:var(--muted)">Planned launch tier</p>
-        <p>✓ Up to 3 quotes / month<br>✓ Up to 3 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
+        <p>✓ Up to 10 quotes / month<br>✓ Up to 10 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
       </div>
       <div style="text-align:left;border:2px solid #d97706;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Pro</strong><strong style="font-size:1.4rem">$14.99<span style="font-size:.8rem">/mo CAD</span></strong></div>
-        <p style="color:var(--muted)">CAD $199.99/year · Save with monthly billing flexibility</p>
+        <p style="color:var(--muted)">CAD $149.99/year · Save compared with monthly billing</p>
         <p>✓ Unlimited quotes and invoices<br>✓ Business logo on PDFs<br>✓ Detailed scope of work<br>✓ Payment tracking<br>✓ Client management</p>
-        <div class="btn-row"><button type="button" class="btn btn-primary" id="qn-pro-monthly">Subscribe monthly · $14.99 CAD</button><button type="button" class="btn btn-outline" id="qn-pro-yearly">Subscribe yearly · $199.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;color:var(--muted)">Sign in to view subscription status.</p>
+        <div class="btn-row"><button type="button" class="btn btn-primary" id="qn-pro-monthly">Subscribe monthly · $14.99 CAD</button><button type="button" class="btn btn-outline" id="qn-pro-yearly">Subscribe yearly · $149.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;color:var(--muted)">Sign in to view subscription status.</p>
       </div>
       <p style="font-size:.83rem;color:var(--muted)"><strong>Billing preview:</strong> Checkout requires configured Vercel Stripe functions. Existing app features are not yet restricted by plan. Do not launch paid access until entitlements are enforced and verified.</p>
       <div class="btn-row"><button class="btn btn-outline" data-action="back-more">← Back to More</button></div>
@@ -2144,7 +2144,7 @@ document.addEventListener("click",function(event){
  const URL='https://jssfjaggsjtwppokjpns.supabase.co';
  const KEY='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
  const status=()=>document.getElementById('qn-pro-status');
- function notice(t){if(status())status().textContent=t;}
+ function notice(t){if(status())status().textContent=t;const m=document.getElementById('qn-membership-status');if(m)m.textContent=t;}
  async function request(path,body){
    if(!window.supabase?.createClient)throw Error('Sign-in service unavailable');
    const client=window.supabase.createClient(URL,KEY);
@@ -2155,14 +2155,58 @@ document.addEventListener("click",function(event){
    if(!response.ok)throw Error(json.error||'Billing service unavailable');return json;
  }
  async function go(path,body){try{notice('Connecting to secure billing…');const r=await request(path,body);if(r.url&&new URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Checkout link unavailable');}catch(e){notice(e.message)}}
- async function refresh(){try{notice('Checking subscription…');const r=await request('/api/stripe/status');notice(r.pro?'Pro subscription active ('+r.status+')':'Subscription status: '+r.status);}catch(e){notice(e.message)}}
+ let latestStatus=null;
+ async function refresh(){
+   try{
+     notice('Checking subscription…');
+     const r=await request('/api/stripe/status');
+     latestStatus=r;
+     if(r.pro){
+       notice('✓ Pro Active · '+(r.status==='trialing'?'Trial':'Subscribed')+' · Unlimited quotes & invoices');
+     }else{
+       notice('Free plan · Subscription status: '+(r.status||'none'));
+     }
+     document.documentElement.dataset.qnPlan=r.pro?'pro':'free';
+     for(const id of ['qn-pro-monthly','qn-pro-yearly']){const b=document.getElementById(id);if(b)b.hidden=!!r.pro;}
+     const manage=document.getElementById('qn-pro-manage');if(manage)manage.hidden=!r.pro;
+     return r;
+   }catch(e){
+     notice('Unable to verify subscription: '+e.message);
+     document.documentElement.dataset.qnPlan='unknown';
+     return null;
+   }
+ }
+ // Stripe redirects back with checkout=success. Always ask the server for
+ // authoritative subscription status, never trust the URL as proof of payment.
+ const params=new URLSearchParams(location.search);
+ if(params.get('checkout')==='success'){
+   const show=()=>{
+     if(typeof showView==='function')showView('plans');
+     refresh();
+   };
+   if(document.readyState==='complete')setTimeout(show,600);
+   else window.addEventListener('load',()=>setTimeout(show,600),{once:true});
+   params.delete('checkout');params.delete('session_id');
+   history.replaceState(history.state,'',location.pathname+(params.toString()?'?'+params:'')+location.hash);
+ }
+ // Keep Billing up to date when opened and after returning from Stripe.
+ document.addEventListener('click',e=>{
+   if(e.target.closest('[data-action="view-plans"],[data-qn-more-go="plans"],[data-qn-more-go="membership"]')){
+     setTimeout(refresh,100);
+   }
+ });
+ window.addEventListener('focus',()=>{
+   if(document.getElementById('view-plans')?.classList.contains('active'))refresh();
+ });
+
  document.addEventListener('click',e=>{
    if(e.target.closest('#qn-pro-monthly,#cloud-checkout'))go('/api/stripe/checkout',{plan:'monthly'});
    if(e.target.closest('#qn-pro-yearly'))go('/api/stripe/checkout',{plan:'yearly'});
    if(e.target.closest('#qn-pro-manage,#cloud-portal'))go('/api/stripe/portal');
    if(e.target.closest('#qn-pro-refresh'))refresh();
  });
- window.qnSubscriptionStatus=()=>request('/api/stripe/status');
+ window.addEventListener('load',()=>setTimeout(refresh,1200),{once:true});
+ window.qnSubscriptionStatus=refresh;
 })();
 </script>
 </body>
