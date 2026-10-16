@@ -1568,7 +1568,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   }
   async function start() {
     if(!window.supabase?.createClient) {msg("Unable to load sign-in service. Check your internet connection and refresh.");return;}
-    sb=window.supabase.createClient(SUPABASE_ENDPOINT,KEY);
+    sb=window.supabase.createClient('https://jssfjaggsjtwppokjpns.supabase.co',KEY);
     const {data,error}=await sb.auth.getUser();
     if(!error&&data.user)enter(data.user);
     sb.auth.onAuthStateChange((event,session)=>{
