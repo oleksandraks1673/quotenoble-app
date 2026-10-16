@@ -2245,6 +2245,7 @@ document.addEventListener("click",function(event){
 })();
 </script>
 
+
 <!-- QN BILLING V2 START -->
 <script>
 (function(){
@@ -2265,7 +2266,7 @@ document.addEventListener("click",function(event){
       const overlay=document.createElement('div');
       overlay.id='qn-billing-screen';overlay.hidden=true;
       overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#f8f9fb;overflow:auto;padding:24px 16px 100px;color:#1f2937';
-      overlay.innerHTML='<div style="max-width:650px;margin:auto"><button type="button" id="qn-billing-close" style="border:0;background:none;font-size:16px;padding:12px 0;cursor:pointer">← Back to Quote.Noble</button><h1 style="margin:10px 0 20px">Billing &amp; Subscription</h1><div style="background:white;padding:24px;border:1px solid #e5e7eb;border-radius:18px"><div style="font-size:14px;color:#6b7280">CURRENT PLAN</div><h2 id="qn-billing-plan" style="margin:8px 0">Checking subscription…</h2><p id="qn-billing-detail" role="status" aria-live="polite">Contacting Stripe securely</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><button type="button" id="qn-billing-check" class="btn btn-outline">Check Subscription</button><button type="button" id="qn-billing-portal" class="btn btn-primary" hidden>Manage Subscription</button></div></div><p style="color:#6b7280;font-size:13px;margin-top:15px">Subscription status is verified through Stripe. No new payment is needed to check your plan.</p></div>';
+      overlay.innerHTML='<div style="max-width:650px;margin:auto"><button type="button" id="qn-billing-close" style="border:0;background:none;font-size:16px;padding:12px 0;cursor:pointer">← Back to Quote.Noble</button><h1 style="margin:10px 0 20px">Billing &amp; Subscription</h1><div style="background:white;padding:24px;border:1px solid #e5e7eb;border-radius:18px"><div style="font-size:14px;color:#6b7280">CURRENT PLAN</div><h2 id="qn-billing-plan" style="margin:8px 0">Checking subscription…</h2><p id="qn-billing-detail" role="status" aria-live="polite">Contacting Stripe securely</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><button type="button" id="qn-billing-check" class="btn btn-outline">Check Subscription</button><button type="button" id="qn-billing-portal" class="btn btn-primary" hidden>Manage Subscription</button></div></div><div style="background:white;margin-top:16px;padding:20px;border:1px solid #e5e7eb;border-radius:18px"><h2 style="font-size:20px;margin:0 0 12px">Choose your plan</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px"><button type="button" id="qn-plan-monthly" style="background:#fff;border:2px solid #e5e7eb;border-radius:12px;padding:18px;text-align:left;color:#1f2937"><strong>Monthly Pro</strong><div style="font-size:24px;font-weight:800">$14.99 CAD</div><small>per month</small></button><button type="button" id="qn-plan-yearly" style="background:#fff7ed;border:2px solid #f97316;border-radius:12px;padding:18px;text-align:left;color:#1f2937"><strong>Yearly Pro</strong><div style="font-size:24px;font-weight:800">$149.99 CAD</div><small>per year</small></button></div><p id="qn-plan-message" role="status" style="font-size:13px;color:#6b7280">Existing subscribers can change plans through Manage Subscription.</p></div><p style="color:#6b7280;font-size:13px;margin-top:15px">Subscription status is verified through Stripe. No new payment is needed to check your plan.</p></div>';
       document.body.append(overlay);
     }
   }
@@ -2279,6 +2280,7 @@ document.addEventListener("click",function(event){
     if(d.cancel_at_period_end)bits.push('Cancellation scheduled');
     el('qn-billing-detail').textContent=bits.join(' · ');
     el('qn-billing-portal').hidden=!d.subscription_id&&!pro;
+    const msg=el('qn-plan-message');if(msg)msg.textContent=pro?'Your plan is active. Use Manage Subscription to change billing or cancel.':'Select a plan to continue securely to Stripe.';
   }
   async function check(){
     install();
@@ -2299,6 +2301,15 @@ document.addEventListener("click",function(event){
     if(e.target.closest('#qn-billing-open')){e.preventDefault();open()}
     if(e.target.closest('#qn-billing-close')){e.preventDefault();el('qn-billing-screen').hidden=true}
     if(e.target.closest('#qn-billing-check')){e.preventDefault();check()}
+    if(e.target.closest('#qn-plan-monthly, #qn-plan-yearly')){
+      e.preventDefault();
+      const plan=e.target.closest('#qn-plan-yearly')?'yearly':'monthly';
+      const msg=el('qn-plan-message');
+      if(current && (current.pro || current.subscription_id)){if(msg)msg.textContent='Manage your existing plan in Stripe to avoid duplicate subscriptions.';return;}
+      if(msg)msg.textContent='Select '+plan+' in the secure checkout.';
+      const btn=el('cloud-checkout-'+plan)||el('qn-pro-start');
+      if(btn)btn.click();else if(msg)msg.textContent='Checkout is not available. Please sign in and try again.';
+    }
     if(e.target.closest('#qn-billing-portal')){
       e.preventDefault();const portal=el('cloud-portal');if(portal)portal.click();else alert('Billing portal unavailable');
     }
