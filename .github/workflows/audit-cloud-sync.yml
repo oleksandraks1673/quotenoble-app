@@ -23,7 +23,7 @@ jobs:
             matches=list(re.finditer(re.escape(term),s,re.I))
             out.append(f'\nTERM {term}: {len(matches)}')
             for m in matches[:6]:
-              fragment=s[max(0,m.start()-650):min(len(s),m.end()+650)]
+              fragment=s[max(0,m.start()-1700):min(len(s),m.end()+2900)]
               fragment=re.sub(r'(?i)(sk_live_|sk_test_|whsec_|eyJ)[A-Za-z0-9_./-]+','[REDACTED]',fragment)
               out.append(fragment)
           Path('sync-warning-inspection.txt').write_text('\n'.join(out)[:26000])
