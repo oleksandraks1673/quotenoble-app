@@ -2149,6 +2149,15 @@ document.addEventListener("click",function(event){
  const SUPABASE_ENDPOINT='https://jssfjaggsjtwppokjpns.supabase.co';
  const KEY='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
  const status=()=>document.getElementById('qn-pro-status');
+  function showSubscriberState(pro){
+    const checkout=document.getElementById('qn-pro-continue');
+    const manage=document.getElementById('qn-pro-actions');
+    if(checkout){checkout.hidden=!!pro;checkout.style.display=pro?'none':'';}
+    if(manage){manage.hidden=!pro;manage.style.display=pro?'flex':'none';}
+    const choices=document.querySelectorAll('[data-qn-plan]');
+    choices.forEach(el=>{el.style.display=pro?'none':'';el.setAttribute('aria-hidden',String(!!pro));});
+  }
+  
  const action=()=>document.getElementById('qn-pro-continue');
  let plan='yearly',busy=false;
  function notice(t){if(status())status().textContent=t;}
@@ -2160,7 +2169,7 @@ document.addEventListener("click",function(event){
    const {data,error}=await client.auth.getSession();
    if(error||!data?.session?.access_token)throw Error('Please sign in to manage your subscription.');
    const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
-   const json=await response.json().catch(()=>({}));
+   const json=await response.json();showSubscriberState(!!json.pro).catch(()=>({}));
    if(!response.ok)throw Error(json.error||'Billing is temporarily unavailable. Please try again.');return json;
  }
  async function go(path,body){if(busy)return;setBusy(true);try{notice('Connecting to secure Stripe checkout…');const r=await request(path,body);if(r.url&&new window.URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Secure checkout is temporarily unavailable.');}catch(e){notice(e.message);setBusy(false);}}
