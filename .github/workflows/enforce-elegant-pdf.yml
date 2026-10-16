@@ -23,7 +23,8 @@ jobs:
           old='const pdf=new NS.jsPDF({unit:"pt",format:"letter"});'
           print('PDF constructor occurrences:',s.count(old))
           assert s.count(old)==1
-          new=old+'\\n   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});'\n          s=s.replace(old,new,1)
+          new=old+'\\n   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});'
+          s=s.replace(old,new,1)
           old='return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+".pdf"};'
           print('Filename marker occurrences:',s.count(old))
           assert s.count(old)==1
