@@ -1,0 +1,38 @@
+name: Diagnose billing installation
+on:
+  push:
+    branches: [fix/billing-on-working-login-20261016]
+    paths: ['.github/workflows/diagnose-billing.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract safe HTML diagnostics
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('app.html').read_text()
+          tokens=['PLANS: Stripe','<!-- HELP -->','view-plans','qn-bill-modern-css','qn-current-plan','qn-bill-active','Quote.Noble subscription client:','qn-more-membership','data-qn-more-panel','data-qn-more-go','qn-pro-continue','qn-pro-manage','supabase.createClient']
+          out=[]
+          for token in tokens:
+              hits=[];pos=0
+              while True:
+                  i=s.find(token,pos)
+                  if i<0:break
+                  hits.append(i);pos=i+len(token)
+              out.append(token+': '+str(hits[:12]))
+              for i in hits[:2]:
+                  snippet=s[max(0,i-140):min(len(s),i+200)].replace('\n',' ')
+                  if 'sb_publishable_' in snippet:snippet='[contains public config omitted]'
+                  out.append('  '+snippet)
+          Path('billing-diagnostics.txt').write_text('\n'.join(out))
+          PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add billing-diagnostics.txt
+          git diff --cached --quiet || (git commit -m "Inspect billing screen installation" && git push)
