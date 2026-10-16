@@ -1,0 +1,62 @@
+name: Repair mobile sync warning safely
+on:
+  push:
+    branches: [fix/mobile-sync-banner-20261016]
+    paths: ['.github/workflows/mobile-sync-repair.yml']
+  pull_request:
+    branches: [release/combined-app-billing-20261016]
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make sync warning tappable and keyboard accessible
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old='notice.style.cursor="pointer";'
+          assert s.count(old)==1, f"Expected exactly one sync export notice, found {s.count(old)}"
+          new='''notice.style.cursor="pointer";
+                // Keep the conflict-export control above fixed app headers on mobile.
+                notice.style.position="fixed";
+                notice.style.zIndex="2147483647";
+                notice.style.pointerEvents="auto";
+                notice.style.touchAction="manipulation";
+                notice.setAttribute("role","button");
+                notice.setAttribute("tabindex","0");
+                notice.setAttribute("aria-label","Export device and cloud backups for safe sync review");'''
+          s=s.replace(old,new,1)
+          anchor='''                };
+              }
+            }
+            return;'''
+          assert s.count(anchor)>=1, "Export handler closing anchor missing"
+          pos=s.index(old)+len(new)
+          end=s.find(anchor,pos)
+          assert end!=-1, "Could not locate export handler"
+          replacement='''                };
+                notice.onkeydown=(event)=>{
+                  if(event.key==="Enter" || event.key===" "){
+                    event.preventDefault();
+                    notice.click();
+                  }
+                };
+              }
+            }
+            return;'''
+          s=s[:end]+s[end:].replace(anchor,replacement,1)
+          assert s.count('notice.style.zIndex="2147483647"')==1
+          assert s.count('notice.onkeydown=(event)=>')==1
+          p.write_text(s)
+          print("PASS: sync warning promoted above headers and made keyboard accessible")
+          PY
+      - name: Commit repair to test branch only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Fix mobile sync conflict export banner interaction" && git push)
