@@ -26,3 +26,229 @@ invoiceTotal: 17 matches at lines 665,673,779,791,808,839,1004,1036,1053,1139,11
   665: function invoiceTotals(inv) {
   673:   const t = invoiceTotals(inv);
   779:  DB.invoices.filter(i=>invoiceStatus(i)==='overdue').forEach(i=>tasks.push({type:'Overdue',title:i.number+' · '+clientName(i.clientId),detail:money(invoiceTotals(i).balance)+' outstanding',kind:'i',id:i.id}));
+\n=== SOURCE LINES 640-685 ===
+640:   const id=String(record.id||'');
+641:   const match=id.match(/^[a-z]+-([0-9a-z]+)(?:[^0-9a-z]|$)/i);
+642:   if(match){const t=parseInt(match[1],36);if(t>1e12&&t<1e14)return t;}
+643:   return 0;
+644: }
+645: function qnNewestFirst(items){
+646:   return items.map((record,index)=>({record,index})).sort((a,b)=>
+647:     qnCreatedMs(b.record)-qnCreatedMs(a.record)||b.index-a.index
+648:   ).map(x=>x.record);
+649: }
+650: function uid(prefix) { return prefix + "-" + Date.now().toString(36) + Math.floor(Math.random()*1e6).toString(36); }
+651: function esc(s) { return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+652: function money(cents) { return (Math.round(cents)/100).toLocaleString("en-CA",{style:"currency",currency:"CAD"}); }
+653: function todayStr() { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+654: function monthStr() { return todayStr().slice(0,7); }
+655: function fmtDate(iso) { if(!iso) return "—"; const p=iso.split("-"); const d=new Date(+p[0],+p[1]-1,+p[2]); return d.toLocaleDateString("en-CA",{month:"short",day:"numeric",year:"numeric"}); }
+656: function getClient(id) { return DB.clients.find(c=>c.id===id); }
+657: function clientName(id) { const c=getClient(id); return c ? c.name : "Unknown client"; }
+658: 
+659: function lineSubtotal(items) { return (Array.isArray(items)?items:[]).reduce((s,it)=>s+(Number.isFinite(Number(it.qty)*Number(it.price))?Math.round(Number(it.qty)*Number(it.price)):0),0); }
+660: function quoteTotals(q) {
+661:   const sub = lineSubtotal(q.items);
+662:   const tax = Math.round(sub * (DB.profile.taxRate||0) / 100);
+663:   return { sub, tax, total: sub + tax };
+664: }
+665: function invoiceTotals(inv) {
+666:   const sub = lineSubtotal(inv.items);
+667:   const tax = Math.round(sub * (DB.profile.taxRate||0) / 100);
+668:   const total = sub + tax;
+669:   const paid = Math.round(inv.depositPaid||0) + (inv.payments||[]).reduce((s,p)=>s+Math.round(p.amount),0);
+670:   return { sub, tax, total, paid, balance: total - paid };
+671: }
+672: function invoiceStatus(inv) {
+673:   const t = invoiceTotals(inv);
+674:   if (t.balance <= 0) return "paid";
+675:   if (t.paid > 0) return "partial";
+676:   if (inv.dueDate && inv.dueDate < todayStr()) return "overdue";
+677:   return "unpaid";
+678: }
+679: const STATUS_LABEL = { draft:"Draft", sent:"Sent", accepted:"Accepted", declined:"Declined",
+680:   paid:"Paid", partial:"Partially paid", unpaid:"Unpaid", overdue:"Overdue" };
+681: 
+682: /* ================= NAV ================= */
+683: function showView(name) {
+684:   if (!document.getElementById("view-"+name)) return;
+685:   if (name !== "setup") { try { localStorage.setItem("qn_last_view",name); if(LS_KEY.startsWith("quotenoble_user_"))localStorage.setItem("qn_last_view_"+LS_KEY.slice(16),name); } catch(e) {} }
+\n=== SOURCE LINES 1125-1225 ===
+1125:   body.querySelector("#q-edit").addEventListener("click", ()=>openQuoteForm(q));
+1126:   body.querySelector("#q-del").addEventListener("click", ()=>{
+1127:     if (confirm("Delete quote "+q.number+"?")) { DB.quotes = DB.quotes.filter(x=>x.id!==id); save(); closeModal(); renderQuotes(); }
+1128:   });
+1129: }
+1130: 
+1131: /* ================= DOCUMENT VIEW + PDF ================= */
+1132: function docItemsRows(items) {
+1133:   return items.map(it=>'<tr><td><strong>'+esc(it.service||'Service')+'</strong>'+(it.desc?'<div style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px">'+esc(it.desc)+'</div>':'')+'</td><td class="num">'+it.qty+'</td><td class="num">'+money(it.price)+'</td><td class="num">'+money(Math.rou
+1134: }
+1135: function openDocument(kind, id) {
+1136:   const isQ = kind==="q";
+1137:   const doc = isQ ? DB.quotes.find(x=>x.id===id) : DB.invoices.find(x=>x.id===id);
+1138:   if (!doc) return;
+1139:   const t = isQ ? quoteTotals(doc) : invoiceTotals(doc);
+1140:   const st = isQ ? doc.status : invoiceStatus(doc);
+1141:   const title = isQ ? "Quote" : "Invoice";
+1142:   const p = DB.profile, c = getClient(doc.clientId);
+1143:   const root = document.getElementById("doc-root");
+1144:   root.innerHTML =
+1145:     '<div class="doc-back"><div class="doc">' +
+1146:     '<div class="doc-header">'+(p.logo?'<img src="'+p.logo+'" alt="Business logo" style="max-width:110px;max-height:75px;object-fit:contain;border-radius:6px;margin-bottom:8px">':'')+'<h1>'+esc(p.businessName||"Your Business")+'</h1><div class="biz">'+
+1147:       [p.phone,p.email].filter(Boolean).map(esc).join(" · ")+'</div></div>' +
+1148:     '<div class="doc-body">' +
+1149:     '<div class="doc-title-row"><h2>'+title+" "+esc(doc.number)+'</h2><span class="badge '+st+'">'+STATUS_LABEL[st]+'</span></div>' +
+1150:     '<div class="doc-meta"><strong>Bill to:</strong> '+esc(c?c.name:"")+(c&&c.address?'<br>'+esc(c.address):"")+(c&&c.phone?'<br>'+esc(c.phone):"")+
+1151:     '<br><br><strong>Date:</strong> '+fmtDate(doc.createdAt)+
+1152:     (isQ ? (doc.validUntil?'<br><strong>Valid until:</strong> '+fmtDate(doc.validUntil):"") : (doc.dueDate?'<br><strong>Due date:</strong> '+fmtDate(doc.dueDate):"")) +
+1153:     '</div>' +
+1154:     '<table class="doc-table"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Amount</th></tr></thead><tbody>'+
+1155:     docItemsRows(doc.items)+'</tbody></table>' +
+1156:     '<div class="doc-totals"><div class="totals-box"><div class="row"><span>Subtotal</span><span>'+money(t.sub)+'</span></div>' +
+1157:     '<div class="row"><span>'+esc(p.taxLabel||"Tax")+' ('+(p.taxRate||0)+'%)</span><span>'+money(t.tax)+'</span></div>' +
+1158:     '<div class="row grand"><span>Total</span><span>'+money(t.total)+'</span></div>' +
+1159:     (!isQ ? '<div class="row"><span>Paid</span><span>'+money(t.paid)+'</span></div><div class="row grand"><span>Balance due</span><span>'+money(t.balance)+'</span></div>' : "") +
+1160:     '</div></div>' +
+1161:     (doc.notes?'<div class="note">'+esc(doc.notes)+'</div>':"") +
+1162:     '</div></div>' +
+1163:     '<div class="doc-actions"><button class="btn btn-primary" id="doc-share">↗ Share</button><button class="btn btn-outline" id="doc-pdf">⬇ PDF</button><button class="btn btn-outline" id="doc-close">Close</button></div></div>';
+1164:   document.getElementById("doc-close").addEventListener("click", ()=>{ root.innerHTML=""; });
+1165:   document.getElementById("doc-share").addEventListener("click", ()=>shareDocument(kind, id));
+1166:   document.getElementById("doc-pdf").addEventListener("click", ()=>downloadPDF(kind, id));
+1167:   window.scrollTo(0,0);
+1168: }
+1169: function buildPDF(kind, id) {
+1170:   const NS=window.jspdf;
+1171:   if(!NS||!NS.jsPDF){alert("PDF library could not load. Please check your internet connection.");return;}
+1172:   const isQ=kind==="q";
+1173:   const doc=isQ?DB.quotes.find(x=>x.id===id):DB.invoices.find(x=>x.id===id);
+1174:   if(!doc)return;
+1175:   const t=isQ?quoteTotals(doc):invoiceTotals(doc), p=DB.profile, c=getClient(doc.clientId);
+1176:   const pdf=new NS.jsPDF({unit:"pt",format:"letter"});
+1177:   const W=612,H=792,M=46,R=W-M,contentW=R-M;
+1178:   const ink=[45,40,36], muted=[113,105,98], accent=[218,119,36], light=[255,246,237], border=[239,225,213];
+1179:   const color=(rgb)=>pdf.setTextColor(...rgb);
+1180:   const font=(size,bold=false)=>{pdf.setFont("helvetica",bold?"bold":"normal");pdf.setFontSize(size);};
+1181:   const text=(value,x,y,opts)=>pdf.text(String(value??""),x,y,opts||{});
+1182:   let page=1,y=0;
+1183:   function header(first=false){
+1184:     pdf.setFillColor(255,255,255);pdf.rect(0,0,W,H,"F");
+1185:     pdf.setFillColor(...light);pdf.rect(0,0,W,94,"F");
+1186:     pdf.setFillColor(...accent);pdf.rect(0,0,W,5,"F");
+1187:     if(first){
+1188:       let logoW=0;
+1189:       if(p.logo&&/^data:image\/(png|jpe?g);base64,/.test(p.logo)){
+1190:         try{const props=pdf.getImageProperties(p.logo),scale=Math.min(70/props.width,58/props.height);
+1191:           logoW=props.width*scale;pdf.addImage(p.logo,p.logo.startsWith("data:image/png")?"PNG":"JPEG",M,25,logoW,props.height*scale);
+1192:         }catch(e){console.warn("PDF logo:",e);}
+1193:       }
+1194:       const bx=M+(logoW?logoW+14:0);
+1195:       font(15,true);color(ink);
+1196:       pdf.text(pdf.splitTextToSize(String(p.businessName||"Your Business"),Math.max(130,310-(bx-M))).slice(0,2),bx,44);
+1197:       font(8.5);color(muted);
+1198:       const contact=[p.phone,p.email].filter(Boolean).join("  |  ");
+1199:       pdf.text(pdf.splitTextToSize(contact,Math.max(135,310-(bx-M))).slice(0,2),bx,65);
+1200:       font(20,true);color(ink);text(isQ?"ESTIMATE":"INVOICE",R,45,{align:"right"});
+1201:       font(9);color(accent);text("#"+String(doc.number),R,64,{align:"right"});
+1202:       pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,103,R,103);
+1203:     }else{
+1204:       font(9,true);color(ink);text(p.businessName||"Your Business",M,33);
+1205:       font(9);color(muted);text((isQ?"ESTIMATE":"INVOICE")+"  #"+doc.number,R,33,{align:"right"});
+1206:       pdf.setDrawColor(...border);pdf.line(M,43,R,43);
+1207:     }
+1208:   }
+1209:   function footer(){
+1210:     const count=pdf.getNumberOfPages();
+1211:     for(let i=1;i<=count;i++){
+1212:       pdf.setPage(i);pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,747,R,747);
+1213:       font(8);color(muted);text("Created with Quote.Noble",M,762);
+1214:       text("Page "+i+" of "+count,R,762,{align:"right"});
+1215:     }
+1216:   }
+1217:   function nextPage(){pdf.addPage();page++;header(false);y=65;}
+1218:   function need(height){if(y+height>730)nextPage();}
+1219:   function line(label,value,yy){font(9);color(muted);text(label,M,yy);font(10,true);color(ink);text(value,M+83,yy);}
+1220:   header(true);y=122;
+1221:   font(9,true);color(accent);text("PREPARED FOR",M,y);
+1222:   font(9,true);color(accent);text("DOCUMENT DETAILS",333,y);
+1223:   y+=21;
+1224:   const name=String(c?.name||"Customer");
+1225:   font(12,true);color(ink);pdf.text(pdf.splitTextToSize(name,245),M,y);
+\n=== SOURCE LINES 1225-1300 ===
+1225:   font(12,true);color(ink);pdf.text(pdf.splitTextToSize(name,245),M,y);
+1226:   font(9);color(muted);
+1227:   let cy=y+19;
+1228:   for(const val of [c?.address,c?.phone].filter(Boolean)){
+1229:     const ls=pdf.splitTextToSize(String(val),245);pdf.text(ls,M,cy);cy+=ls.length*13+2;
+1230:   }
+1231:   font(9);color(muted);text("Issued",333,y);
+1232:   font(10,true);color(ink);text(fmtDate(doc.createdAt),R,y,{align:"right"});
+1233:   const deadline=isQ?doc.validUntil:doc.dueDate;
+1234:   if(deadline){font(9);color(muted);text(isQ?"Valid until":"Due date",333,y+23);
+1235:     font(10,true);color(ink);text(fmtDate(deadline),R,y+23,{align:"right"});}
+1236:   y=Math.max(cy,y+43)+17;
+1237:   function tableHeader(){
+1238:     need(40);
+1239:     pdf.setFillColor(...light);pdf.roundedRect(M,y,contentW,33,5,5,"F");
+1240:     font(9,true);color([146,64,14]);
+1241:     text("DESCRIPTION",M+12,y+21);text("QTY",393,y+21,{align:"right"});
+1242:     text("RATE",468,y+21,{align:"right"});text("AMOUNT",R-10,y+21,{align:"right"});
+1243:     y+=49;
+1244:   }
+1245:   tableHeader();
+1246:   const items=Array.isArray(doc.items)?doc.items:[];
+1247:   items.forEach((it,index)=>{
+1248:     const service=String(it.service||"Service");
+1249:     const titleLines=pdf.splitTextToSize(service,285);
+1250:     const descLines=String(it.desc||"").split(/\r?\n/).flatMap(part=>pdf.splitTextToSize(part||" ",285));
+1251:     let lines=[...titleLines.map(v=>({v,bold:true})),...descLines.map(v=>({v,bold:false}))];
+1252:     if(!lines.length)lines=[{v:"Service",bold:true}];
+1253:     let first=true;
+1254:     while(lines.length){
+1255:       if(y>707){nextPage();tableHeader();}
+1256:       const available=Math.max(1,Math.floor((713-y)/13.5));
+1257:       const chunk=lines.splice(0,available);
+1258:       if(first){
+1259:         font(9);color(ink);
+1260:         text(String(it.qty??1),393,y,{align:"right"});
+1261:         text(money(Number(it.price)||0),468,y,{align:"right"});
+1262:         font(9,true);text(money(Math.round((Number(it.qty)||0)*(Number(it.price)||0))),R-10,y,{align:"right"});
+1263:         first=false;
+1264:       }
+1265:       for(const row of chunk){
+1266:         font(row.bold?10:9,row.bold);color(row.bold?ink:muted);
+1267:         text(row.v,M+12,y);y+=13.5;
+1268:       }
+1269:     }
+1270:     y+=12;need(14);
+1271:     pdf.setDrawColor(...border);pdf.setLineWidth(.5);pdf.line(M+10,y-5,R-10,y-5);
+1272:     y+=8;
+1273:   });
+1274:   need(isQ?118:153);
+1275:   const boxX=327,boxW=R-boxX;
+1276:   pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,7,7,"F");
+1277:   let ty=y+23;
+1278:   const totalLine=(label,value,emphasis=false)=>{
+1279:     font(emphasis?11:9,emphasis);color(emphasis?ink:muted);text(label,boxX+13,ty);
+1280:     font(emphasis?12:10,emphasis);color(emphasis?accent:ink);text(value,R-13,ty,{align:"right"});ty+=25;
+1281:   };
+1282:   totalLine("Subtotal",money(t.sub));
+1283:   totalLine((p.taxLabel||"Tax")+" ("+(p.taxRate||0)+"%)",money(t.tax));
+1284:   pdf.setDrawColor(...border);pdf.line(boxX+13,ty-11,R-13,ty-11);
+1285:   totalLine("TOTAL",money(t.total),true);
+1286:   if(!isQ){totalLine("Paid",money(t.paid));totalLine("BALANCE DUE",money(t.balance),true);}
+1287:   y+=isQ?116:151;
+1288:   if(doc.notes){
+1289:     need(46);font(10,true);color(ink);text("Notes & terms",M,y);y+=18;
+1290:     const noteLines=String(doc.notes).split(/\r?\n/).flatMap(part=>pdf.splitTextToSize(part||" ",contentW-10));
+1291:     font(9);color(muted);
+1292:     for(const ln of noteLines){need(15);text(ln,M,y);y+=14;}
+1293:   }
+1294:   footer();
+1295:   return {pdf,filename:(isQ?"Estimate-":"Invoice-")+doc.number+".pdf"};
+1296: }
+1297: function downloadPDF(kind, id) {
+1298:   const b = buildPDF(kind, id);
+1299:   if (!b) return;
+1300:   b.pdf.save(b.filename);
