@@ -1,0 +1,89 @@
+Sync warning inspection - no application changes
+
+TERM Sync needs review: 1
+loud write.
+          let backedUp=false;
+          try{
+            const stamp=Date.now();
+            const localKey="qn_local_before_merge_"+uid+"_"+stamp;
+            const cloudKey="qn_cloud_before_merge_"+uid+"_"+stamp;
+            localStorage.setItem(localKey,old);
+            localStorage.setItem(cloudKey,remoteString);
+            backedUp=localStorage.getItem(localKey)===old &&
+              localStorage.getItem(cloudKey)===remoteString;
+          }catch(e){console.warn("Merge backup failed",e)}
+          if(!backedUp || conflict){
+            ready=false;
+            status(!backedUp?"Sync paused · backup failed":
+              "Sync needs review · tap here to export both copies",true);
+            if(backedUp){
+              const notice=document.getElementById("qn-save-status");
+              if(notice){
+                notice.style.cursor="pointer";
+                notice.title="Download both saved versions for safe review";
+                notice.onclick=()=>{
+                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
+                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
+                  const url=URL.createObjectURL(blob);
+        
+
+TERM export both copies: 1
+Up=false;
+          try{
+            const stamp=Date.now();
+            const localKey="qn_local_before_merge_"+uid+"_"+stamp;
+            const cloudKey="qn_cloud_before_merge_"+uid+"_"+stamp;
+            localStorage.setItem(localKey,old);
+            localStorage.setItem(cloudKey,remoteString);
+            backedUp=localStorage.getItem(localKey)===old &&
+              localStorage.getItem(cloudKey)===remoteString;
+          }catch(e){console.warn("Merge backup failed",e)}
+          if(!backedUp || conflict){
+            ready=false;
+            status(!backedUp?"Sync paused · backup failed":
+              "Sync needs review · tap here to export both copies",true);
+            if(backedUp){
+              const notice=document.getElementById("qn-save-status");
+              if(notice){
+                notice.style.cursor="pointer";
+                notice.title="Download both saved versions for safe review";
+                notice.onclick=()=>{
+                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
+                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
+                  const url=URL.createObjectURL(blob);
+                  const a=document.create
+
+TERM sync needs: 1
+loud write.
+          let backedUp=false;
+          try{
+            const stamp=Date.now();
+            const localKey="qn_local_before_merge_"+uid+"_"+stamp;
+            const cloudKey="qn_cloud_before_merge_"+uid+"_"+stamp;
+            localStorage.setItem(localKey,old);
+            localStorage.setItem(cloudKey,remoteString);
+            backedUp=localStorage.getItem(localKey)===old &&
+              localStorage.getItem(cloudKey)===remoteString;
+          }catch(e){console.warn("Merge backup failed",e)}
+          if(!backedUp || conflict){
+            ready=false;
+            status(!backedUp?"Sync paused · backup failed":
+              "Sync needs review · tap here to export both copies",true);
+            if(backedUp){
+              const notice=document.getElementById("qn-save-status");
+              if(notice){
+                notice.style.cursor="pointer";
+                notice.title="Download both saved versions for safe review";
+                notice.onclick=()=>{
+                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
+                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
+                  const url=URL.createObjectURL(blob);
+ 
+
+TERM syncReview: 0
+
+TERM syncConflict: 0
+
+TERM syncBanner: 0
+
+TERM syncStatus: 0
