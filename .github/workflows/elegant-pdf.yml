@@ -1,0 +1,46 @@
+name: Elegant minimal PDF layout
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/elegant-pdf.yml']
+permissions:
+  contents: write
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove heavy bands and line separators from PDF
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          replacements=[
+            ('pdf.setFillColor(...light);pdf.rect(0,0,W,102,"F");','// Elegant white document: no large colored header band.'),
+            ('pdf.setFillColor(...accent);pdf.rect(0,0,W,4,"F");','// Brand accent is reserved for headings, not a full-width stripe.'),
+            ('pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,103,R,103);','// Keep generous white space below the business header.'),
+            ('pdf.setDrawColor(...border);pdf.line(M,43,R,43);','// Continuation header without dividing rule.'),
+            ('pdf.setPage(i);pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,747,R,747);','pdf.setPage(i);'),
+            ('pdf.setFillColor(...ink);pdf.roundedRect(M,y,contentW,33,4,4,"F");','// Minimal table heading without a filled band.'),
+            ('font(9,true);color([255,255,255]);','font(8.5,true);color(muted);'),
+            ('pdf.setDrawColor(...border);pdf.setLineWidth(.5);pdf.line(M+10,y-5,R-10,y-5);','// No separator lines between services.'),
+            ('pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,5,5,"F");','// White totals area without background panel.'),
+            ('pdf.setDrawColor(...border);pdf.line(boxX+13,ty-11,R-13,ty-11);','// No horizontal line in totals.'),
+            ('text("Powered by Quote.Noble  |  All amounts in CAD",M,762);','text("Quote.Noble  |  All amounts in CAD",M,762);')
+          ]
+          for old,new in replacements:
+            n=s.count(old)
+            assert n==1, f'Expected one occurrence, got {n}: {old[:70]}'
+            s=s.replace(old,new,1)
+          assert 'function quoteTotals(q)' in s and 'function invoiceTotals(inv)' in s
+          p.write_text(s)
+          print('PASS: white minimal PDF, no table lines, no colored header band')
+          PY
+      - name: Commit to feature branch only
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Make quote and invoice PDFs elegant and line-free" && git push)
