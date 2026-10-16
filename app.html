@@ -368,7 +368,46 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
 #cloud-account-card .qn-password-wrap button.qn-password-toggle {position:absolute!important;top:50%!important;right:9px!important;left:auto!important;transform:translateY(-50%)!important;width:auto!important;min-width:0!important;min-height:0!important;height:36px!important;padding:0 12px!important;margin:0!important;border:0!important;border-radius:9px!important;background:#fff0e7!important;color:#a9430c!important;font-size:13px!important;line-height:36px!important;font-weight:750!important;display:inline-flex!important;align-items:center;justify-content:center;z-index:3;box-shadow:none!important;}
 </style><style id="qn-more-clean-css">
 .qn-more-clean{--qm:#ff681b}.qn-more-header{margin:4px 0 20px}.qn-more-header h1{font-size:29px;letter-spacing:-.8px;margin:0 0 5px;color:#1b1d23}.qn-more-header p{margin:0;color:#808591;font-size:14px}.qn-more-business-banner{display:flex;align-items:center;gap:13px;padding:19px 16px;background:#1b1d23;border-radius:18px;color:#fff;margin-bottom:24px}.qn-more-banner-icon{background:#34363c;color:#ff8b43;width:46px;height:46px;display:grid;place-items:center;border-radius:13px;font-size:25px}.qn-more-business-banner>div:nth-child(2){flex:1;min-width:0}.qn-more-business-banner strong,.qn-more-business-banner span{display:block}.qn-more-business-banner strong{font-size:16px}.qn-more-business-banner span{font-size:12px;color:#bfc0c6;margin-top:3px}.qn-more-business-banner button{background:transparent;border:0;color:#fff;font-size:30px;min-width:30px;cursor:pointer}.qn-more-section-label{font-size:11px;letter-spacing:1.1px;font-weight:800;color:#b0521e;margin:22px 0 10px 3px}.qn-more-menu{border:1px solid #eaecf0;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 3px 14px #16181b06}.qn-more-item{display:flex;align-items:center;gap:12px;width:100%;padding:15px 13px;border:0!important;border-radius:0!important;background:#fff!important;color:#20232a!important;text-align:left;box-shadow:none!important;min-height:70px;cursor:pointer}.qn-more-item+.qn-more-item{border-top:1px solid #eff0f2!important}.qn-more-item-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#fff0e7;color:#dc611a;font-size:23px;font-weight:750}.qn-more-item>span:nth-child(2){flex:1;min-width:0}.qn-more-item strong,.qn-more-item small{display:block}.qn-more-item strong{font-size:14px;font-weight:750}.qn-more-item small{color:#7c828d;font-size:12px;margin-top:3px}.qn-more-item b{color:#a6abb3;font-size:25px;font-weight:400}.qn-more-footer{text-align:center;color:#9ca0a9;font-size:12px;margin:24px 0}.qn-more-clean.qn-more-panel-open>.qn-more-header,.qn-more-clean.qn-more-panel-open>.qn-more-business-banner,.qn-more-clean.qn-more-panel-open>.qn-more-section-label,.qn-more-clean.qn-more-panel-open>.qn-more-menu,.qn-more-clean.qn-more-panel-open>.qn-more-footer{display:none!important}.qn-more-panel[hidden]{display:none!important}.qn-more-panel>h2{margin:12px 0 20px;font-size:23px}.qn-more-back{background:transparent!important;color:#d85b15!important;border:0!important;padding:8px 0!important;font-weight:750;cursor:pointer}.qn-more-panel .card{margin-bottom:14px}.qn-more-panel .qn-premium-tools{display:block}
-</style></head>
+</style><style id="qn-mobile-ios-android">
+/* Mobile cross-platform layout — Android Chrome and iOS Safari */
+:root{--qn-safe-bottom:env(safe-area-inset-bottom,0px);--qn-safe-top:env(safe-area-inset-top,0px)}
+html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{max-width:100%;overflow-x:hidden;padding-bottom:var(--qn-safe-bottom)}
+button,input,select,textarea{font-family:inherit}
+button,[role="button"]{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+input,select,textarea{font-size:max(16px,1rem)}
+img,video,canvas,svg{max-width:100%}
+#view-plans,.qn-bill,.qn-bill *{box-sizing:border-box}
+.qn-bill{width:min(100%,760px);margin-inline:auto}
+.qn-bill-heading,.qn-bill-line{min-width:0}
+.qn-bill-heading>div,.qn-bill-line>strong{min-width:0;overflow-wrap:anywhere}
+.qn-bill-option{min-height:112px;touch-action:manipulation}
+.qn-bill-primary,.qn-bill-secondary,.qn-bill-back{min-height:48px;touch-action:manipulation}
+.qn-bill-primary:focus-visible,.qn-bill-secondary:focus-visible,.qn-bill-option:focus-visible{outline:3px solid #d7821a;outline-offset:3px}
+@media(max-width:600px){
+ #view-plans{padding-inline:12px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+ .qn-bill{margin:8px auto 24px;padding:18px 15px;border-radius:20px}
+ .qn-bill-heading h2{font-size:clamp(1.22rem,5vw,1.5rem);line-height:1.2}
+ .qn-bill-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .qn-bill-option{padding:13px 11px}
+ .qn-bill-option strong{font-size:clamp(1.15rem,5vw,1.55rem)}
+ .qn-bill-actions{grid-template-columns:1fr;gap:10px}
+ .qn-bill-current{padding:16px}
+}
+@media(max-width:340px){
+ .qn-bill-options{grid-template-columns:1fr}
+ .qn-bill-option{min-height:90px}
+ .qn-bill-line{align-items:flex-start;flex-direction:column}
+}
+@media(min-width:601px) and (max-width:1024px){
+ #view-plans{padding-inline:24px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))}
+ .qn-bill{padding:28px}
+}
+@media(hover:none){.qn-bill-primary:active,.qn-bill-secondary:active,.qn-bill-option:active{filter:brightness(.96)}}
+@media(prefers-reduced-motion:reduce){.qn-bill *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+</style>
+</head>
 <body>
 <header class="app-header">
   <div class="brand">
