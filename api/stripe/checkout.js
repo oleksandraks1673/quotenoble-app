@@ -26,7 +26,10 @@ module.exports = async (req, res) => {
     }
 
     const price = await st.prices.retrieve(priceId);
-    if (!price.active || price.type !== 'recurring') {
+    const expected = plan === 'monthly' ? { amount: 1499, interval: 'month' } : { amount: 14999, interval: 'year' };
+    if (!price.active || price.type !== 'recurring' || price.currency !== 'cad' ||
+        price.unit_amount !== expected.amount || price.recurring?.interval !== expected.interval ||
+        price.recurring?.interval_count !== 1) {
       return res.status(400).json({ error: 'Invalid subscription price' });
     }
 
@@ -48,7 +51,8 @@ module.exports = async (req, res) => {
       });
     }
 
-    const origin = 'https://quotenoblev13stripeintegrationprevi.vercel.app';
+    // Set QUOTENOBLE_APP_URL for preview environments; production defaults to the official domain.
+    const origin = (process.env.QUOTENOBLE_APP_URL || 'https://www.quotenoble.com').replace(/\/$/, '');
 
     const session = await st.checkout.sessions.create({
       mode: 'subscription',
