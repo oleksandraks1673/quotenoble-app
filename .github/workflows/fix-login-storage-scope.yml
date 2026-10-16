@@ -1,0 +1,33 @@
+name: Fix login storage scope
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/fix-login-storage-scope.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair storage global scope without touching saved data
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text()
+          assert s.count('const storage = {')==1
+          assert s.count('let LS_KEY = "quotenoble_pending";')==1
+          s=s.replace('const storage = {','var storage = {',1)
+          assert s.count('var storage = {')==1
+          assert 'storage.wipe(); location.reload();' in s
+          Path('index.html').write_text(s)
+          Path('app.html').write_text(s)
+          print('PASS: storage accessible across classic scripts, saved data unchanged')
+          PY
+      - name: Commit fix
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Fix login storage variable visibility across scripts" && git push)
