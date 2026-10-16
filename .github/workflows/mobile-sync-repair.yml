@@ -1,4 +1,4 @@
-name: Repair mobile sync warning
+name: Repair mobile sync warning safely
 on:
   push:
     branches: [fix/mobile-sync-banner-20261016]
