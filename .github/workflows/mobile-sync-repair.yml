@@ -3,6 +3,8 @@ on:
   push:
     branches: [fix/mobile-sync-banner-20261016]
     paths: ['.github/workflows/mobile-sync-repair.yml']
+  pull_request:
+    branches: [release/combined-app-billing-20261016]
 permissions:
   contents: write
 jobs:
