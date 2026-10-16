@@ -1,7 +1,27 @@
 Sync warning inspection - no application changes
 
 TERM Sync needs review: 1
-loud write.
+ON.stringify(previous)===JSON.stringify(item)){
+                  // Cloud changed; keep cloud record.
+                }else{
+                  conflict=true;
+                }
+              }
+            }
+          }
+          // Profile and sequence numbers are not record collections; avoid
+          // replacing different business settings without a known baseline.
+          if(JSON.stringify(DB.profile)!==JSON.stringify(remote.profile)){
+            let base;
+            try{base=baseline?JSON.parse(baseline):null}catch(e){}
+            if(base && JSON.stringify(base.profile)===JSON.stringify(remote.profile))merged.profile=DB.profile;
+            else if(!base || JSON.stringify(base.profile)!==JSON.stringify(DB.profile))conflict=true;
+          }
+          merged.seq={
+            quote:Math.max(Number(DB.seq?.quote)||1001,Number(remote.seq?.quote)||1001),
+            invoice:Math.max(Number(DB.seq?.invoice)||2001,Number(remote.seq?.invoice)||2001)
+          };
+          // Always preserve BOTH original copies before any merged cloud write.
           let backedUp=false;
           try{
             const stamp=Date.now();
@@ -25,36 +45,85 @@ loud write.
                   const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
                   const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
                   const url=URL.createObjectURL(blob);
-        
+                  const a=document.createElement("a");a.href=url;a.download="QuoteNoble_Sync_Review_"+new Date().toISOString().slice(0,10)+".json";
+                  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+                };
+              }
+            }
+            return;
+          }
+          DB=merged;
+          if(!storage.save(DB)){
+            ready=false;
+            status("Sync paused · device storage unavailable",true);
+            return;
+          }
+          lastSnapshot=remoteString;
+          try{localStorage.setItem(baselineKey,remoteString)}catch(e){}
+          ready=true;
+          window.qnCloudSave();
+          status("Reconciling saved records…");
+          return;
+        }
+        if(localHasWork && !remoteHasWork){
+          ready=true;
+          status("Saving existing device records to cloud…");
+          window.qnCloudSave();
+          return;
+        }
+        DB=remote;
+        DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+        DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+        DB.seq=DB.seq||{quote:1001,invoice:2001};
+        DB.profile=DB.profile||seedDB().profile;
+        storage.save(DB);
+        lastSnapshot=JSON.stringify(DB);
+        try{localStorage.setItem("qn_last_cloud_snapshot_"+uid,lastSnapshot)}catch(e){}
+        if(typeof showView==="function"){
+          const active=document.querySelector(".view.active");
+          const name=active?.id?.replace(/^view-/,"")||"home";
+          showView(name);
+        }
+        status("Cloud data restored ✓");
+      }else{
+        status("Saving account data…");
+      }
+      ready=true;
+      if(!remote && hasRecords(DB))window.qnCloudSave();
+    }catch(e){
+      console.warn("Quote.Noble cloud restore failed:",e);
+      ready=true;
+      status("Using device data · cloud unavailable",true);
+      /* Never overwrite an existing cloud record when initial download fails. */
+      ready=false;
+      window.addEventListener("online",()=>window.qnCloudConnect(client,{id:uid}),{once:true});
+    }
+  };
+  window.addEventListener("online",()=>{if(ready)window.qnCloudSave();else if(client&&uid)window.qnCloudConnect(client,{id:uid});});
+  setInterval(()=>{if(ready 
 
 TERM export both copies: 1
-Up=false;
-          try{
-            const stamp=Date.now();
-            const localKey="qn_local_before_merge_"+uid+"_"+stamp;
-            const cloudKey="qn_cloud_before_merge_"+uid+"_"+stamp;
-            localStorage.setItem(localKey,old);
-            localStorage.setItem(cloudKey,remoteString);
-            backedUp=localStorage.getItem(localKey)===old &&
-              localStorage.getItem(cloudKey)===remoteString;
-          }catch(e){console.warn("Merge backup failed",e)}
-          if(!backedUp || conflict){
-            ready=false;
-            status(!backedUp?"Sync paused · backup failed":
-              "Sync needs review · tap here to export both copies",true);
-            if(backedUp){
-              const notice=document.getElementById("qn-save-status");
-              if(notice){
-                notice.style.cursor="pointer";
-                notice.title="Download both saved versions for safe review";
-                notice.onclick=()=>{
-                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
-                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
-                  const url=URL.createObjectURL(blob);
-                  const a=document.create
-
-TERM sync needs: 1
-loud write.
+ringify(item)){
+                  // Cloud changed; keep cloud record.
+                }else{
+                  conflict=true;
+                }
+              }
+            }
+          }
+          // Profile and sequence numbers are not record collections; avoid
+          // replacing different business settings without a known baseline.
+          if(JSON.stringify(DB.profile)!==JSON.stringify(remote.profile)){
+            let base;
+            try{base=baseline?JSON.parse(baseline):null}catch(e){}
+            if(base && JSON.stringify(base.profile)===JSON.stringify(remote.profile))merged.profile=DB.profile;
+            else if(!base || JSON.stringify(base.profile)!==JSON.stringify(DB.profile))conflict=true;
+          }
+          merged.seq={
+            quote:Math.max(Number(DB.seq?.quote)||1001,Number(remote.seq?.quote)||1001),
+            invoice:Math.max(Number(DB.seq?.invoice)||2001,Number(remote.seq?.invoice)||2001)
+          };
+          // Always preserve BOTH original copies before any merged cloud write.
           let backedUp=false;
           try{
             const stamp=Date.now();
@@ -78,7 +147,164 @@ loud write.
                   const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
                   const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
                   const url=URL.createObjectURL(blob);
- 
+                  const a=document.createElement("a");a.href=url;a.download="QuoteNoble_Sync_Review_"+new Date().toISOString().slice(0,10)+".json";
+                  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+                };
+              }
+            }
+            return;
+          }
+          DB=merged;
+          if(!storage.save(DB)){
+            ready=false;
+            status("Sync paused · device storage unavailable",true);
+            return;
+          }
+          lastSnapshot=remoteString;
+          try{localStorage.setItem(baselineKey,remoteString)}catch(e){}
+          ready=true;
+          window.qnCloudSave();
+          status("Reconciling saved records…");
+          return;
+        }
+        if(localHasWork && !remoteHasWork){
+          ready=true;
+          status("Saving existing device records to cloud…");
+          window.qnCloudSave();
+          return;
+        }
+        DB=remote;
+        DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+        DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+        DB.seq=DB.seq||{quote:1001,invoice:2001};
+        DB.profile=DB.profile||seedDB().profile;
+        storage.save(DB);
+        lastSnapshot=JSON.stringify(DB);
+        try{localStorage.setItem("qn_last_cloud_snapshot_"+uid,lastSnapshot)}catch(e){}
+        if(typeof showView==="function"){
+          const active=document.querySelector(".view.active");
+          const name=active?.id?.replace(/^view-/,"")||"home";
+          showView(name);
+        }
+        status("Cloud data restored ✓");
+      }else{
+        status("Saving account data…");
+      }
+      ready=true;
+      if(!remote && hasRecords(DB))window.qnCloudSave();
+    }catch(e){
+      console.warn("Quote.Noble cloud restore failed:",e);
+      ready=true;
+      status("Using device data · cloud unavailable",true);
+      /* Never overwrite an existing cloud record when initial download fails. */
+      ready=false;
+      window.addEventListener("online",()=>window.qnCloudConnect(client,{id:uid}),{once:true});
+    }
+  };
+  window.addEventListener("online",()=>{if(ready)window.qnCloudSave();else if(client&&uid)window.qnCloudConnect(client,{id:uid});});
+  setInterval(()=>{if(ready && navigator.onLine && !running &
+
+TERM sync needs: 1
+ON.stringify(previous)===JSON.stringify(item)){
+                  // Cloud changed; keep cloud record.
+                }else{
+                  conflict=true;
+                }
+              }
+            }
+          }
+          // Profile and sequence numbers are not record collections; avoid
+          // replacing different business settings without a known baseline.
+          if(JSON.stringify(DB.profile)!==JSON.stringify(remote.profile)){
+            let base;
+            try{base=baseline?JSON.parse(baseline):null}catch(e){}
+            if(base && JSON.stringify(base.profile)===JSON.stringify(remote.profile))merged.profile=DB.profile;
+            else if(!base || JSON.stringify(base.profile)!==JSON.stringify(DB.profile))conflict=true;
+          }
+          merged.seq={
+            quote:Math.max(Number(DB.seq?.quote)||1001,Number(remote.seq?.quote)||1001),
+            invoice:Math.max(Number(DB.seq?.invoice)||2001,Number(remote.seq?.invoice)||2001)
+          };
+          // Always preserve BOTH original copies before any merged cloud write.
+          let backedUp=false;
+          try{
+            const stamp=Date.now();
+            const localKey="qn_local_before_merge_"+uid+"_"+stamp;
+            const cloudKey="qn_cloud_before_merge_"+uid+"_"+stamp;
+            localStorage.setItem(localKey,old);
+            localStorage.setItem(cloudKey,remoteString);
+            backedUp=localStorage.getItem(localKey)===old &&
+              localStorage.getItem(cloudKey)===remoteString;
+          }catch(e){console.warn("Merge backup failed",e)}
+          if(!backedUp || conflict){
+            ready=false;
+            status(!backedUp?"Sync paused · backup failed":
+              "Sync needs review · tap here to export both copies",true);
+            if(backedUp){
+              const notice=document.getElementById("qn-save-status");
+              if(notice){
+                notice.style.cursor="pointer";
+                notice.title="Download both saved versions for safe review";
+                notice.onclick=()=>{
+                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
+                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
+                  const url=URL.createObjectURL(blob);
+                  const a=document.createElement("a");a.href=url;a.download="QuoteNoble_Sync_Review_"+new Date().toISOString().slice(0,10)+".json";
+                  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+                };
+              }
+            }
+            return;
+          }
+          DB=merged;
+          if(!storage.save(DB)){
+            ready=false;
+            status("Sync paused · device storage unavailable",true);
+            return;
+          }
+          lastSnapshot=remoteString;
+          try{localStorage.setItem(baselineKey,remoteString)}catch(e){}
+          ready=true;
+          window.qnCloudSave();
+          status("Reconciling saved records…");
+          return;
+        }
+        if(localHasWork && !remoteHasWork){
+          ready=true;
+          status("Saving existing device records to cloud…");
+          window.qnCloudSave();
+          return;
+        }
+        DB=remote;
+        DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
+        DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
+        DB.seq=DB.seq||{quote:1001,invoice:2001};
+        DB.profile=DB.profile||seedDB().profile;
+        storage.save(DB);
+        lastSnapshot=JSON.stringify(DB);
+        try{localStorage.setItem("qn_last_cloud_snapshot_"+uid,lastSnapshot)}catch(e){}
+        if(typeof showView==="function"){
+          const active=document.querySelector(".view.active");
+          const name=active?.id?.replace(/^view-/,"")||"home";
+          showView(name);
+        }
+        status("Cloud data restored ✓");
+      }else{
+        status("Saving account data…");
+      }
+      ready=true;
+      if(!remote && hasRecords(DB))window.qnCloudSave();
+    }catch(e){
+      console.warn("Quote.Noble cloud restore failed:",e);
+      ready=true;
+      status("Using device data · cloud unavailable",true);
+      /* Never overwrite an existing cloud record when initial download fails. */
+      ready=false;
+      window.addEventListener("online",()=>window.qnCloudConnect(client,{id:uid}),{once:true});
+    }
+  };
+  window.addEventListener("online",()=>{if(ready)window.qnCloudSave();else if(client&&uid)window.qnCloudConnect(client,{id:uid});});
+  setInterval(()=>{if
 
 TERM syncReview: 0
 
