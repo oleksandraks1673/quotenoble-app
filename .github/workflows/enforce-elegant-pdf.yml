@@ -1,0 +1,52 @@
+name: Enforce elegant PDF version
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/enforce-elegant-pdf.yml']
+permissions:
+  contents: write
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce elegant PDF and fresh app entry points
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          assert s.count('function buildPDF(kind, id)')==1
+          assert 'Generated with QuoteFlow' not in s
+          assert 'Quote.Noble  |  All amounts in CAD' in s
+          old='const pdf=new NS.jsPDF({unit:"pt",format:"letter"});'
+          assert s.count(old)==1
+          new=old+'''
+   // Document version makes a freshly generated PDF distinguishable from older files.
+   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});'''
+          s=s.replace(old,new,1)
+          old='return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+".pdf"};'
+          assert s.count(old)==1
+          s=s.replace(old,'return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+"-Elegant.pdf"};',1)
+          Path('index.html').write_text(s)
+          Path('app.html').write_text(s)
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          import json
+          vp=Path('vercel.json')
+          cfg=json.loads(vp.read_text())
+          cfg['headers']=[
+            {'source':'/','headers':[{'key':'Cache-Control','value':'no-cache, no-store, must-revalidate'}]},
+            {'source':'/index.html','headers':[{'key':'Cache-Control','value':'no-cache, no-store, must-revalidate'}]},
+            {'source':'/app.html','headers':[{'key':'Cache-Control','value':'no-cache, no-store, must-revalidate'}]},
+            {'source':'/sw.js','headers':[{'key':'Cache-Control','value':'no-cache, no-store, must-revalidate'}]}
+          ]
+          vp.write_text(json.dumps(cfg,indent=2)+'\\n')
+          print('PASS: one elegant PDF generator, distinct file name, no-cache entry points')
+          PY
+      - name: Commit feature-only change
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html vercel.json
+          git diff --cached --quiet || (git commit -m "Enforce fresh elegant PDF output and no-cache HTML" && git push)
