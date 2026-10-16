@@ -26,6 +26,10 @@ module.exports = async (req, res) => {
     }
 
     const price = await st.prices.retrieve(priceId);
+    const isTestKey = process.env.STRIPE_SECRET_KEY?.startsWith('sk_test_');
+    if (typeof price.livemode === 'boolean' && price.livemode === isTestKey) {
+      throw new Error('Stripe key and price mode do not match');
+    }
     const expected = plan === 'monthly' ? { amount: 1499, interval: 'month' } : { amount: 14999, interval: 'year' };
     if (!price.active || price.type !== 'recurring' || price.currency !== 'cad' ||
         price.unit_amount !== expected.amount || price.recurring?.interval !== expected.interval ||
