@@ -1,0 +1,58 @@
+name: Fix template apply confirmation
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/fix-template-apply-confirm.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add safe modern apply confirmation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          js = """<script id="qn-template-apply-dialog">
+          (function(){
+            let approved=false;
+            document.addEventListener('click',function(event){
+              const button=event.target.closest('button');
+              if(!button || !/^Use template$/i.test(button.textContent.trim()) || approved)return;
+              const select=document.querySelector('select[id*="template"],select[name*="template"]');
+              if(select && !select.value)return;
+              event.preventDefault();event.stopImmediatePropagation();
+              document.getElementById('qn-template-dialog')?.remove();
+              const root=document.createElement('div');
+              root.id='qn-template-dialog';root.className='qn-td-backdrop';
+              root.innerHTML='<section class="qn-td-card" role="alertdialog" aria-modal="true" aria-labelledby="qn-td-title"><button class="qn-td-close" type="button" aria-label="Close">×</button><div class="qn-td-icon warn">!</div><h2 id="qn-td-title">Apply saved template?</h2><p>This will replace the current quote items, notes and private materials. This cannot be undone.</p><button class="qn-td-btn" type="button">Apply template</button><button class="qn-td-btn secondary" type="button">Cancel</button></section>';
+              document.body.appendChild(root);
+              const close=()=>root.remove();
+              root.querySelector('.qn-td-close').onclick=close;
+              root.querySelector('.qn-td-btn.secondary').onclick=close;
+              root.querySelector('.qn-td-btn:not(.secondary)').onclick=function(){
+                close();approved=true;
+                const nativeConfirm=window.confirm;
+                window.confirm=function(message){if(String(message).includes('Replace the current quote items'))return true;return nativeConfirm(message);};
+                try{button.click();}finally{window.confirm=nativeConfirm;approved=false;}
+              };
+              root.addEventListener('click',e=>{if(e.target===root)close();});
+              root.querySelector('.qn-td-btn:not(.secondary)').focus();
+            },true);
+          })();
+          </script>"""
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            assert 'id="qn-template-dialog-js"' in s,filename
+            if 'id="qn-template-apply-dialog"' not in s:
+              s=s.replace('</body>',js+'</body>',1)
+              p.write_text(s)
+              print('patched',filename)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Use in-app confirmation before replacing quote with template" && git push)
