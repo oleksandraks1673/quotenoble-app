@@ -41,6 +41,7 @@
     if (e.target.closest('#qn-billing-manage')) {
       const existing = byId('cloud-portal');
       if (existing) existing.click();
+      else { set('qn-billing-detail', 'Billing portal is unavailable. Please reload and sign in again.'); }
     }
     if (e.target.closest('[data-action="view-plans"], [data-qn-more="membership"], [data-view="more"]')) {
       setTimeout(refresh, 250);
@@ -51,9 +52,9 @@
   window.addEventListener('load', () => {
     refresh();
     const query = new URLSearchParams(location.search);
-    if (query.has('checkout')) {
+    if (query.has('checkout') || query.has('billing')) {
       const url = new URL(location.href);
-      url.searchParams.delete('checkout'); url.searchParams.delete('session_id');
+      url.searchParams.delete('checkout'); url.searchParams.delete('billing'); url.searchParams.delete('session_id');
       history.replaceState(history.state, '', url.pathname + url.search + url.hash);
       setTimeout(refresh, 1200);
     }
