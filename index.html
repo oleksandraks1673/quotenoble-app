@@ -2169,7 +2169,7 @@ document.addEventListener("click",function(event){
    const {data,error}=await client.auth.getSession();
    if(error||!data?.session?.access_token)throw Error('Please sign in to manage your subscription.');
    const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
-   const json=await response.json();showSubscriberState(!!json.pro).catch(()=>({}));
+   const json=await response.json();if(path==='/api/stripe/status')showSubscriberState(!!json.pro);
    if(!response.ok)throw Error(json.error||'Billing is temporarily unavailable. Please try again.');return json;
  }
  async function go(path,body){if(busy)return;setBusy(true);try{notice('Connecting to secure Stripe checkout…');const r=await request(path,body);if(r.url&&new window.URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Secure checkout is temporarily unavailable.');}catch(e){notice(e.message);setBusy(false);}}
@@ -2178,7 +2178,7 @@ document.addEventListener("click",function(event){
    const opt=e.target.closest('[data-qn-plan]');if(opt){choose(opt.dataset.qnPlan);return;}
    if(e.target.closest('#qn-pro-continue'))go('/api/stripe/checkout',{plan});
    if(e.target.closest('#cloud-checkout')){if(typeof showView==='function')showView('plans');}
-   if(e.target.closest('#qn-pro-manage,#qn-change-plan,#qn-cancel-plan,#cloud-portal'))go('/api/stripe/portal');
+   if(e.target.closest('#qn-change-plan'))go('/api/stripe/portal',{action:'change_plan'});else if(e.target.closest('#qn-pro-manage,#qn-cancel-plan,#cloud-portal'))go('/api/stripe/portal');
    if(e.target.closest('#qn-pro-refresh'))refresh();
    if(e.target.closest('[data-view="plans"], [data-action="plans"], [data-qn-more-go="plans"]'))setTimeout(refresh,150);
  });
@@ -2187,16 +2187,6 @@ document.addEventListener("click",function(event){
  choose('yearly');
  setTimeout(()=>{if(document.getElementById('view-plans')?.classList.contains('active'))refresh();},300);
 })();
-document.addEventListener('click',async function(e){
-      const btn=e.target.closest('#qn-change-plan');
-      if(!btn)return;
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      btn.disabled=true;
-      try{const r=await request('/api/stripe/portal',{action:'change_plan'});if(r.url)window.location.assign(r.url);else throw Error('Billing portal link unavailable');}
-      catch(err){notice(err.message||'Unable to open plan change');}
-      finally{btn.disabled=false;}
-    },true);
-    </script>
+</script>
 </body>
 </html>
