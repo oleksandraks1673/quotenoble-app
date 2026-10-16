@@ -18,11 +18,14 @@ jobs:
           s=p.read_text()
           assert s.count('function buildPDF(kind, id)')==1
           assert 'Generated with QuoteFlow' not in s
+          print('Brand footer present:', 'Quote.Noble  |  All amounts in CAD' in s)
           assert 'Quote.Noble  |  All amounts in CAD' in s
           old='const pdf=new NS.jsPDF({unit:"pt",format:"letter"});'
+          print('PDF constructor occurrences:',s.count(old))
           assert s.count(old)==1
           new=old+'\\n   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});'\n          s=s.replace(old,new,1)
           old='return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+".pdf"};'
+          print('Filename marker occurrences:',s.count(old))
           assert s.count(old)==1
           s=s.replace(old,'return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+"-Elegant.pdf"};',1)
           Path('index.html').write_text(s)
