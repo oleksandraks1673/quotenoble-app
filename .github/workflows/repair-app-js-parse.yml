@@ -1,0 +1,43 @@
+name: Repair app JavaScript parse failure
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/repair-app-js-parse.yml']
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove malformed PDF metadata line and verify all inline JavaScript
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,subprocess
+          p=Path('index.html')
+          s=p.read_text()
+          bad=r'const pdf=new NS.jsPDF({unit:"pt",format:"letter"});\n   pdf.setProperties'
+          good='const pdf=new NS.jsPDF({unit:"pt",format:"letter"});'+chr(10)+'   pdf.setProperties'
+          assert s.count(bad)==1, 'Expected exact malformed PDF constructor line'
+          s=s.replace(bad,good,1)
+          scripts=list(re.finditer(r'<script\b([^>]*)>(.*?)</script\s*>',s,re.I|re.S))
+          for i,m in enumerate(scripts):
+            if not m.group(2).strip():continue
+            tmp=Path('/tmp/quote-check-'+str(i)+'.js')
+            tmp.write_text(m.group(2))
+            result=subprocess.run(['node','--check',str(tmp)],capture_output=True,text=True)
+            if result.returncode:raise RuntimeError('Script '+str(i)+' failed: '+result.stderr)
+          assert 'var storage = {' in s
+          assert '-Elegant.pdf' in s
+          p.write_text(s)
+          Path('app.html').write_text(s)
+          print('PASS: all '+str(len(scripts))+' script tags checked; malformed PDF line repaired')
+          PY
+      - name: Commit verified repair
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Repair JS syntax error blocking login and elegant PDFs" && git push)
