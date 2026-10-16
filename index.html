@@ -2163,7 +2163,7 @@ document.addEventListener("click",function(event){
    const json=await response.json().catch(()=>({}));
    if(!response.ok)throw Error(json.error||'Billing is temporarily unavailable. Please try again.');return json;
  }
- async function go(path,body){if(busy)return;setBusy(true);try{notice('Connecting to secure Stripe checkout…');const r=await request(path,body);if(r.url&&new URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Secure checkout is temporarily unavailable.');}catch(e){notice(e.message);setBusy(false);}}
+ async function go(path,body){if(busy)return;setBusy(true);try{notice('Connecting to secure Stripe checkout…');const r=await request(path,body);if(r.url&&new window.URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Secure checkout is temporarily unavailable.');}catch(e){notice(e.message);setBusy(false);}}
  async function refresh(){try{notice('Checking subscription securely…');const r=await request('/api/stripe/status');const active=Boolean(r.pro);const buy=action(),manage=document.getElementById('qn-pro-actions');if(buy)buy.hidden=active;if(manage)manage.hidden=!active;notice(active?'Your Pro subscription is active. Manage your plan below.':'No active Pro subscription. Choose a plan above.');}catch(e){notice(e.message);}}
  document.addEventListener('click',e=>{
    const opt=e.target.closest('[data-qn-plan]');if(opt){choose(opt.dataset.qnPlan);return;}
