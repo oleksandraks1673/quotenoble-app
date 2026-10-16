@@ -1,0 +1,62 @@
+name: Align PDF logo and company header
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/align-pdf-header.yml']
+permissions:
+  contents: write
+jobs:
+  align:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Align logo and business information in PDF
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old='''       let logoW=0;
+       if(p.logo&&/^data:image\\/(png|jpe?g);base64,/.test(p.logo)){
+         try{const props=pdf.getImageProperties(p.logo),scale=Math.min(70/props.width,58/props.height);
+           logoW=props.width*scale;pdf.addImage(p.logo,p.logo.startsWith("data:image/png")?"PNG":"JPEG",M,25,logoW,props.height*scale);
+         }catch(e){console.warn("PDF logo:",e);}
+       }
+       const bx=M+(logoW?logoW+14:0);
+       font(17,true);color(ink);
+       pdf.text(pdf.splitTextToSize(String(p.businessName||"Your Business"),Math.max(130,310-(bx-M))).slice(0,2),bx,44);
+       font(8.5);color(muted);
+       const contact=[p.phone,p.email].filter(Boolean).join("  |  ");
+       pdf.text(pdf.splitTextToSize(contact,Math.max(135,310-(bx-M))).slice(0,2),bx,65);'''
+          new='''       let logoW=0;
+       const logoMaxW=80,logoMaxH=48,logoTop=27;
+       if(p.logo&&/^data:image\\/(png|jpe?g);base64,/.test(p.logo)){
+         try{
+           const props=pdf.getImageProperties(p.logo);
+           const scale=Math.min(logoMaxW/props.width,logoMaxH/props.height);
+           logoW=props.width*scale;
+           const logoH=props.height*scale;
+           pdf.addImage(p.logo,p.logo.startsWith("data:image/png")?"PNG":"JPEG",M,logoTop+(logoMaxH-logoH)/2,logoW,logoH);
+         }catch(e){console.warn("PDF logo:",e);}
+       }
+       const bx=M+(logoW?logoW+18:0);
+       const brandW=Math.max(125,315-(bx-M));
+       font(16,true);color(ink);
+       pdf.text(pdf.splitTextToSize(String(p.businessName||"Your Business"),brandW).slice(0,2),bx,45);
+       font(8.5);color(muted);
+       const contact=[p.phone,p.email].filter(Boolean).join("  |  ");
+       pdf.text(pdf.splitTextToSize(contact,brandW).slice(0,2),bx,64);'''
+          assert s.count(old)==1, f'Header pattern count {s.count(old)}'
+          s=s.replace(old,new,1)
+          Path('index.html').write_text(s)
+          Path('app.html').write_text(s)
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          print('PASS: logo centered vertically, brand/contact aligned, both entry points identical')
+          PY
+      - name: Commit header polish on feature branch
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Align PDF logo and company header" && git push)
