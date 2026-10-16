@@ -1,0 +1,70 @@
+name: Repair template core
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/repair-template-core.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch original template handlers
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          helper="""<script id="qn-template-core-dialogs">
+          window.qnTemplateDialog=function(opts){
+            return new Promise(resolve=>{
+              document.getElementById('qn-template-dialog')?.remove();
+              const root=document.createElement('div');
+              root.id='qn-template-dialog';root.className='qn-td-backdrop';
+              const card=document.createElement('section');
+              card.className='qn-td-card';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+              const icon=document.createElement('div');icon.className='qn-td-icon '+(opts.ask?'':'warn');icon.textContent=opts.ask?'✎':'!';
+              const title=document.createElement('h2');title.textContent=opts.title;
+              const desc=document.createElement('p');desc.textContent=opts.description||'';
+              const input=document.createElement('input');
+              input.placeholder='e.g. Gutter cleaning';input.maxLength=90;input.style.cssText='box-sizing:border-box;width:100%;min-height:52px;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;font:inherit;margin-bottom:15px;color:#172033';
+              const yes=document.createElement('button');yes.type='button';yes.className='qn-td-btn';yes.textContent=opts.ask?'Save template':'Apply template';
+              const no=document.createElement('button');no.type='button';no.className='qn-td-btn secondary';no.textContent='Cancel';
+              const finish=v=>{root.remove();resolve(v)};
+              yes.onclick=()=>{if(opts.ask){const v=input.value.trim();if(!v){input.focus();return;}finish(v)}else finish(true)};
+              no.onclick=()=>finish(opts.ask?null:false);
+              root.onclick=e=>{if(e.target===root)finish(opts.ask?null:false)};
+              root.onkeydown=e=>{if(e.key==='Escape')finish(opts.ask?null:false);if(e.key==='Enter'&&opts.ask){e.preventDefault();yes.click()}};
+              card.append(icon,title,desc);
+              if(opts.ask)card.append(input);
+              card.append(yes,no);root.append(card);document.body.append(root);
+              (opts.ask?input:yes).focus();
+            });
+          };
+          </script>"""
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            for marker in ('qn-template-create-dialog','qn-template-apply-dialog'):
+              s,n=re.subn(r'<script id="'+marker+r'">.*?</script>','',s,count=1,flags=re.S)
+              assert n==1,(filename,marker)
+            assert 'body.querySelector("#qn-smart-save").onclick=()=>{' in s
+            s=s.replace('body.querySelector("#qn-smart-save").onclick=()=>{','body.querySelector("#qn-smart-save").onclick=async()=>{',1)
+            old='const raw=prompt("Name this template (for example, Shingle roof replacement):");'
+            assert old in s
+            s=s.replace(old,'const raw=await window.qnTemplateDialog({ask:true,title:"Create new template",description:"Give this template a name to reuse it in future quotes."});',1)
+            assert 'body.querySelector("#qn-smart-apply").onclick=()=>{' in s
+            s=s.replace('body.querySelector("#qn-smart-apply").onclick=()=>{','body.querySelector("#qn-smart-apply").onclick=async()=>{',1)
+            old='!confirm("Replace the current quote items, notes and private materials with this template?")'
+            assert old in s
+            s=s.replace(old,'!(await window.qnTemplateDialog({title:"Apply saved template?",description:"Replace the current quote items, notes and private materials with this template?"}))',1)
+            assert 'id="qn-template-core-dialogs"' not in s
+            s=s.replace('</body>',helper+'</body>',1)
+            p.write_text(s)
+            print(filename,'patched')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Connect template dialogs directly to save and apply handlers" && git push)
