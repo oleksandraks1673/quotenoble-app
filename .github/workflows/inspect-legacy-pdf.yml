@@ -1,0 +1,40 @@
+name: Find and retire legacy PDF generator
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/inspect-legacy-pdf.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit all PDF generators and old branding
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text()
+          terms=['Generated with QuoteFlow','Created with Quote.Noble','function buildPDF','function downloadPDF','window.print','html2pdf','function print','function generatePDF','QUOTE Q-','ESTIMATE','pdf.save(','new jspdf','new jsPDF','createObjectURL','pdf.output(']
+          lines=s.splitlines()
+          out=['Legacy PDF generator audit — code only']
+          for term in terms:
+            hits=[(i,line) for i,line in enumerate(lines) if term.lower() in line.lower()]
+            out.append(f'\\n{term}: {len(hits)} occurrences')
+            for i,line in hits[:12]:
+              out.append(f' {i+1}: {line[:220]}')
+          for i,line in enumerate(lines):
+            if 'function buildPDF(' in line:
+              out.append('\\n=== MAIN PDF GENERATOR ===')
+              for j in range(max(0,i-10),min(len(lines),i+180)):
+                out.append(f'{j+1}: {lines[j][:240]}')
+              break
+          Path('pdf-generator-audit.txt').write_text('\\n'.join(out)[:65000])
+          PY
+      - name: Commit diagnostic report only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pdf-generator-audit.txt
+          git diff --cached --quiet || (git commit -m "Audit old and new PDF generators" && git push)
