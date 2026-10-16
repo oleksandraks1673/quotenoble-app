@@ -4,27 +4,37 @@ on:
     branches: [release/combined-app-billing-20261016]
     paths: ['.github/workflows/diagnose-signin-release.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect auth initialization without printing keys
+      - name: Create redacted auth diagnostic
         run: |
           python3 - <<'PY'
-          import re
           from pathlib import Path
+          import re
+          out=[]
+          terms=['Sign-in service is not available','createClient','window.supabase','supabase-js','signInWithPassword','SUPABASE_PUBLISHABLE_KEY']
           for f in ['index.html','app.html']:
             s=Path(f).read_text()
-            print('FILE',f,'size',len(s))
-            for term in ['Sign-in service is not available','createClient','window.supabase','supabase-js','SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','signInWithPassword']:
-              positions=[m.start() for m in re.finditer(re.escape(term),s,re.I)]
-              print('TERM',term,'count',len(positions))
-              for p in positions[:5]:
-                snippet=s[max(0,p-240):p+250]
-                snippet=re.sub(r'eyJ[A-Za-z0-9._-]{20,}', '[REDACTED_JWT]',snippet)
-                snippet=re.sub(r'(https://[a-z0-9-]+\.supabase\.co)', '[SUPABASE_HOST]',snippet)
-                snippet=re.sub(r'(?i)(key|token|secret)(\\s*[:=]\\s*[\\x27\\x22])[^\\x27\\x22]+',r'\\1\\2[REDACTED]',snippet)
-                print('CONTEXT',re.sub(r'\\s+',' ',snippet))
+            out.append(f'FILE {f} length {len(s)}')
+            for term in terms:
+              pos=[m.start() for m in re.finditer(re.escape(term),s,re.I)]
+              out.append(f'TERM {term} count {len(pos)}')
+              for p in pos[:3]:
+                sn=s[max(0,p-400):p+450]
+                sn=re.sub(r'eyJ[A-Za-z0-9._-]{20,}', '[JWT]',sn)
+                sn=re.sub(r'https://[a-z0-9-]+\.supabase\.co','[SUPABASE_HOST]',sn)
+                sn=re.sub(r'(?i)(?:sb_publishable_|sb_secret_)[A-Za-z0-9_-]+','[SUPABASE_KEY]',sn)
+                sn=re.sub(r'(?i)(?:sk_live_|sk_test_|pk_live_|pk_test_)[A-Za-z0-9_-]+','[STRIPE_KEY]',sn)
+                out.append('CONTEXT '+re.sub(r'\s+',' ',sn))
+          Path('signin-diagnostic.txt').write_text('\n'.join(out))
           PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add signin-diagnostic.txt
+          git diff --cached --quiet || (git commit -m "Record sanitized sign-in diagnostic" && git push)
