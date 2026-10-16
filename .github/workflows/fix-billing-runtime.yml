@@ -1,0 +1,45 @@
+name: Fix billing runtime and plan switch
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/fix-billing-runtime.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair billing handlers in both entrypoints
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            old="showSubscriberState(!!json.pro).catch(()=>({}))"
+            assert s.count(old)==1,(filename,'broken catch not found')
+            s=s.replace(old,"showSubscriberState(!!json.pro)")
+            # request() is shared by checkout, portal and status. Only status response updates the subscriber UI.
+            s=s.replace("showSubscriberState(!!json.pro);","if(path==='/api/stripe/status')showSubscriberState(!!json.pro);",1)
+            old="if(e.target.closest('#qn-pro-manage,#qn-change-plan,#qn-cancel-plan,#cloud-portal'))go('/api/stripe/portal');"
+            assert s.count(old)==1,(filename,'portal handler not found')
+            s=s.replace(old,"if(e.target.closest('#qn-change-plan'))go('/api/stripe/portal',{action:'change_plan'});else if(e.target.closest('#qn-pro-manage,#qn-cancel-plan,#cloud-portal'))go('/api/stripe/portal');")
+            start=s.index('/* Quote.Noble subscription client: verified status, no browser alerts. */')
+            end=s.index('</script>',start)
+            chunk=s[start:end]
+            marker="document.addEventListener('click',async function(e){"
+            assert marker in chunk,(filename,'out-of-scope listener not found')
+            idx=chunk.index(marker)
+            chunk=chunk[:idx]
+            s=s[:start]+chunk+s[end:]
+            assert "showSubscriberState(!!json.pro).catch" not in s
+            assert "go('/api/stripe/portal',{action:'change_plan'})" in s
+            p.write_text(s)
+            print(filename,'billing errors corrected')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Fix billing catch error and plan switch click handler" && git push)
