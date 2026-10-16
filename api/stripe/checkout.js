@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
     }
 
     const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').toLowerCase();
-    const allowed = host === 'www.quotenoble.com' || host === 'quotenoble.com' || /^quotenoblev13stripeintegrationpreview-[a-z0-9-]+\\.vercel\\.app$/.test(host);
+    const allowed = host === 'www.quotenoble.com' || host === 'quotenoble.com' || /^quotenoblev13stripeintegrationpreview-[a-z0-9-]+\.vercel\.app$/.test(host);
     if (!allowed) return res.status(400).json({ error: 'Invalid checkout return host' });
     const origin = 'https://' + host;
 
