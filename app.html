@@ -376,7 +376,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
 .qn-plan-benefits{background:#f7f8fa;border-radius:14px;padding:15px 17px;margin:20px 0;color:#253348}.qn-plan-benefits p{font-size:.9rem;margin:8px 0;line-height:1.4}.qn-plan-continue{width:100%;border:0;border-radius:13px;background:#e9902e;color:#fff;padding:16px 12px;font-size:1rem;font-weight:800;cursor:pointer}.qn-plan-continue:disabled{opacity:.6;cursor:wait}.qn-plan-actions{margin-top:12px;display:flex;justify-content:center}.qn-plan-actions[hidden]{display:none}.qn-plan-status{font-size:.83rem;color:#64748b;text-align:center;min-height:1.5em;margin:13px 0 4px}.qn-plan-footnote{font-size:.75rem;text-align:center;color:#64748b;margin:10px 0 18px}.qn-plan-back{display:block;margin:auto;border:0;background:transparent;color:#64748b;font-weight:650;padding:8px;cursor:pointer}
 @media(max-width:390px){.qn-billing-shell{padding:19px 13px}.qn-plan-option{padding:14px 10px}.qn-plan-option strong{font-size:1.4rem}}
 </style>
-</head>
+<style id="qn-billing-mobile-repair">#qn-pro-actions:not([hidden]){display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important}#qn-pro-actions .btn{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;white-space:normal!important}#qn-pro-actions .qn-billing-help{margin:0!important;font-size:14px!important;line-height:1.5!important;color:#657181!important}#qn-pro-actions .qn-manage-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;width:100%}#qn-pro-continue[hidden],#qn-pro-actions[hidden]{display:none!important}</style></head>
 <body>
 <header class="app-header">
   <div class="brand">
@@ -536,7 +536,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
       </div>
       <div class="qn-plan-benefits"><p>✓ Unlimited quotes and invoices</p><p>✓ Professional branded PDFs</p><p>✓ Detailed scope of work</p><p>✓ Client and job management</p><p>✓ Payment tracking</p></div>
       <button type="button" class="qn-plan-continue" id="qn-pro-continue">Continue with Yearly Pro →</button>
-      <div class="qn-plan-actions" id="qn-pro-actions" hidden><button type="button" class="btn btn-primary" id="qn-pro-manage">Manage subscription</button></div>
+      <div class="qn-plan-actions" id="qn-pro-actions" hidden><button type="button" class="btn btn-primary" id="qn-pro-manage">Manage subscription →</button><p class="qn-billing-help">Change your plan, update payment details, or cancel securely through Stripe.</p><div class="qn-manage-grid"><button type="button" class="btn btn-outline" id="qn-change-plan">Change plan ↗</button><button type="button" class="btn btn-outline" id="qn-cancel-plan">Cancel subscription ↗</button></div></div>
       <div class="qn-plan-actions"><button type="button" class="btn btn-outline" id="qn-pro-refresh">Refresh subscription status</button></div>
       <p id="qn-pro-status" class="qn-plan-status" role="status" aria-live="polite">Sign in to check your subscription.</p>
       <p class="qn-plan-footnote">Secure checkout powered by Stripe · Prices in CAD</p>
@@ -1568,7 +1568,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   }
   async function start() {
     if(!window.supabase?.createClient) {msg("Unable to load sign-in service. Check your internet connection and refresh.");return;}
-    sb=window.supabase.createClient(URL,KEY);
+    sb=window.supabase.createClient(SUPABASE_ENDPOINT,KEY);
     const {data,error}=await sb.auth.getUser();
     if(!error&&data.user)enter(data.user);
     sb.auth.onAuthStateChange((event,session)=>{
@@ -2146,7 +2146,7 @@ document.addEventListener("click",function(event){
 <script>
 /* Quote.Noble subscription client: verified status, no browser alerts. */
 (()=>{
- const URL='https://jssfjaggsjtwppokjpns.supabase.co';
+ const SUPABASE_ENDPOINT='https://jssfjaggsjtwppokjpns.supabase.co';
  const KEY='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
  const status=()=>document.getElementById('qn-pro-status');
  const action=()=>document.getElementById('qn-pro-continue');
@@ -2156,7 +2156,7 @@ document.addEventListener("click",function(event){
  function choose(p){plan=p;document.querySelectorAll('[data-qn-plan]').forEach(b=>{const selected=b.dataset.qnPlan===p;b.classList.toggle('selected',selected);b.setAttribute('aria-checked',String(selected));});if(action())action().textContent='Continue with '+(p==='yearly'?'Yearly':'Monthly')+' Pro →';}
  async function request(path,body){
    if(!window.supabase?.createClient)throw Error('Sign-in service unavailable.');
-   const client=window.supabase.createClient(URL,KEY);
+   const client=window.supabase.createClient(SUPABASE_ENDPOINT,KEY);
    const {data,error}=await client.auth.getSession();
    if(error||!data?.session?.access_token)throw Error('Please sign in to manage your subscription.');
    const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
@@ -2169,13 +2169,14 @@ document.addEventListener("click",function(event){
    const opt=e.target.closest('[data-qn-plan]');if(opt){choose(opt.dataset.qnPlan);return;}
    if(e.target.closest('#qn-pro-continue'))go('/api/stripe/checkout',{plan});
    if(e.target.closest('#cloud-checkout')){if(typeof showView==='function')showView('plans');}
-   if(e.target.closest('#qn-pro-manage,#cloud-portal'))go('/api/stripe/portal');
+   if(e.target.closest('#qn-pro-manage,#qn-change-plan,#qn-cancel-plan,#cloud-portal'))go('/api/stripe/portal');
    if(e.target.closest('#qn-pro-refresh'))refresh();
-   if(e.target.closest('[data-view="plans"], [data-action="plans"]'))setTimeout(refresh,150);
+   if(e.target.closest('[data-view="plans"], [data-action="plans"], [data-qn-more-go="plans"]'))setTimeout(refresh,150);
  });
  window.qnSubscriptionStatus=()=>request('/api/stripe/status');
  window.qnRefreshBilling=refresh;
  choose('yearly');
+ setTimeout(()=>{if(document.getElementById('view-plans')?.classList.contains('active'))refresh();},300);
 })();
 </script>
 </body>
