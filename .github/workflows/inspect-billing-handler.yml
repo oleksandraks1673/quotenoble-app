@@ -1,0 +1,32 @@
+name: Inspect billing handler safely
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/inspect-billing-handler.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write sanitized billing snippet
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text()
+          marker='/* Quote.Noble subscription client: verified status, no browser alerts. */'
+          a=s.index(marker);b=s.index('</script>',a)
+          t=s[a:b]
+          t=re.sub(r'eyJ[A-Za-z0-9._-]{20,}','[JWT]',t)
+          t=re.sub(r'(?:sb_publishable_|sb_secret_)[A-Za-z0-9_-]+','[KEY]',t)
+          t=re.sub(r'https://[a-z0-9-]+\.supabase\.co','[HOST]',t)
+          Path('billing-handler-diagnostic.txt').write_text(t[-9000:])
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add billing-handler-diagnostic.txt
+          git diff --cached --quiet || (git commit -m "Inspect billing handler without secrets" && git push)
