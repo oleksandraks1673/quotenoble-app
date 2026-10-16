@@ -588,7 +588,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
 /* ================= STORE ================= */
 let LS_KEY = "quotenoble_pending";
 let memDB = null; // in-memory fallback if localStorage is blocked
-const storage = {
+var storage = {
   load() {
     try {
       const raw = localStorage.getItem(LS_KEY);
