@@ -1,0 +1,36 @@
+name: Apply complete billing repair
+on:
+  push:
+    branches: [fix/billing-on-working-login-20261016]
+    paths: ['.github/workflows/apply-billing-repair.yml']
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute verified billing patch
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast
+          workflow=Path('.github/workflows/install-complete-billing.yml').read_text()
+          start=workflow.index("          python3 - <<'PY'")+len("          python3 - <<'PY'")+1
+          end=workflow.index("\n          PY",start)
+          source='\n'.join(line[10:] if line.startswith('          ') else line for line in workflow[start:end].splitlines())
+          ast.parse(source)
+          exec(compile(source,'billing-patch','exec'))
+          for file in ('app.html','index.html'):
+              text=Path(file).read_text()
+              assert 'id="qn-current-plan"' in text
+              assert 'id="qn-cancel-plan"' in text
+              assert 'id="qn-billing-installed"' in text
+              print(file,'billing UI verified')
+          PY
+      - name: Commit repaired pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html index.html
+          git diff --cached --quiet || (git commit -m "Install complete billing UI on working login version" && git push)
