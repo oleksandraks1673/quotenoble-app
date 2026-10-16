@@ -52,7 +52,11 @@ module.exports = async (req, res) => {
     }
 
     // Set QUOTENOBLE_APP_URL for preview environments; production defaults to the official domain.
-    const origin = (process.env.QUOTENOBLE_APP_URL || 'https://www.quotenoble.com').replace(/\/$/, '');
+    const origin = process.env.QUOTENOBLE_APP_URL
+      ? process.env.QUOTENOBLE_APP_URL.replace(/\/$/, '')
+      : process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+        ? 'https://' + process.env.VERCEL_URL
+        : 'https://www.quotenoble.com';
 
     const session = await st.checkout.sessions.create({
       mode: 'subscription',
