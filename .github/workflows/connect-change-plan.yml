@@ -1,0 +1,52 @@
+name: Connect Change Plan to Stripe
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/connect-change-plan.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire Change Plan button without altering login
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          for filename in ('index.html','app.html'):
+            p=Path(filename);s=p.read_text()
+            marker='/* Quote.Noble subscription client: verified status, no browser alerts. */'
+            assert s.count(marker)==1
+            a=s.index(marker);b=s.index('</script>',a);chunk=s[a:b]
+            # The existing portal click handler already handles these buttons;
+            # provide action to backend only for the Change Plan button.
+            needle="request('/api/stripe/portal',{})"
+            alternatives=["request('/api/stripe/portal',{})","request('/api/stripe/portal')","request('/api/stripe/portal', {})"]
+            match=next((v for v in alternatives if v in chunk),None)
+            if match:
+              chunk=chunk.replace(match,"request('/api/stripe/portal',e.target.closest('#qn-change-plan')?{action:'change_plan'}:{})")
+            else:
+              # Keep existing management unchanged; add a capturing handler only for change plan.
+              injection="""document.addEventListener('click',async function(e){
+                const btn=e.target.closest('#qn-change-plan');
+                if(!btn)return;
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                btn.disabled=true;
+                try{const r=await request('/api/stripe/portal',{action:'change_plan'});if(r.url)window.location.assign(r.url);else throw Error('Billing portal link unavailable');}
+                catch(err){notice(err.message||'Unable to open plan change');}
+                finally{btn.disabled=false;}
+              },true);
+              """
+              chunk=chunk+injection
+            s=s[:a]+chunk+s[b:];p.write_text(s)
+            print(filename,'change-plan action wired')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Wire plan switch to Stripe confirmation" && git push)
