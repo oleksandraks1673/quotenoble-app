@@ -1,0 +1,62 @@
+name: Refine professional PDF design
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/refine-pdf-design.yml']
+permissions:
+  contents: write
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply premium restrained PDF styling
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          replacements=[
+            ('const ink=[45,40,36], muted=[113,105,98], accent=[218,119,36], light=[255,246,237], border=[239,225,213];',
+             'const ink=[29,38,50], muted=[103,115,128], accent=[188,104,38], light=[248,249,251], border=[224,230,236];'),
+            ('pdf.setFillColor(...light);pdf.rect(0,0,W,94,"F");',
+             'pdf.setFillColor(...light);pdf.rect(0,0,W,102,"F");'),
+            ('pdf.setFillColor(...accent);pdf.rect(0,0,W,5,"F");',
+             'pdf.setFillColor(...accent);pdf.rect(0,0,W,4,"F");'),
+            ('font(15,true);color(ink);',
+             'font(17,true);color(ink);'),
+            ('font(20,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});',
+             'font(22,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});'),
+            ('font(9);color(accent);text("#"+String(doc.number),R,64,{align:"right"});',
+             'font(9,true);color(accent);text("#"+String(doc.number),R,65,{align:"right"});'),
+            ('font(9,true);color(accent);text("PREPARED FOR",M,y);',
+             'font(8.5,true);color(accent);text("PREPARED FOR",M,y);'),
+            ('font(9,true);color(accent);text("DOCUMENT DETAILS",333,y);',
+             'font(8.5,true);color(accent);text("DOCUMENT DETAILS",333,y);'),
+            ('pdf.setFillColor(...light);pdf.roundedRect(M,y,contentW,33,5,5,"F");',
+             'pdf.setFillColor(...ink);pdf.roundedRect(M,y,contentW,33,4,4,"F");'),
+            ('font(9,true);color([146,64,14]);',
+             'font(9,true);color([255,255,255]);'),
+            ('pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,7,7,"F");',
+             'pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,5,5,"F");'),
+            ('font(emphasis?12:10,emphasis);color(emphasis?accent:ink);',
+             'font(emphasis?12:10,emphasis);color(emphasis?ink:ink);'),
+            ('text("Created with Quote.Noble",M,762);',
+             'text("Powered by Quote.Noble  |  All amounts in CAD",M,762);')
+          ]
+          for old,new in replacements:
+            n=s.count(old)
+            assert n==1, f'Expected one match, got {n}: {old[:70]}'
+            s=s.replace(old,new,1)
+          assert 'function quoteTotals(q)' in s and 'function invoiceTotals(inv)' in s
+          p.write_text(s)
+          print('PASS: refined typography, navy table header, neutral surfaces and CAD footer')
+          PY
+      - name: Commit only tested source edits
+        run: |
+          git diff --check
+          git diff --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Refine premium quote and invoice PDF styling" && git push)
