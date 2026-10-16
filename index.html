@@ -1173,7 +1173,8 @@ function buildPDF(kind, id) {
   const doc=isQ?DB.quotes.find(x=>x.id===id):DB.invoices.find(x=>x.id===id);
   if(!doc)return;
   const t=isQ?quoteTotals(doc):invoiceTotals(doc), p=DB.profile, c=getClient(doc.clientId);
-  const pdf=new NS.jsPDF({unit:"pt",format:"letter"});\n   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});
+  const pdf=new NS.jsPDF({unit:"pt",format:"letter"});
+   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});
   const W=612,H=792,M=46,R=W-M,contentW=R-M;
   const ink=[29,38,50], muted=[103,115,128], accent=[188,104,38], light=[248,249,251], border=[224,230,236];
   const color=(rgb)=>pdf.setTextColor(...rgb);
