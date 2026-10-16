@@ -1,0 +1,30 @@
+name: Restore working billing interface
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/restore-working-billing.yml']
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore tested HTML entrypoints
+        run: |
+          git show b295df244ce6047306d5af4fec1678d819ec106a:index.html > index.html
+          git show b295df244ce6047306d5af4fec1678d819ec106a:app.html > app.html
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('index.html','app.html'):
+            s=Path(name).read_text()
+            assert "sb=window.supabase.createClient('https://jssfjaggsjtwppokjpns.supabase.co',KEY)" in s
+            assert 'qn-pro-continue' in s
+            print(name,'restored',len(s))
+          PY
+      - name: Commit restoration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Restore last working billing interface" && git push)
