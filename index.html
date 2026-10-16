@@ -1182,8 +1182,8 @@ function buildPDF(kind, id) {
   let page=1,y=0;
   function header(first=false){
     pdf.setFillColor(255,255,255);pdf.rect(0,0,W,H,"F");
-    pdf.setFillColor(...light);pdf.rect(0,0,W,102,"F");
-    pdf.setFillColor(...accent);pdf.rect(0,0,W,4,"F");
+    // Elegant white document: no large colored header band.
+    // Brand accent is reserved for headings, not a full-width stripe.
     if(first){
       let logoW=0;
       if(p.logo&&/^data:image\/(png|jpe?g);base64,/.test(p.logo)){
@@ -1199,18 +1199,18 @@ function buildPDF(kind, id) {
       pdf.text(pdf.splitTextToSize(contact,Math.max(135,310-(bx-M))).slice(0,2),bx,65);
       font(22,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});
       font(9,true);color(accent);text("#"+String(doc.number),R,65,{align:"right"});
-      pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,103,R,103);
+      // Keep generous white space below the business header.
     }else{
       font(9,true);color(ink);text(p.businessName||"Your Business",M,33);
       font(9);color(muted);text((isQ?"QUOTE":"INVOICE")+"  #"+doc.number,R,33,{align:"right"});
-      pdf.setDrawColor(...border);pdf.line(M,43,R,43);
+      // Continuation header without dividing rule.
     }
   }
   function footer(){
     const count=pdf.getNumberOfPages();
     for(let i=1;i<=count;i++){
-      pdf.setPage(i);pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,747,R,747);
-      font(8);color(muted);text("Powered by Quote.Noble  |  All amounts in CAD",M,762);
+      pdf.setPage(i);
+      font(8);color(muted);text("Quote.Noble  |  All amounts in CAD",M,762);
       text("Page "+i+" of "+count,R,762,{align:"right"});
     }
   }
@@ -1236,8 +1236,8 @@ function buildPDF(kind, id) {
   y=Math.max(cy,y+43)+17;
   function tableHeader(){
     need(40);
-    pdf.setFillColor(...ink);pdf.roundedRect(M,y,contentW,33,4,4,"F");
-    font(9,true);color([255,255,255]);
+    // Minimal table heading without a filled band.
+    font(8.5,true);color(muted);
     text("DESCRIPTION",M+12,y+21);text("QTY",393,y+21,{align:"right"});
     text("RATE",468,y+21,{align:"right"});text("AMOUNT",R-10,y+21,{align:"right"});
     y+=49;
@@ -1268,12 +1268,12 @@ function buildPDF(kind, id) {
       }
     }
     y+=12;need(14);
-    pdf.setDrawColor(...border);pdf.setLineWidth(.5);pdf.line(M+10,y-5,R-10,y-5);
+    // No separator lines between services.
     y+=8;
   });
   need(isQ?118:153);
   const boxX=327,boxW=R-boxX;
-  pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,5,5,"F");
+  // White totals area without background panel.
   let ty=y+23;
   const totalLine=(label,value,emphasis=false)=>{
     font(emphasis?11:9,emphasis);color(emphasis?ink:muted);text(label,boxX+13,ty);
@@ -1281,7 +1281,7 @@ function buildPDF(kind, id) {
   };
   totalLine("Subtotal",money(t.sub));
   totalLine((p.taxLabel||"Tax")+" ("+(p.taxRate||0)+"%)",money(t.tax));
-  pdf.setDrawColor(...border);pdf.line(boxX+13,ty-11,R-13,ty-11);
+  // No horizontal line in totals.
   totalLine("TOTAL",money(t.total),true);
   if(!isQ){totalLine("Paid",money(t.paid));totalLine("BALANCE DUE",money(t.balance),true);}
   y+=isQ?116:151;
