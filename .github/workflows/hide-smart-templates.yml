@@ -1,0 +1,32 @@
+name: Hide Smart Templates UI
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/hide-smart-templates.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hide templates from quote form
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('index.html','app.html'):
+            p=Path(name);s=p.read_text()
+            target="'<div class=\"field\" style=\"padding:14px;border:1px solid var(--border,#dce2eb);border-radius:12px\"><label style=\"font-weight:750\">⭐ My saved templates</label>"
+            assert target in s,name
+            s=s.replace(target,"'<div class=\"field\" hidden aria-hidden=\"true\" style=\"display:none!important;padding:14px;border:1px solid var(--border,#dce2eb);border-radius:12px\"><label style=\"font-weight:750\">⭐ My saved templates</label>",1)
+            assert 'qnBindSmartTemplates(body);' in s
+            s=s.replace('qnBindSmartTemplates(body);','',1)
+            p.write_text(s)
+            print(name,'templates UI hidden; stored data preserved')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Temporarily hide Smart Templates without deleting records" && git push)
