@@ -1,0 +1,54 @@
+/* Quote.Noble subscription client: verified status, no browser alerts. */
+(()=>{
+ const SUPABASE_ENDPOINT='[HOST]';
+ const KEY='[KEY]';
+ const status=()=>document.getElementById('qn-pro-status');
+  function showSubscriberState(pro){
+    const checkout=document.getElementById('qn-pro-continue');
+    const manage=document.getElementById('qn-pro-actions');
+    if(checkout){checkout.hidden=!!pro;checkout.style.display=pro?'none':'';}
+    if(manage){manage.hidden=!pro;manage.style.display=pro?'flex':'none';}
+    const choices=document.querySelectorAll('[data-qn-plan]');
+    choices.forEach(el=>{el.style.display=pro?'none':'';el.setAttribute('aria-hidden',String(!!pro));});
+  }
+  
+ const action=()=>document.getElementById('qn-pro-continue');
+ let plan='yearly',busy=false;
+ function notice(t){if(status())status().textContent=t;}
+ function setBusy(v){busy=v;if(action())action().disabled=v;}
+ function choose(p){plan=p;document.querySelectorAll('[data-qn-plan]').forEach(b=>{const selected=b.dataset.qnPlan===p;b.classList.toggle('selected',selected);b.setAttribute('aria-checked',String(selected));});if(action())action().textContent='Continue with '+(p==='yearly'?'Yearly':'Monthly')+' Pro →';}
+ async function request(path,body){
+   if(!window.supabase?.createClient)throw Error('Sign-in service unavailable.');
+   const client=window.supabase.createClient(SUPABASE_ENDPOINT,KEY);
+   const {data,error}=await client.auth.getSession();
+   if(error||!data?.session?.access_token)throw Error('Please sign in to manage your subscription.');
+   const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
+   const json=await response.json();showSubscriberState(!!json.pro).catch(()=>({}));
+   if(!response.ok)throw Error(json.error||'Billing is temporarily unavailable. Please try again.');return json;
+ }
+ async function go(path,body){if(busy)return;setBusy(true);try{notice('Connecting to secure Stripe checkout…');const r=await request(path,body);if(r.url&&new window.URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Secure checkout is temporarily unavailable.');}catch(e){notice(e.message);setBusy(false);}}
+ async function refresh(){try{notice('Checking subscription securely…');const r=await request('/api/stripe/status');const active=Boolean(r.pro);const buy=action(),manage=document.getElementById('qn-pro-actions');if(buy)buy.hidden=active;if(manage)manage.hidden=!active;notice(active?'Your Pro subscription is active. Manage your plan below.':'No active Pro subscription. Choose a plan above.');}catch(e){notice(e.message);}}
+ document.addEventListener('click',e=>{
+   const opt=e.target.closest('[data-qn-plan]');if(opt){choose(opt.dataset.qnPlan);return;}
+   if(e.target.closest('#qn-pro-continue'))go('/api/stripe/checkout',{plan});
+   if(e.target.closest('#cloud-checkout')){if(typeof showView==='function')showView('plans');}
+   if(e.target.closest('#qn-pro-manage,#qn-change-plan,#qn-cancel-plan,#cloud-portal'))go('/api/stripe/portal');
+   if(e.target.closest('#qn-pro-refresh'))refresh();
+   if(e.target.closest('[data-view="plans"], [data-action="plans"], [data-qn-more-go="plans"]'))setTimeout(refresh,150);
+ });
+ window.qnSubscriptionStatus=()=>request('/api/stripe/status');
+ window.qnRefreshBilling=refresh;
+ choose('yearly');
+ setTimeout(()=>{if(document.getElementById('view-plans')?.classList.contains('active'))refresh();},300);
+})();
+document.addEventListener('click',async function(e){
+      const btn=e.target.closest('#qn-change-plan');
+      if(!btn)return;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      btn.disabled=true;
+      try{const r=await request('/api/stripe/portal',{action:'change_plan'});if(r.url)window.location.assign(r.url);else throw Error('Billing portal link unavailable');}
+      catch(err){notice(err.message||'Unable to open plan change');}
+      finally{btn.disabled=false;}
+    },true);
+    
