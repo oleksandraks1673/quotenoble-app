@@ -21,10 +21,7 @@ jobs:
           assert 'Quote.Noble  |  All amounts in CAD' in s
           old='const pdf=new NS.jsPDF({unit:"pt",format:"letter"});'
           assert s.count(old)==1
-          new=old+'''
-   // Document version makes a freshly generated PDF distinguishable from older files.
-   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});'''
-          s=s.replace(old,new,1)
+          new=old+'\\n   pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});'\n          s=s.replace(old,new,1)
           old='return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+".pdf"};'
           assert s.count(old)==1
           s=s.replace(old,'return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+"-Elegant.pdf"};',1)
