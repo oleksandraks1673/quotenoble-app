@@ -1,0 +1,36 @@
+name: Synchronize app PDF versions
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/sync-app-pdf.yml']
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep alternate app entry in sync with polished index
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          a=Path('app.html')
+          i=Path('index.html')
+          old=a.read_text()
+          new=i.read_text()
+          assert len(old)>5000000 and len(new)>5000000, 'Unexpected app file sizes'
+          assert 'function buildPDF(kind, id)' in new
+          assert 'function quoteTotals(q)' in new and 'function invoiceTotals(inv)' in new
+          assert 'No separator lines between services' in new
+          assert 'Quote.Noble  |  All amounts in CAD' in new
+          a.write_text(new)
+          assert a.read_bytes()==i.read_bytes()
+          print('PASS: app.html and index.html identical with new PDF design')
+          PY
+      - name: Commit only alternate entry point
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html
+          git diff --cached --quiet || (git commit -m "Sync alternate app entry with polished PDF design" && git push)
