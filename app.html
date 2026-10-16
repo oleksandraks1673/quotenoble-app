@@ -526,13 +526,13 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
       <div style="text-align:left;border:1px solid #e3e6ea;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Free</strong><strong style="font-size:1.4rem">$0</strong></div>
         <p style="color:var(--muted)">Planned launch tier</p>
-        <p>✓ Up to 3 quotes / month<br>✓ Up to 3 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
+        <p>✓ Up to 10 quotes / month<br>✓ Up to 10 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
       </div>
       <div style="text-align:left;border:2px solid #d97706;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Pro</strong><strong style="font-size:1.4rem">$14.99<span style="font-size:.8rem">/mo CAD</span></strong></div>
-        <p style="color:var(--muted)">CAD $199.99/year · Save with monthly billing flexibility</p>
+        <p style="color:var(--muted)">CAD $149.99/year · Save compared with monthly billing</p>
         <p>✓ Unlimited quotes and invoices<br>✓ Business logo on PDFs<br>✓ Detailed scope of work<br>✓ Payment tracking<br>✓ Client management</p>
-        <div class="btn-row"><button type="button" class="btn btn-primary" id="qn-pro-monthly">Subscribe monthly · $14.99 CAD</button><button type="button" class="btn btn-outline" id="qn-pro-yearly">Subscribe yearly · $199.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;color:var(--muted)">Sign in to view subscription status.</p>
+        <div class="btn-row"><button type="button" class="btn btn-primary" id="qn-pro-monthly">Subscribe monthly · $14.99 CAD</button><button type="button" class="btn btn-outline" id="qn-pro-yearly">Subscribe yearly · $149.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;color:var(--muted)">Sign in to view subscription status.</p>
       </div>
       <p style="font-size:.83rem;color:var(--muted)"><strong>Billing preview:</strong> Checkout requires configured Vercel Stripe functions. Existing app features are not yet restricted by plan. Do not launch paid access until entitlements are enforced and verified.</p>
       <div class="btn-row"><button class="btn btn-outline" data-action="back-more">← Back to More</button></div>
@@ -2163,6 +2163,35 @@ document.addEventListener("click",function(event){
    if(e.target.closest('#qn-pro-refresh'))refresh();
  });
  window.qnSubscriptionStatus=()=>request('/api/stripe/status');
+ let checking=false;
+ async function syncPro(){
+   if(checking)return;
+   checking=true;
+   try {
+     const result=await request('/api/stripe/status');
+     const el=document.getElementById('qn-pro-status');
+     if(el)el.textContent=result.pro?'✓ Pro Active ('+result.status+')':'Subscription status: '+result.status;
+     document.documentElement.dataset.qnPro=result.pro?'active':'free';
+   } catch(e) {
+     const el=document.getElementById('qn-pro-status');
+     if(el)el.textContent='Subscription check: '+e.message;
+   } finally { checking=false; }
+ }
+ const q=new URLSearchParams(location.search);
+ if(q.has('checkout')){
+   window.addEventListener('load',()=>setTimeout(syncPro,700));
+   q.delete('checkout');q.delete('session_id');
+   history.replaceState(history.state,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
+ }
+ document.addEventListener('click',e=>{
+   if(e.target.closest('#qn-pro-refresh'))return;
+   if(e.target.closest('#nav-more,[data-view="more"]'))setTimeout(syncPro,200);
+ });
+ document.addEventListener('visibilitychange',()=>{
+   if(!document.hidden&&document.getElementById('qn-pro-status'))syncPro();
+ });
+ window.qnRefreshSubscription=syncPro;
+
 })();
 </script>
 </body>

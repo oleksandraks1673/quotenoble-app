@@ -526,11 +526,11 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
       <div style="text-align:left;border:1px solid #e3e6ea;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Free</strong><strong style="font-size:1.4rem">$0</strong></div>
         <p style="color:var(--muted)">Planned launch tier</p>
-        <p>✓ Up to 3 quotes / month<br>✓ Up to 3 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
+        <p>✓ Up to 10 quotes / month<br>✓ Up to 10 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
       </div>
       <div style="text-align:left;border:2px solid #d97706;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Pro</strong><strong style="font-size:1.4rem">$14.99<span style="font-size:.8rem">/mo CAD</span></strong></div>
-        <p style="color:var(--muted)">Monthly $14.99 CAD · Yearly $199.99 CAD</p>
+        <p style="color:var(--muted)">Monthly $14.99 CAD · Yearly $149.99 CAD</p>
         <p>✓ Unlimited quotes and invoices<br>✓ Business logo on PDFs<br>✓ Detailed scope of work<br>✓ Payment tracking<br>✓ Client management</p>
         <button class="btn btn-outline" style="width:100%" id="qn-pro-start">Choose Pro plan</button>
       </div>
@@ -2140,7 +2140,7 @@ document.addEventListener("click",function(event){
  async function checkout(plan){try{const j=await request('/api/stripe/checkout',{plan});if(j.url)location.assign(j.url);}catch(e){alert(e.message)}}
  async function portal(){try{const j=await request('/api/stripe/portal');if(j.url)location.assign(j.url);}catch(e){alert(e.message)}}
  document.addEventListener('click',e=>{
-  if(e.target.closest('#qn-pro-start,#cloud-checkout')){const plan=confirm('Quote.Noble Pro\nOK: $14.99 CAD per month\nCancel: choose yearly plan');if(plan)checkout('monthly');else if(confirm('Subscribe for $199.99 CAD per year?'))checkout('yearly');}
+  if(e.target.closest('#qn-pro-start,#cloud-checkout')){const plan=confirm('Quote.Noble Pro\nOK: $14.99 CAD per month\nCancel: choose yearly plan');if(plan)checkout('monthly');else if(confirm('Subscribe for $149.99 CAD per year?'))checkout('yearly');}
   if(e.target.closest('#cloud-portal'))portal();
  });
  window.qnSubscriptionStatus=async()=>request('/api/stripe/status');
