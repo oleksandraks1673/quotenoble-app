@@ -1,0 +1,30 @@
+name: Diagnose sign-in release
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/diagnose-signin-release.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect auth initialization without printing keys
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          for f in ['index.html','app.html']:
+            s=Path(f).read_text()
+            print('FILE',f,'size',len(s))
+            for term in ['Sign-in service is not available','createClient','window.supabase','supabase-js','SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','signInWithPassword']:
+              positions=[m.start() for m in re.finditer(re.escape(term),s,re.I)]
+              print('TERM',term,'count',len(positions))
+              for p in positions[:5]:
+                snippet=s[max(0,p-240):p+250]
+                snippet=re.sub(r'eyJ[A-Za-z0-9._-]{20,}', '[REDACTED_JWT]',snippet)
+                snippet=re.sub(r'(https://[a-z0-9-]+\.supabase\.co)', '[SUPABASE_HOST]',snippet)
+                snippet=re.sub(r'(?i)(key|token|secret)(\\s*[:=]\\s*[\\x27\\x22])[^\\x27\\x22]+',r'\\1\\2[REDACTED]',snippet)
+                print('CONTEXT',re.sub(r'\\s+',' ',snippet))
+          PY
