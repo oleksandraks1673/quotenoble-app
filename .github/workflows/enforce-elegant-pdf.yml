@@ -37,7 +37,7 @@ jobs:
             {'source':'/app.html','headers':[{'key':'Cache-Control','value':'no-cache, no-store, must-revalidate'}]},
             {'source':'/sw.js','headers':[{'key':'Cache-Control','value':'no-cache, no-store, must-revalidate'}]}
           ]
-          vp.write_text(json.dumps(cfg,indent=2)+'\\n')
+          vp.write_text(json.dumps(cfg,indent=2)+chr(10))
           print('PASS: one elegant PDF generator, distinct file name, no-cache entry points')
           PY
       - name: Commit feature-only change
