@@ -20,6 +20,25 @@ module.exports=async(req,res)=>{
       if(!monthly||!yearly)return res.status(503).json({error:'Subscription prices are not configured'});
       const next=item?.price?.id===monthly?yearly:item?.price?.id===yearly?monthly:null;
       if(!next)return res.status(409).json({error:'Your plan cannot be changed automatically. Please contact support.'});
+      const [monthlyPrice,yearlyPrice]=await Promise.all([st.prices.retrieve(monthly),st.prices.retrieve(yearly)]);
+      if(monthlyPrice.currency!=='cad'||yearlyPrice.currency!=='cad'||monthlyPrice.unit_amount!==1499||yearlyPrice.unit_amount!==14999||monthlyPrice.recurring?.interval!=='month'||yearlyPrice.recurring?.interval!=='year')
+        return res.status(409).json({error:'Stripe prices do not match the published CAD plans'});
+      if(monthlyPrice.product!==yearlyPrice.product)return res.status(409).json({error:'Monthly and annual plans must belong to the same Stripe product'});
+      const configs=await st.billingPortal.configurations.list({limit:100});
+      let config=configs.data.find(x=>x.active&&x.features?.subscription_update?.enabled&&
+        x.features.subscription_update.products?.some(p=>p.product===monthlyPrice.product&&p.prices?.includes(monthly)&&p.prices?.includes(yearly)));
+      if(!config){
+        config=await st.billingPortal.configurations.create({
+          business_profile:{headline:'Manage your Quote.Noble Pro subscription'},
+          features:{
+            subscription_update:{enabled:true,default_allowed_updates:['price'],proration_behavior:'create_prorations',products:[{product:monthlyPrice.product,prices:[monthly,yearly]}]},
+            subscription_cancel:{enabled:true,mode:'at_period_end'},
+            payment_method_update:{enabled:true},
+            invoice_history:{enabled:true}
+          }
+        });
+      }
+      portalArgs.configuration=config.id;
       portalArgs.flow_data={type:'subscription_update_confirm',subscription_update_confirm:{subscription:active.id,items:[{id:item.id,price:next,quantity:item.quantity||1}]},after_completion:{type:'redirect',redirect:{return_url:returnUrl}}};
     }
     const s=await st.billingPortal.sessions.create(portalArgs);
