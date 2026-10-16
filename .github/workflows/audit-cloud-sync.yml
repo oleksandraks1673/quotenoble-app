@@ -18,7 +18,7 @@ jobs:
           s=Path('index.html').read_text(encoding='utf-8')
           lines=s.splitlines()
           terms=['Sync needs review','export both copies','sync needs','syncReview','syncConflict','syncBanner','syncStatus']
-          out=['Sync warning inspection - no application changes']
+          out=['Sync warning inspection - expanded context']
           for term in terms:
             matches=list(re.finditer(re.escape(term),s,re.I))
             out.append(f'\nTERM {term}: {len(matches)}')
