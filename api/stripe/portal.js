@@ -15,7 +15,11 @@ module.exports = async (req, res) => {
       return res.status(404).json({ error: 'No billing account found' });
     }
 
-    const origin = (process.env.QUOTENOBLE_APP_URL || 'https://www.quotenoble.com').replace(/\/$/, '');
+    const origin = process.env.QUOTENOBLE_APP_URL
+      ? process.env.QUOTENOBLE_APP_URL.replace(/\/$/, '')
+      : process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+        ? 'https://' + process.env.VERCEL_URL
+        : 'https://www.quotenoble.com';
     const session = await st.billingPortal.sessions.create({
       customer: billingCustomer.id,
       return_url: origin + '/'
