@@ -1,0 +1,28 @@
+PLANS: Stripe: [3542851]
+  lass="btn-row"><button class="btn btn-danger" data-action="reset-all">Reset everything</button></div>     </div> </div>   </section>   <!-- PLANS: Stripe checkout requires server configuration -->   <section id="view-plans" class="view">     <div class="card" style="text-align:center">       <h2 style="font-size:1.55rem">Simple pricing fo
+<!-- HELP -->: [3545179]
+        <div class="btn-row"><button class="btn btn-outline" data-action="back-more">← Back to More</button></div>     </div>   </section>    <!-- HELP -->   <section id="view-help" class="view">     <div class="card">       <h2>How Quote.Noble works</h2>       <ul class="help-list">         <li><strong>Your data stays in your browser, on y
+view-plans: [404529, 405076, 405788, 3541402, 3542923, 3607239]
+  ighlight-color:transparent;touch-action:manipulation} input,select,textarea{font-size:max(16px,1rem)} img,video,canvas,svg{max-width:100%} #view-plans,.qn-bill,.qn-bill *{box-sizing:border-box} .qn-bill{width:min(100%,760px);margin-inline:auto} .qn-bill-heading,.qn-bill-line{min-width:0} .qn-bill-heading>div,.qn-bill-line>strong{min-width
+  ble,.qn-bill-secondary:focus-visible,.qn-bill-option:focus-visible{outline:3px solid #d7821a;outline-offset:3px} @media(max-width:600px){  #view-plans{padding-inline:12px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}  .qn-bill{margin:8px auto 24px;padding:18px 15px;border-radius:20px}  .qn-bill-heading h2{font-size:clamp(1.
+qn-bill-modern-css: []
+qn-current-plan: []
+qn-bill-active: []
+Quote.Noble subscription client:: [5222580]
+  [contains public config omitted]
+qn-more-membership: [3536816, 3540889]
+  g><small>Protect your business records</small></span><b>›</b></button>       <button type="button" class="qn-more-item" data-qn-more-panel="qn-more-membership"><span class="qn-more-item-icon">◇</span><span><strong>Membership</strong><small>Free and Pro plan information</small></span><b>›</b></button>     </div>     <div class="qn-more-sec
+       </div>       <input type="file" id="import-file" accept=".json,application/json" style="display:none;">     </div> </div>     <div id="qn-more-membership" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Membership</h2>    <div class="card" id="membership-card">     
+data-qn-more-panel: [3535995, 3536331, 3536563, 3536796, 3537333, 5208836, 5208922]
+  ales Reports</strong><small>Revenue, invoices and payments</small></span><b>›</b></button>       <button type="button" class="qn-more-item" data-qn-more-panel="qn-more-insights"><span class="qn-more-item-icon">◷</span><span><strong>Business Insights</strong><small>Pipeline and follow-ups</small></span><b>›</b></button>     </div>     <div
+  <div class="qn-more-section-label">ACCOUNT & SETTINGS</div>     <div class="qn-more-menu">       <button type="button" class="qn-more-item" data-qn-more-panel="qn-more-account"><span class="qn-more-item-icon">♙</span><span><strong>Account & Sign In</strong><small>Cloud account and password</small></span><b>›</b></button>       <button typ
+data-qn-more-go: [3535567, 5209328, 5209412]
+      <div class="qn-more-section-label">BUSINESS TOOLS</div>     <div class="qn-more-menu">       <button type="button" class="qn-more-item" data-qn-more-go="jobs"><span class="qn-more-item-icon">▤</span><span><strong>Job Tracker</strong><small>Manage your active projects</small></span><b>›</b></button>       <button type="button" class="q
+  ore-panel').forEach(p=>p.hidden=true);root.classList.remove('qn-more-panel-open');window.scrollTo(0,0);return;}const nav=e.target.closest('[data-qn-more-go]');if(nav&&typeof showView==='function'){showView(nav.getAttribute('data-qn-more-go'));}});</script><script> document.addEventListener("click",function(event){   if(event.target && eve
+qn-pro-continue: []
+qn-pro-manage: [3544497, 5224274]
+  ine" id="qn-pro-yearly">Subscribe yearly · $199.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;col
+  /checkout',{plan:'monthly'});    if(e.target.closest('#qn-pro-yearly'))go('/api/stripe/checkout',{plan:'yearly'});    if(e.target.closest('#qn-pro-manage,#cloud-portal'))go('/api/stripe/portal');    if(e.target.closest('#qn-pro-refresh'))refresh();  });  window.qnSubscriptionStatus=()=>request('/api/stripe/status'); })(); </script> </body
+supabase.createClient: [5175956, 5223044]
+  (!window.supabase?.createClient) {msg("Unable to load sign-in service. Check your internet connection and refresh.");return;}     sb=window.supabase.createClient(URL,KEY);     const {data,error}=await sb.auth.getUser();     if(!error&&data.user)enter(data.user);     sb.auth.onAuthStateChange((event,session)=>{       if(event==="SIGNED_OUT
+   async function request(path,body){    if(!window.supabase?.createClient)throw Error('Sign-in service unavailable');    const client=window.supabase.createClient(URL,KEY);    const {data,error}=await client.auth.getSession();    if(error||!data?.session?.access_token)throw Error('Please sign in before subscribing.');    const response=awa
