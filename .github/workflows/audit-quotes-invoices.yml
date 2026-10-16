@@ -26,7 +26,11 @@ jobs:
               snippet=lines[i][:250]
               snippet=re.sub(r'(?i)(sk_live_|sk_test_|whsec_|eyJ)[A-Za-z0-9_./-]+','[REDACTED]',snippet)
               out.append(f'  {i+1}: {snippet}')
-          Path('quote-invoice-audit.txt').write_text('\n'.join(out)[:25000])
+          for a,b in [(640,685),(1125,1225),(1225,1300)]:
+            out.append(f'\\n=== SOURCE LINES {a}-{b} ===')
+            for i in range(a-1,min(b,len(lines))):
+              out.append(f'{i+1}: {lines[i][:300]}')
+          Path('quote-invoice-audit.txt').write_text('\n'.join(out)[:60000])
           PY
       - name: Commit audit
         run: |
