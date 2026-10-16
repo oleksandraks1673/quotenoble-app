@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     const subscription = ordered[0];
     const pro = Boolean(subscription && ['active', 'trialing'].includes(subscription.status));
     const recurring = subscription?.items?.data?.[0]?.price?.recurring?.interval;
-    const plan = pro ? (recurring === 'year' ? 'yearly' : 'monthly') : 'free';
+    const plan = recurring === 'year' ? 'yearly' : recurring === 'month' ? 'monthly' : 'free';
 
     return res.status(200).json({
       pro,
