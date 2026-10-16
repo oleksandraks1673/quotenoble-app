@@ -1,0 +1,77 @@
+902:   }).join("");
+903: }
+904: /* Private quote materials: stored only on quote object; never used by customer document renderer. */
+905: function qnMaterialRows(items){return (items||[]).map((m,i)=>'<div class="qn-mat-row" style="display:grid;grid-template-columns:minmax(0,1fr) 62px 88px 36px;gap:6px;margin-bottom:8px;align-items:center"><input class="qn-mat-name" aria-label="Material" placeholder="Material name" value="'+esc(m.name||'')+'"><input class="qn-mat-qty" aria-label="Quantity" type="number" min="0" step="0.01" placeholder="Qty" value="'+esc(String(m.qty??1))+'"><select class="qn-mat-unit" aria-label="Unit">'+['pcs','bundles','rolls','boxes','sheets','ft','m','other'].map(u=>'<option value="'+u+'"'+(m.unit===u?' selected':'')+'>'+u+'</option>').join('')+'</select><button type="button" class="btn btn-outline btn-small qn-mat-remove" aria-label="Remove material" style="padding:8px">×</button></div>').join('');}
+906: function qnReadMaterials(body){return [...body.querySelectorAll('.qn-mat-row')].map(r=>({name:r.querySelector('.qn-mat-name').value.trim(),qty:Number(r.querySelector('.qn-mat-qty').value||0),unit:r.querySelector('.qn-mat-unit').value})).filter(m=>m.name);}
+907: function qnBindMaterials(body){const wrap=body.querySelector('#qn-material-wrap');body.querySelector('#qn-add-material').onclick=()=>{const current=qnReadMaterials(body);wrap.innerHTML=qnMaterialRows([...current,{name:'',qty:1,unit:'pcs'}]);wrap.querySelector('.qn-mat-row:last-child .qn-mat-name')?.focus();};wrap.onclick=e=>{if(e.target.closest('.qn-mat-remove')){e.target.closest('.qn-mat-row').remove();}};}
+908: function qnCopyMaterials(q){const lines=(q.materials||[]).map(m=>`${m.qty} ${m.unit} — ${m.name}`);if(q.materialNotes)lines.push('',q.materialNotes);const value=lines.join('\n');if(navigator.clipboard?.writeText)navigator.clipboard.writeText(value).then(()=>alert('Private material list copied.')).catch(()=>prompt('Copy material list:',value));else prompt('Copy material list:',value);}
+909: function qnBindSmartTemplates(body){
+910:   const select=body.querySelector("#qn-smart-select");
+911:   if(!select)return;
+912:   function populate(){
+913:     const previous=select.value;
+914:     select.innerHTML='<option value="">Choose a saved template</option>';
+915:     (DB.smartTemplates||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(t=>select.add(new Option(t.name,t.id)));
+916:     if((DB.smartTemplates||[]).some(t=>t.id===previous))select.value=previous;
+917:   }
+918:   populate();
+919:   body.querySelector("#qn-smart-save").onclick=()=>{
+920:     const items=readItems(body);
+921:     if(!items.length){alert("Add at least one line item before saving a template.");return;}
+922:     const raw=prompt("Name this template (for example, Shingle roof replacement):");
+923:     if(raw===null)return;
+924:     const name=raw.trim().slice(0,90);
+925:     if(!name){alert("Enter a template name.");return;}
+926:     const match=(DB.smartTemplates||[]).find(t=>t.name.toLowerCase()===name.toLowerCase());
+927:     if(match&&!confirm("Replace the existing template named "+name+"?"))return;
+928:     const record={id:match?.id||uid("tpl"),name,items:items.map(x=>({...x})),
+929:       materials:qnReadMaterials(body),materialNotes:body.querySelector("#qn-material-notes").value,
+930:       notes:body.querySelector("#f-notes").value,updatedAt:new Date().toISOString()};
+931:     if(match)Object.assign(match,record);
+932:     else { DB.smartTemplates=DB.smartTemplates||[]; DB.smartTemplates.push(record); }
+933:     save();populate();select.value=record.id;
+934:     if(window.qnSaveFailed)alert("Template is only in memory. Storage is unavailable; export a backup before leaving.");
+935:     else alert("Template saved. It can be used on future quotes.");
+936:   };
+937:   body.querySelector("#qn-smart-apply").onclick=()=>{
+938:     const t=(DB.smartTemplates||[]).find(x=>x.id===select.value);
+939:     if(!t){alert("Choose a saved template first.");return;}
+940:     const current=readItems(body);
+941:     if((current.length||qnReadMaterials(body).length||body.querySelector("#f-notes").value.trim()||body.querySelector("#qn-material-notes").value.trim())&&!confirm("Replace the current quote items, notes and private materials with this template?"))return;
+942:     body.querySelector("#items-wrap").innerHTML=itemRowsHTML((t.items||[]).map(x=>({...x})));
+943:     const materialWrap=body.querySelector("#qn-material-wrap");
+944:     if(materialWrap)materialWrap.innerHTML=qnMaterialRows(t.materials||[]);
+945:     body.querySelector("#qn-material-notes").value=t.materialNotes||"";
+946:     body.querySelector("#f-notes").value=t.notes||"";
+947:     updateLiveTotals(body);
+948:   };
+949:   body.querySelector("#qn-smart-delete").onclick=()=>{
+950:     const t=(DB.smartTemplates||[]).find(x=>x.id===select.value);
+951:     if(!t)return alert("Choose a saved template first.");
+952:     if(!confirm('Delete template "'+t.name+'"? Existing quotes will not be changed.'))return;
+953:     DB.smartTemplates=DB.smartTemplates.filter(x=>x.id!==t.id);
+954:     save();populate();select.value="";
+955:   };
+956: }
+957: function openQuoteForm(existing, presetClientId) {
+958:   if (!DB.clients.length) { alert("Add a client first (Clients tab), then make a quote."); showView("clients"); return; }
+959:   const q = existing || { clientId: presetClientId||DB.clients[0].id, items:[{desc:"",qty:1,price:0}], materials:[], materialNotes:"", notes:"", validUntil:"", status:"draft" };
+960:   const body = openModal(existing?("Edit "+q.number):"New quote",
+961:     '<div class="field"><label>Client</label><select id="f-client">'+clientOptionsHTML(q.clientId)+'</select></div>' +
+962:     '<div class="field" style="padding:14px;border:1px solid var(--border,#dce2eb);border-radius:12px"><label style="font-weight:750">⭐ My saved templates</label><div class="hint" style="margin:5px 0 10px">Reuse your own scope, prices, notes and private materials. Templates are private to your account.</div><select id="qn-smart-select" style="width:100%"><option value="">Choose a saved template</option></select><div class="btn-row" style="margin-top:9px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-outline btn-small" id="qn-smart-apply">Use template</button><button type="button" class="btn btn-outline btn-small" id="qn-smart-save">Save current as template</button><button type="button" class="btn btn-outline btn-small" id="qn-smart-delete">Delete template</button></div></div>' +
+963:     '<div class="field"><label>Line items</label><div id="items-wrap">'+itemRowsHTML(q.items)+'</div>' +
+964:     '<button type="button" class="btn btn-outline btn-small" id="add-item" style="margin-top:8px;">+ Add line</button></div>' +
+965:     '<div class="field" style="margin-top:18px;padding:15px;border:1px solid var(--border,#dce2eb);border-radius:12px;background:var(--surface,#fff)"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><label style="font-size:16px;font-weight:750">🔒 Materials list</label><span style="font-size:12px;color:var(--muted)">Internal only · Hidden from customer</span></div><div class="hint" style="margin:6px 0 12px">Prepare your material order while creating the quote. Not included in the customer quote, PDF or invoice.</div><div id="qn-material-wrap">'+qnMaterialRows(q.materials||[])+'</div><button type="button" class="btn btn-outline btn-small" id="qn-add-material">+ Add material</button><label for="qn-material-notes" style="display:block;margin-top:12px">Supplier / delivery notes</label><textarea id="qn-material-notes" rows="3" placeholder="Colo
+966:     '<div class="totals-box" id="live-totals"></div>' +
+967:     '<div class="field"><label>Notes for the client</label><textarea id="f-notes" placeholder="e.g. Price includes cleanup and haul-away.">'+esc(q.notes)+'</textarea></div>' +
+968:     '<div class="field"><label>Valid until</label><input id="f-valid" type="date" value="'+esc(q.validUntil||"")+'"></div>' +
+970:       ["draft","sent","accepted","declined"].map(s=>'<option value="'+s+'"'+(q.status===s?" selected":"")+'>'+STATUS_LABEL[s]+'</option>').join("") +
+971:     '</select></div>' +
+972:     modalFooter(existing?"Save changes":"Create quote","f-save"));
+973:   bindItemRows(body); updateLiveTotals(body); qnBindMaterials(body); qnBindSmartTemplates(body);
+974:   body.querySelector("#f-save").addEventListener("click", ()=>{
+975:     const items = readItems(body);
+976:     if (!items.length) { alert("Add a service name or scope of work for at least one line item."); return; }
+977:     const data = { clientId: body.querySelector("#f-client").value, items, materials:qnReadMaterials(body), materialNotes:body.querySelector("#qn-material-notes").value.trim(),
+978:       notes: body.querySelector("#f-notes").value.trim(), validUntil: body.querySelector("#f-valid").value,
+979:       status: body.querySelector("#f-status").value };
