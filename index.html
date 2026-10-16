@@ -1175,15 +1175,15 @@ function buildPDF(kind, id) {
   const t=isQ?quoteTotals(doc):invoiceTotals(doc), p=DB.profile, c=getClient(doc.clientId);
   const pdf=new NS.jsPDF({unit:"pt",format:"letter"});
   const W=612,H=792,M=46,R=W-M,contentW=R-M;
-  const ink=[45,40,36], muted=[113,105,98], accent=[218,119,36], light=[255,246,237], border=[239,225,213];
+  const ink=[29,38,50], muted=[103,115,128], accent=[188,104,38], light=[248,249,251], border=[224,230,236];
   const color=(rgb)=>pdf.setTextColor(...rgb);
   const font=(size,bold=false)=>{pdf.setFont("helvetica",bold?"bold":"normal");pdf.setFontSize(size);};
   const text=(value,x,y,opts)=>pdf.text(String(value??""),x,y,opts||{});
   let page=1,y=0;
   function header(first=false){
     pdf.setFillColor(255,255,255);pdf.rect(0,0,W,H,"F");
-    pdf.setFillColor(...light);pdf.rect(0,0,W,94,"F");
-    pdf.setFillColor(...accent);pdf.rect(0,0,W,5,"F");
+    pdf.setFillColor(...light);pdf.rect(0,0,W,102,"F");
+    pdf.setFillColor(...accent);pdf.rect(0,0,W,4,"F");
     if(first){
       let logoW=0;
       if(p.logo&&/^data:image\/(png|jpe?g);base64,/.test(p.logo)){
@@ -1192,13 +1192,13 @@ function buildPDF(kind, id) {
         }catch(e){console.warn("PDF logo:",e);}
       }
       const bx=M+(logoW?logoW+14:0);
-      font(15,true);color(ink);
+      font(17,true);color(ink);
       pdf.text(pdf.splitTextToSize(String(p.businessName||"Your Business"),Math.max(130,310-(bx-M))).slice(0,2),bx,44);
       font(8.5);color(muted);
       const contact=[p.phone,p.email].filter(Boolean).join("  |  ");
       pdf.text(pdf.splitTextToSize(contact,Math.max(135,310-(bx-M))).slice(0,2),bx,65);
-      font(20,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});
-      font(9);color(accent);text("#"+String(doc.number),R,64,{align:"right"});
+      font(22,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});
+      font(9,true);color(accent);text("#"+String(doc.number),R,65,{align:"right"});
       pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,103,R,103);
     }else{
       font(9,true);color(ink);text(p.businessName||"Your Business",M,33);
@@ -1210,7 +1210,7 @@ function buildPDF(kind, id) {
     const count=pdf.getNumberOfPages();
     for(let i=1;i<=count;i++){
       pdf.setPage(i);pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,747,R,747);
-      font(8);color(muted);text("Created with Quote.Noble",M,762);
+      font(8);color(muted);text("Powered by Quote.Noble  |  All amounts in CAD",M,762);
       text("Page "+i+" of "+count,R,762,{align:"right"});
     }
   }
@@ -1218,8 +1218,8 @@ function buildPDF(kind, id) {
   function need(height){if(y+height>730)nextPage();}
   function line(label,value,yy){font(9);color(muted);text(label,M,yy);font(10,true);color(ink);text(value,M+83,yy);}
   header(true);y=122;
-  font(9,true);color(accent);text("PREPARED FOR",M,y);
-  font(9,true);color(accent);text("DOCUMENT DETAILS",333,y);
+  font(8.5,true);color(accent);text("PREPARED FOR",M,y);
+  font(8.5,true);color(accent);text("DOCUMENT DETAILS",333,y);
   y+=21;
   const name=String(c?.name||"Customer");
   font(12,true);color(ink);pdf.text(pdf.splitTextToSize(name,245),M,y);
@@ -1236,8 +1236,8 @@ function buildPDF(kind, id) {
   y=Math.max(cy,y+43)+17;
   function tableHeader(){
     need(40);
-    pdf.setFillColor(...light);pdf.roundedRect(M,y,contentW,33,5,5,"F");
-    font(9,true);color([146,64,14]);
+    pdf.setFillColor(...ink);pdf.roundedRect(M,y,contentW,33,4,4,"F");
+    font(9,true);color([255,255,255]);
     text("DESCRIPTION",M+12,y+21);text("QTY",393,y+21,{align:"right"});
     text("RATE",468,y+21,{align:"right"});text("AMOUNT",R-10,y+21,{align:"right"});
     y+=49;
@@ -1273,11 +1273,11 @@ function buildPDF(kind, id) {
   });
   need(isQ?118:153);
   const boxX=327,boxW=R-boxX;
-  pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,7,7,"F");
+  pdf.setFillColor(...light);pdf.roundedRect(boxX,y,boxW,isQ?102:137,5,5,"F");
   let ty=y+23;
   const totalLine=(label,value,emphasis=false)=>{
     font(emphasis?11:9,emphasis);color(emphasis?ink:muted);text(label,boxX+13,ty);
-    font(emphasis?12:10,emphasis);color(emphasis?accent:ink);text(value,R-13,ty,{align:"right"});ty+=25;
+    font(emphasis?12:10,emphasis);color(emphasis?ink:ink);text(value,R-13,ty,{align:"right"});ty+=25;
   };
   totalLine("Subtotal",money(t.sub));
   totalLine((p.taxLabel||"Tax")+" ("+(p.taxRate||0)+"%)",money(t.tax));
