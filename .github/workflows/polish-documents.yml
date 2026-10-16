@@ -1,0 +1,39 @@
+name: Polish quote and invoice documents
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/polish-documents.yml']
+permissions:
+  contents: write
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply narrowly scoped document improvements
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          changes=[
+            ('text(isQ?"ESTIMATE":"INVOICE",R,45,{align:"right"});','text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});'),
+            ('text((isQ?"ESTIMATE":"INVOICE")+"  #"+doc.number,R,33,{align:"right"});','text((isQ?"QUOTE":"INVOICE")+"  #"+doc.number,R,33,{align:"right"});'),
+            ('filename:(isQ?"Estimate-":"Invoice-")+doc.number+".pdf"','filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+".pdf"'),
+            ('const descLines=String(it.desc||"").split(/\\r?\\n/).flatMap(part=>pdf.splitTextToSize(part||" ",285));','const descLines=String(it.desc||"").trim()?String(it.desc).split(/\\r?\\n/).flatMap(part=>pdf.splitTextToSize(part||" ",285)):[];')
+          ]
+          for old,new in changes:
+            count=s.count(old)
+            assert count==1, f'Expected one occurrence, found {count}: {old[:70]}'
+            s=s.replace(old,new,1)
+          p.write_text(s)
+          print('PASS: quote labels, safe PDF filenames, and compact PDF line items')
+          PY
+      - name: Verify exact edits and commit to feature branch only
+        run: |
+          git diff --check
+          git diff --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Polish quote and invoice PDF presentation" && git push)
