@@ -1,0 +1,39 @@
+name: Diagnose template storage
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/diagnose-template-storage.yml']
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract template functions without secrets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text().splitlines()
+          matches=[i for i,line in enumerate(s) if re.search(r'(saved.template|save.current.as.template|template[s]?\b|function.*[Tt]emplate)',line,re.I)]
+          groups=[]
+          for i in matches:
+            if i>2500:continue
+            if not groups or i>groups[-1][-1]+6:groups.append(list(range(max(0,i-5),min(len(s),i+10))))
+            else:groups[-1]=list(range(groups[-1][0],min(len(s),i+10)))
+          out=[]
+          for g in groups:
+            if len(out)>500:break
+            for i in g:
+              line=s[i]
+              if re.search(r'(apikey|secret|token|password|SUPABASE_|auth\.getSession)',line,re.I):line='[REDACTED]'
+              out.append(str(i+1)+': '+line[:350])
+          Path('template-storage-diagnostic.txt').write_text('\n'.join(out[:650]))
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add template-storage-diagnostic.txt
+          git diff --cached --quiet || (git commit -m "Add template storage diagnostic" && git push)
