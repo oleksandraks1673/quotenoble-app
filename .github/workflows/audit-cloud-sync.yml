@@ -1,4 +1,4 @@
-name: Audit cloud synchronization
+name: Inspect sync warning safely
 on:
   push:
     branches: [release/combined-app-billing-20261016]
@@ -6,32 +6,31 @@ on:
 permissions:
   contents: write
 jobs:
-  audit:
+  inspect:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate safe synchronization diagnostic
+      - name: Inspect warning code without changing app
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
-          s=Path('index.html').read_text()
+          s=Path('index.html').read_text(encoding='utf-8')
           lines=s.splitlines()
-          terms=['cloudSave','cloudSync','syncToCloud','syncFromCloud','supabase.from','localStorage.setItem','localStorage.getItem','beforeunload','visibilitychange','qn-cloud']
-          out=['CLOUD SYNC AUDIT (code lines redacted for secrets)']
+          terms=['Sync needs review','export both copies','sync needs','syncReview','syncConflict','syncBanner','syncStatus']
+          out=['Sync warning inspection - no application changes']
           for term in terms:
-            hits=[i for i,line in enumerate(lines) if term.lower() in line.lower()]
-            out.append(f'{term}: {len(hits)} hits, line numbers: '+','.join(str(i+1) for i in hits[:25]))
-          for i,line in enumerate(lines):
-            if re.search(r'(async function|function|const|let)\s+\w*(cloud|sync|persist|saveData|loadData)\w*',line,re.I):
-              snippet=line[:220]
-              snippet=re.sub(r'(?i)(key|token|secret|password)\s*[:=]\s*[^,; ]+',r'\1=[REDACTED]',snippet)
-              out.append(f'FUNCTION {i+1}: {snippet}')
-          Path('cloud-sync-audit.txt').write_text('\n'.join(out)+'\n')
+            matches=list(re.finditer(re.escape(term),s,re.I))
+            out.append(f'\nTERM {term}: {len(matches)}')
+            for m in matches[:6]:
+              fragment=s[max(0,m.start()-650):min(len(s),m.end()+650)]
+              fragment=re.sub(r'(?i)(sk_live_|sk_test_|whsec_|eyJ)[A-Za-z0-9_./-]+','[REDACTED]',fragment)
+              out.append(fragment)
+          Path('sync-warning-inspection.txt').write_text('\n'.join(out)[:26000])
           PY
-      - name: Commit diagnostic
+      - name: Save inspection report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add cloud-sync-audit.txt
-          git diff --cached --quiet || (git commit -m "Document cloud sync implementation locations" && git push)
+          git add sync-warning-inspection.txt
+          git diff --cached --quiet || (git commit -m "Inspect sync warning handlers without modifying app" && git push)
