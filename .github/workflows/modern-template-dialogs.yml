@@ -1,0 +1,71 @@
+name: Modern template notifications
+on:
+  push:
+    branches: [release/combined-app-billing-20261016]
+    paths: ['.github/workflows/modern-template-dialogs.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace template alerts with accessible in-app dialogs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          css="""<style id="qn-template-dialog-css">
+          .qn-td-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:2147483000;display:grid;place-items:center;padding:18px}
+          .qn-td-card{width:min(100%,430px);background:#fff;color:#111827;border-radius:26px;box-shadow:0 24px 70px rgba(0,0,0,.2);padding:32px 24px 24px;position:relative;text-align:center;font-family:inherit}
+          .qn-td-icon{width:90px;height:90px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;font-size:42px;background:#e9f8ef;color:#19875a}
+          .qn-td-icon.warn{background:#fff2e6;color:#e68413}
+          .qn-td-card h2{font-size:25px;line-height:1.2;margin:0 0 12px;color:#10182c}
+          .qn-td-card p{font-size:16px;line-height:1.55;color:#596272;margin:0 0 22px}
+          .qn-td-btn{width:100%;border:0;border-radius:14px;background:#e88919;color:white;font-size:17px;font-weight:700;min-height:54px;cursor:pointer;margin:0 0 10px}
+          .qn-td-btn.secondary{background:#fff;color:#172033;border:1px solid #d7dce4}
+          .qn-td-close{position:absolute;right:14px;top:12px;border:0;background:transparent;font-size:27px;color:#64748b;padding:5px 12px;cursor:pointer}
+          </style>"""
+          js="""<script id="qn-template-dialog-js">
+          (function(){
+            if(window.__qnTemplateDialogInstalled)return;
+            window.__qnTemplateDialogInstalled=true;
+            const nativeAlert=window.alert.bind(window);
+            function closeDialog(){const old=document.getElementById('qn-template-dialog');if(old)old.remove();}
+            function dialog(success){
+              closeDialog();
+              const root=document.createElement('div');root.className='qn-td-backdrop';root.id='qn-template-dialog';
+              root.innerHTML='<section class="qn-td-card" role="alertdialog" aria-modal="true" aria-labelledby="qn-td-title" aria-describedby="qn-td-desc"><button class="qn-td-close" type="button" aria-label="Close dialog">×</button><div class="qn-td-icon '+(success?'':'warn')+'">'+(success?'✓':'!')+'</div><h2 id="qn-td-title">'+(success?'Template saved!':'Choose a saved template')+'</h2><p id="qn-td-desc">'+(success?'Your template has been saved and can be used on future quotes.':'Please select one of your saved templates from the list to continue.')+'</p><button type="button" class="qn-td-btn">'+(success?'Great!':'Choose template')+'</button><button type="button" class="qn-td-btn secondary">'+(success?'View my templates →':'Cancel')+'</button></section>';
+              document.body.appendChild(root);
+              const buttons=root.querySelectorAll('.qn-td-btn');
+              root.querySelector('.qn-td-close').onclick=closeDialog;
+              buttons[0].onclick=()=>{closeDialog();if(!success){const select=document.querySelector('#view-quotes select[id*="template"],select[id*="template"]');if(select)select.focus();}};
+              buttons[1].onclick=()=>{closeDialog();if(success){const select=document.querySelector('#view-quotes select[id*="template"],select[id*="template"]');if(select){select.scrollIntoView({behavior:'smooth',block:'center'});select.focus();}}};
+              root.addEventListener('click',e=>{if(e.target===root)closeDialog();});
+              root.addEventListener('keydown',e=>{if(e.key==='Escape')closeDialog();});
+              buttons[0].focus();
+            }
+            window.alert=function(message){
+              const t=String(message||'').trim();
+              if(/^Template saved\./i.test(t)){dialog(true);return;}
+              if(/^Choose a saved template first\.?$/i.test(t)){dialog(false);return;}
+              return nativeAlert(message);
+            };
+          })();
+          </script>"""
+          for name in ('index.html','app.html'):
+            p=Path(name);s=p.read_text()
+            assert 'Template saved.' in s and 'Choose a saved template first' in s,name
+            assert 'id="qn-template-dialog-js"' not in s
+            assert '</head>' in s and '</body>' in s
+            s=s.replace('</head>',css+'</head>',1)
+            s=s.replace('</body>',js+'</body>',1)
+            p.write_text(s)
+            print(name,'dialog installed')
+          PY
+      - name: Commit updated app files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Replace native template alerts with polished in-app dialogs" && git push)
