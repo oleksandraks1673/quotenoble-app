@@ -2187,6 +2187,16 @@ document.addEventListener("click",function(event){
  choose('yearly');
  setTimeout(()=>{if(document.getElementById('view-plans')?.classList.contains('active'))refresh();},300);
 })();
-</script>
+document.addEventListener('click',async function(e){
+      const btn=e.target.closest('#qn-change-plan');
+      if(!btn)return;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      btn.disabled=true;
+      try{const r=await request('/api/stripe/portal',{action:'change_plan'});if(r.url)window.location.assign(r.url);else throw Error('Billing portal link unavailable');}
+      catch(err){notice(err.message||'Unable to open plan change');}
+      finally{btn.disabled=false;}
+    },true);
+    </script>
 </body>
 </html>
