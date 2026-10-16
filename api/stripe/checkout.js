@@ -64,6 +64,9 @@ module.exports = async (req, res) => {
 
     const session = await st.checkout.sessions.create({
       mode: 'subscription',
+      // Managed Payments requires a product tax code; use ordinary Stripe Checkout
+      // until the product's tax classification is configured in Stripe.
+      managed_payments: { enabled: false },
       customer: existingCustomer.id,
       client_reference_id: user.id,
       line_items: [{ price: priceId, quantity: 1 }],
