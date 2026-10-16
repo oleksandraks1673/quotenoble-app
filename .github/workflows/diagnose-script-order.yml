@@ -1,0 +1,42 @@
+name: Diagnose script execution order
+on:
+  push:
+    branches: [feature/quote-invoice-polish-20261016]
+    paths: ['.github/workflows/diagnose-script-order.yml']
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analyze inline scripts and JS parse errors
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,subprocess
+          s=Path('index.html').read_text()
+          scripts=list(re.finditer(r'<script\b([^>]*)>(.*?)</script\s*>',s,re.I|re.S))
+          out=['Script order and parsing diagnostic']
+          for i,m in enumerate(scripts):
+            body=m.group(2)
+            attrs=m.group(1)
+            start=s[:m.start()].count('\\n')+1
+            out.append(f'SCRIPT {i}: line={start} attrs={attrs[:180]} length={len(body)} storageDecl={"var storage =" in body} login={"signInWithPassword" in body}')
+            if body.strip() and not re.search(r'\bsrc\s*=',attrs,re.I) and not re.search(r'\btype\s*=\s*["\x27]application/',attrs,re.I):
+              tmp=Path('/tmp/quote-script-'+str(i)+'.js')
+              tmp.write_text(body)
+              r=subprocess.run(['node','--check',str(tmp)],capture_output=True,text=True)
+              out.append(' PARSE '+('PASS' if r.returncode==0 else 'FAIL '+r.stderr[-1100:]))
+          for needle in ['var storage = {','let DB = storage.load();','signInWithPassword','function enter(user)','function seedDB()']:
+            p=s.find(needle)
+            out.append(f'NEEDLE {needle}: pos={p}, scriptIndex={next((i for i,m in enumerate(scripts) if m.start()<=p<m.end()),-1)}')
+          Path('script-order-audit.txt').write_text('\\n'.join(out))
+          print('\\n'.join(out)[:9000])
+          PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add script-order-audit.txt
+          git diff --cached --quiet || (git commit -m "Diagnose login JavaScript parse errors and script order" && git push)
