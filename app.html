@@ -2265,7 +2265,7 @@ document.addEventListener("click",function(event){
     const btn=e.target.closest('button');
     if(!btn)return;
     const label=(btn.textContent||'').trim().replace(/\s+/g,' ').toLowerCase();
-    if(!/^(create new template|save as template|create template)$/.test(label))return;
+    if(!/^(create new template|save as template|save current as template|create template)$/.test(label))return;
     e.preventDefault();e.stopImmediatePropagation();
     const old=document.getElementById('qn-template-dialog');if(old)old.remove();
     const root=document.createElement('div');root.id='qn-template-dialog';root.className='qn-td-backdrop';
