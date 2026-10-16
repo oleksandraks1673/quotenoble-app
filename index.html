@@ -1187,16 +1187,16 @@ function buildPDF(kind, id) {
     if(first){
       let logoW=0;
       if(p.logo&&/^data:image\/(png|jpe?g);base64,/.test(p.logo)){
-        try{const props=pdf.getImageProperties(p.logo),scale=Math.min(70/props.width,58/props.height);
-          logoW=props.width*scale;pdf.addImage(p.logo,p.logo.startsWith("data:image/png")?"PNG":"JPEG",M,25,logoW,props.height*scale);
+        try{const props=pdf.getImageProperties(p.logo),scale=Math.min(80/props.width,48/props.height);
+          logoW=props.width*scale;pdf.addImage(p.logo,p.logo.startsWith("data:image/png")?"PNG":"JPEG",M+4,27+(48-props.height*scale)/2,logoW,props.height*scale);
         }catch(e){console.warn("PDF logo:",e);}
       }
-      const bx=M+(logoW?logoW+14:0);
-      font(17,true);color(ink);
-      pdf.text(pdf.splitTextToSize(String(p.businessName||"Your Business"),Math.max(130,310-(bx-M))).slice(0,2),bx,44);
+      const bx=M+(logoW?logoW+22:0);
+      font(16,true);color(ink);
+      pdf.text(pdf.splitTextToSize(String(p.businessName||"Your Business"),Math.max(130,320-(bx-M))).slice(0,2),bx,44);
       font(8.5);color(muted);
       const contact=[p.phone,p.email].filter(Boolean).join("  |  ");
-      pdf.text(pdf.splitTextToSize(contact,Math.max(135,310-(bx-M))).slice(0,2),bx,65);
+      pdf.text(pdf.splitTextToSize(contact,Math.max(135,320-(bx-M))).slice(0,2),bx,65);
       font(22,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});
       font(9,true);color(accent);text("#"+String(doc.number),R,65,{align:"right"});
       // Keep generous white space below the business header.
