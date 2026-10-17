@@ -1,0 +1,36 @@
+name: Integrate branded document preview
+on:
+  push:
+    branches: [fix/billing-portal-access-20261017]
+    paths: ['.github/workflows/integrate-document-preview.yml']
+permissions:
+  contents: write
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire preview enhancement into both app entry points
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          assert Path('document-preview/brand-preview.js').is_file()
+          tag='<script defer src="/document-preview/brand-preview.js"></script>'
+          for name in ('index.html','app.html'):
+              p=Path(name)
+              s=p.read_text()
+              assert '</body>' in s and 'function buildPDF(kind, id)' in s
+              s=re.sub(r'<script[^>]+src=["\x27]/document-preview/brand-preview\.js["\x27][^>]*></script>','',s)
+              s=s.replace('</body>',tag+'\n</body>',1)
+              assert s.count('/document-preview/brand-preview.js')==1
+              p.write_text(s)
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          PY
+      - name: Commit on preview branch
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Integrate branded quote and invoice preview into app" && git push)
