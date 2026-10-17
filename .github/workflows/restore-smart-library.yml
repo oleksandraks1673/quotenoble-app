@@ -1,0 +1,42 @@
+name: Restore Smart Templates on quote editor
+on:
+  push:
+    branches: [fix/billing-portal-access-20261017]
+    paths: ['.github/workflows/restore-smart-library.yml']
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wire existing 40-service library into both app entry points
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          library=Path('smart-templates/library.js')
+          ui=Path('smart-templates/live-ui.js')
+          assert library.exists() and ui.exists()
+          source=library.read_text()
+          assert source.count('"id":')>=40, 'Expected at least 40 services'
+          tags='<script defer src="/smart-templates/library.js"></script><script defer src="/smart-templates/live-ui.js"></script>'
+          for filename in ('index.html','app.html'):
+              p=Path(filename)
+              s=p.read_text()
+              assert '</body>' in s, filename
+              s=re.sub(r'<script[^>]+src=["\x27]/smart-templates/(?:library|live-ui)\.js["\x27][^>]*></script>', '', s)
+              s=s.replace('</body>',tags+'\n</body>',1)
+              assert s.count('/smart-templates/library.js')==1
+              assert s.count('/smart-templates/live-ui.js')==1
+              p.write_text(s)
+              print(filename,'wired existing 40-service Smart Templates')
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          PY
+      - name: Commit preview-only changes
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Load 40 Smart Templates in both quote editor entry points" && git push)
