@@ -2,7 +2,7 @@
 (function(){
 "use strict";
 const css=document.createElement("style");
-css.textContent='#qn-pdf-overlay{position:fixed;inset:0;z-index:2147483645;background:#f4eee8;display:flex;flex-direction:column;color:#263142}#qn-pdf-overlay .qn-pdf-top{background:#fff7ef;border-bottom:2px solid #d97706;display:flex;align-items:center;gap:12px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}#qn-pdf-overlay .qn-pdf-top strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#qn-pdf-overlay .qn-pdf-top button,#qn-pdf-overlay .qn-pdf-bottom button{border:1px solid #e8c7a5;border-radius:12px;background:white;color:#263142;padding:12px;font-weight:700;min-height:45px}#qn-pdf-overlay .qn-pdf-bottom{background:#fff7ef;display:flex;gap:10px;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}#qn-pdf-overlay .qn-pdf-bottom button{flex:1}#qn-pdf-overlay .qn-pdf-bottom .primary{background:#d97706;color:white;border-color:#d97706}#qn-pdf-overlay .qn-pdf-pages{flex:1;overflow:auto;padding:16px 10px;background:#e9e9ee;display:flex;flex-direction:column;align-items:center;gap:14px}#qn-pdf-overlay canvas{display:block;max-width:100%;height:auto;background:white;box-shadow:0 3px 18px #0002}#qn-pdf-overlay .qn-pdf-loading{margin:auto;text-align:center;color:#475569;padding:24px}';
+css.textContent='#qn-pdf-overlay{position:fixed;inset:0;z-index:2147483645;background:#f4eee8;display:flex;flex-direction:column;color:#263142}#qn-pdf-overlay .qn-pdf-top{background:#fff7ef;border-bottom:2px solid #d97706;display:flex;align-items:center;gap:12px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}#qn-pdf-overlay .qn-pdf-top strong{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#qn-pdf-overlay .qn-pdf-top button,#qn-pdf-overlay .qn-pdf-bottom button{border:1px solid #e8c7a5;border-radius:12px;background:white;color:#263142;padding:12px;font-weight:700;min-height:45px}#qn-pdf-overlay .qn-pdf-bottom{background:#fff7ef;display:flex;gap:10px;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}#qn-pdf-overlay .qn-pdf-bottom button{flex:1}#qn-pdf-overlay .qn-pdf-bottom .primary{background:#d97706;color:white;border-color:#d97706}#qn-pdf-overlay .qn-pdf-pages{flex:1;overflow:auto;padding:3px 0;background:#fff;display:block;overflow:auto;overscroll-behavior:contain}#qn-pdf-overlay canvas{display:block;max-width:none;height:auto;background:white;margin:0 auto 6px;box-shadow:none}#qn-pdf-overlay .qn-pdf-loading{margin:auto;text-align:center;color:#475569;padding:24px}';
 document.head.append(css);
 const sentences=s=>String(s||"").replace(/^\s*[•-]\s*/gm,"").trim().split(/(?<=[.!?])\s+(?=[A-Z])/).map(x=>x.trim()).filter(Boolean);
 function format(s){const lines=sentences(s);return lines.length>1?lines.map(x=>"• "+x).join("\n"):s}
@@ -28,10 +28,15 @@ window.qnOpenPDFPreview=function(kind,id){
  const top=document.createElement("header");top.className="qn-pdf-top";
  const back=document.createElement("button");back.textContent="← Back";back.type="button";
  const title=document.createElement("strong");title.textContent=b.filename;
- top.append(back,title);
+ const zoomOut=document.createElement("button");zoomOut.type="button";zoomOut.textContent="−";zoomOut.setAttribute("aria-label","Make PDF text smaller");
+ const zoomIn=document.createElement("button");zoomIn.type="button";zoomIn.textContent="+";zoomIn.setAttribute("aria-label","Make PDF text larger");
+ top.append(back,title,zoomOut,zoomIn);
  const pages=document.createElement("main");pages.className="qn-pdf-pages";
  const loading=document.createElement("div");loading.className="qn-pdf-loading";loading.textContent="Rendering document preview…";pages.append(loading);
+ let zoom=1.3;
+ let renderSerial=0;
  const render=async()=>{
+   const serial=++renderSerial;
    try{
      if(!window.pdfjsLib){
        await new Promise((resolve,reject)=>{
@@ -45,12 +50,13 @@ window.qnOpenPDFPreview=function(kind,id){
      const documentTask=pdfjs.getDocument({data});
      const doc=await documentTask.promise;
      if(!pages.isConnected)return;
+     if(serial!==renderSerial)return;
      pages.replaceChildren();
      for(let n=1;n<=doc.numPages;n++){
        const page=await doc.getPage(n);
-       if(!pages.isConnected)return;
+       if(!pages.isConnected||serial!==renderSerial)return;
        const original=page.getViewport({scale:1});
-       const scale=Math.min(2.2,Math.max(.7,(pages.clientWidth-20)/original.width));
+       const scale=Math.min(3.5,Math.max(.7,pages.clientWidth/original.width*zoom));
        const viewport=page.getViewport({scale});
        const canvas=document.createElement("canvas");
        const ctx=canvas.getContext("2d");
@@ -63,6 +69,8 @@ window.qnOpenPDFPreview=function(kind,id){
      }
    }catch(error){loading.textContent="Preview could not render. You can still download or share this PDF.";pages.replaceChildren(loading);console.error("Quote.Noble PDF preview",error)}
  };
+ zoomOut.onclick=()=>{zoom=Math.max(1,Math.round((zoom-.2)*10)/10);render()};
+ zoomIn.onclick=()=>{zoom=Math.min(2.6,Math.round((zoom+.2)*10)/10);render()};
  const bottom=document.createElement("footer");bottom.className="qn-pdf-bottom";
  const share=document.createElement("button");share.textContent="↗ Share";
  const download=document.createElement("button");download.className="primary";download.textContent="↓ Download PDF";
