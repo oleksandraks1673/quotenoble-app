@@ -69,7 +69,14 @@ window.qnOpenPDFPreview=function(kind,id){
  const close=()=>{layer.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)};
  back.onclick=close;
  share.onclick=async()=>{try{const file=new File([b.pdf.output("blob")],b.filename,{type:"application/pdf"});if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:b.filename});return}}catch(e){if(e.name==="AbortError")return}alert("Sharing this PDF is not supported in this browser. Use Download PDF instead.")};
- download.onclick=()=>{const a=document.createElement("a");a.href=url;a.download=b.filename;a.click()};
+ download.onclick=()=>{
+   const a=document.createElement("a");
+   const suffix=new Date().toISOString().replace(/[-:TZ.]/g,"").slice(0,14);
+   const stem=b.filename.replace(/\.pdf$/i,"");
+   a.href=url;
+   a.download=stem+"-"+suffix+".pdf";
+   document.body.append(a);a.click();a.remove();
+ };
  bottom.append(share,download);layer.append(top,pages,bottom);document.body.append(layer);render();
 };
 })();
