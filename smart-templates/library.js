@@ -245,8 +245,8 @@ const templates=[
 ];
 // Display and insert each scope sentence as an editable bullet point.
 for (const template of templates) {
-  const sentences=String(template.description||"").trim().split(/(?<=[.!?])\\s+(?=[A-Z])/).map(s=>s.trim()).filter(Boolean);
-  template.description=sentences.map(s=>"• "+s).join("\\n");
+  const sentences=String(template.description||"").trim().split(/(?<=[.!?])\s+(?=[A-Z])/).map(s=>s.trim()).filter(Boolean);
+  template.description=sentences.map(s=>"• "+s).join("\n");
 }
 const search=(query="",trade="")=>templates.filter(t=>(!trade||t.trade===trade)&&(!query||(t.name+" "+t.description).toLowerCase().includes(query.toLowerCase())));
 root.QuoteNobleSmartTemplates=Object.freeze({templates:Object.freeze(templates),trades:Object.freeze(["Roofing","Gutters & Aluminum","Painting","Renovations","Plumbing","Electrical"]),search});
