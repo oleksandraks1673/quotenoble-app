@@ -1258,7 +1258,9 @@ function buildPDF(kind, id) {
   items.forEach((it,index)=>{
     const service=String(it.service||"Service");
     const titleLines=pdf.splitTextToSize(service,285);
-    const descLines=String(it.desc||"").trim()?String(it.desc).split(/\r?\n/).flatMap(part=>pdf.splitTextToSize(part||" ",285)):[];
+    const scopeText=String(it.desc||"").trim();
+    const scopeItems=scopeText ? scopeText.split(/\r?\n/).flatMap(part=>part.replace(/^\s*[•-]\s*/, "").split(/(?<=[.!?])\s+(?=[A-Z])/)).map(part=>part.trim().replace(/^\s*[•-]\s*/, "")).filter(Boolean) : [];
+    const descLines=scopeItems.flatMap(part=>pdf.splitTextToSize("- "+part,285));
     let lines=[...titleLines.map(v=>({v,bold:true})),...descLines.map(v=>({v,bold:false}))];
     if(!lines.length)lines=[{v:"Service",bold:true}];
     let first=true;
