@@ -1,0 +1,42 @@
+name: Improve PDF text readability
+on:
+  push:
+    branches: [fix/billing-portal-access-20261017]
+    paths: ['.github/workflows/improve-pdf-text-readability.yml']
+permissions:
+  contents: write
+jobs:
+  improve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Increase PDF type size and maintain pagination
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          changes=[
+            ('font(8.5,true);color(accent);text("PREPARED FOR",M,y);','font(9.5,true);color(accent);text("PREPARED FOR",M,y);'),
+            ('font(8.5,true);color(accent);text("DOCUMENT DETAILS",333,y);','font(9.5,true);color(accent);text("DOCUMENT DETAILS",333,y);'),
+            ('font(9);color(muted);\n  let cy=y+19;', 'font(10);color(muted);\n  let cy=y+19;'),
+            ('font(8.5,true);color(muted);\n    text("DESCRIPTION"', 'font(9.5,true);color(muted);\n    text("DESCRIPTION"'),
+            ('const available=Math.max(1,Math.floor((713-y)/13.5));','const available=Math.max(1,Math.floor((713-y)/15));'),
+            ('font(row.bold?10:9,row.bold);color(row.bold?ink:muted);','font(row.bold?11:10,row.bold);color(row.bold?ink:muted);'),
+            ('text(row.v,M+12,y);y+=13.5;','text(row.v,M+12,y);y+=15;'),
+            ('font(9);color(ink);\n        text(String(it.qty??1)', 'font(10);color(ink);\n        text(String(it.qty??1)')
+          ]
+          for name in ('index.html','app.html'):
+            p=Path(name);s=p.read_text()
+            for old,new in changes:
+              n=s.count(old)
+              assert n==1, f'{name}: expected 1 occurrence, got {n}: {old[:65]}'
+              s=s.replace(old,new,1)
+            p.write_text(s)
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          PY
+      - name: Commit updated PDF typography
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Enlarge PDF text and adjust description pagination" && git push)
