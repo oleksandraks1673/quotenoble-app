@@ -1,0 +1,48 @@
+name: Fix in-app PDF and bullet descriptions
+on:
+  push:
+    branches: [fix/billing-portal-access-20261017]
+    paths: ['.github/workflows/fix-pdf-bullets.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update both app entry points
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          old='''function downloadPDF(kind, id) {
+            const b = buildPDF(kind, id);
+            if (!b) return;
+            b.pdf.save(b.filename);
+          }'''
+          new='''function downloadPDF(kind, id) {
+            if (typeof window.qnOpenPDFPreview === "function") {
+              window.qnOpenPDFPreview(kind, id);
+              return;
+            }
+            const b = buildPDF(kind, id);
+            if (!b) return;
+            b.pdf.save(b.filename);
+          }'''
+          tag='<script defer src="/document-preview/in-app-pdf.js"></script>'
+          for name in ('index.html','app.html'):
+              p=Path(name);s=p.read_text()
+              assert s.count(old)==1, 'PDF function signature changed in '+name
+              s=s.replace(old,new,1)
+              assert '</body>' in s
+              s=s.replace('</body>',tag+'\n</body>',1)
+              assert s.count('/document-preview/in-app-pdf.js')==1
+              p.write_text(s)
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          PY
+      - name: Commit tested source changes
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Open quote and invoice PDFs inside app instead of automatic downloads" && git push)
