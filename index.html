@@ -1266,7 +1266,7 @@ function buildPDF(kind, id) {
     let first=true;
     while(lines.length){
       if(y>707){nextPage();tableHeader();}
-      const available=Math.max(1,Math.floor((713-y)/13.5));
+      const available=Math.max(1,Math.floor((713-y)/15));
       const chunk=lines.splice(0,available);
       if(first){
         font(9);color(ink);
@@ -1276,8 +1276,8 @@ function buildPDF(kind, id) {
         first=false;
       }
       for(const row of chunk){
-        font(row.bold?10:9,row.bold);color(row.bold?ink:muted);
-        text(row.v,M+12,y);y+=13.5;
+        font(row.bold?11:10,row.bold);color(row.bold?ink:muted);
+        text(row.v,M+12,y);y+=15;
       }
     }
     y+=12;need(14);
