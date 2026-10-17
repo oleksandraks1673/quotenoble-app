@@ -954,12 +954,22 @@ function qnBindSmartTemplates(body){
     save();populate();select.value="";
   };
 }
+
+const QN_SERVICE_LIBRARY={"Roofing": ["Asphalt shingle replacement", "Architectural shingles installation", "Roof tear-off and disposal", "Roof leak repair", "Roof inspection", "Roof ventilation installation", "Ridge vent installation", "Roof exhaust vent installation", "Chimney flashing repair", "Skylight replacement", "Skylight flashing repair", "Synthetic slate roofing", "Cedar roofing installation", "Metal roof installation", "Flat roof membrane replacement", "Flat roof repair"], "Gutters": ["Eavestrough installation", "Eavestrough replacement", "Gutter cleaning", "Leaf guard installation", "Downspout installation", "Downspout relocation", "Soffit installation", "Fascia replacement"], "HVAC": ["Furnace installation", "Furnace replacement", "Air conditioner installation", "Air conditioner replacement", "Heat pump installation", "Heat pump service", "Ductwork installation", "Duct cleaning"], "Exterior": ["Siding installation", "Siding repair", "Window replacement", "Exterior door installation"], "General": ["Interior painting", "Drywall repair", "Bathroom renovation", "Kitchen renovation"]};
+function qnBindServiceLibrary(body){
+ const cat=body.querySelector('#qn-library-category'), service=body.querySelector('#qn-library-service'), apply=body.querySelector('#qn-library-apply');if(!cat||!service||!apply)return;
+ cat.innerHTML='<option value="">Select category</option>'+Object.keys(QN_SERVICE_LIBRARY).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
+ cat.onchange=()=>{service.innerHTML='<option value="">Select service</option>'+(QN_SERVICE_LIBRARY[cat.value]||[]).map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');};
+ apply.onclick=()=>{const name=service.value;if(!name)return alert('Choose a service first.');const wrap=body.querySelector('#items-wrap');const items=readItems(body);const scope='Supply labour and standard installation materials for '+name.toLowerCase()+'. Inspect and prepare the work area; complete the agreed work to applicable standards; remove job-related debris and leave the area clean. Confirm quantities, material specifications, exclusions and site conditions before sending.';items.push({service:name,desc:scope,qty:1,price:0});wrap.innerHTML=itemRowsHTML(items);updateLiveTotals(body);};
+}
+
 function openQuoteForm(existing, presetClientId) {
   if (!DB.clients.length) { alert("Add a client first (Clients tab), then make a quote."); showView("clients"); return; }
   const q = existing || { clientId: presetClientId||DB.clients[0].id, items:[{desc:"",qty:1,price:0}], materials:[], materialNotes:"", notes:"", validUntil:"", status:"draft" };
   const body = openModal(existing?("Edit "+q.number):"New quote",
     '<div class="field"><label>Client</label><select id="f-client">'+clientOptionsHTML(q.clientId)+'</select></div>' +
     '<div class="field" hidden aria-hidden="true" style="display:none!important;padding:14px;border:1px solid var(--border,#dce2eb);border-radius:12px"><label style="font-weight:750">⭐ My saved templates</label><div class="hint" style="margin:5px 0 10px">Reuse your own scope, prices, notes and private materials. Templates are private to your account.</div><select id="qn-smart-select" style="width:100%"><option value="">Choose a saved template</option></select><div class="btn-row" style="margin-top:9px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-outline btn-small" id="qn-smart-apply">Use template</button><button type="button" class="btn btn-outline btn-small" id="qn-smart-save">Save current as template</button><button type="button" class="btn btn-outline btn-small" id="qn-smart-delete">Delete template</button></div></div>' +
+    '<div class="field" style="padding:14px;border:1px solid #e6c79c;border-radius:12px;background:#fffaf2"><label style="font-weight:750;color:#92400e">✦ Smart Templates · Service Library</label><div class="hint" style="margin:6px 0 10px">Choose a trade and service to add an editable scope of work. Review details and enter your price.</div><select id="qn-library-category" aria-label="Service category" style="width:100%;margin-bottom:8px"></select><select id="qn-library-service" aria-label="Service template" style="width:100%;margin-bottom:8px"></select><button type="button" class="btn btn-primary btn-small" id="qn-library-apply">+ Add to quote</button></div>' +
     '<div class="field"><label>Line items</label><div id="items-wrap">'+itemRowsHTML(q.items)+'</div>' +
     '<button type="button" class="btn btn-outline btn-small" id="add-item" style="margin-top:8px;">+ Add line</button></div>' +
     '<div class="field" style="margin-top:18px;padding:15px;border:1px solid var(--border,#dce2eb);border-radius:12px;background:var(--surface,#fff)"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><label style="font-size:16px;font-weight:750">🔒 Materials list</label><span style="font-size:12px;color:var(--muted)">Internal only · Hidden from customer</span></div><div class="hint" style="margin:6px 0 12px">Prepare your material order while creating the quote. Not included in the customer quote, PDF or invoice.</div><div id="qn-material-wrap">'+qnMaterialRows(q.materials||[])+'</div><button type="button" class="btn btn-outline btn-small" id="qn-add-material">+ Add material</button><label for="qn-material-notes" style="display:block;margin-top:12px">Supplier / delivery notes</label><textarea id="qn-material-notes" rows="3" placeholder="Colour, supplier, delivery address, etc.">'+esc(q.materialNotes||'')+'</textarea></div>' +
@@ -970,7 +980,7 @@ function openQuoteForm(existing, presetClientId) {
       ["draft","sent","accepted","declined"].map(s=>'<option value="'+s+'"'+(q.status===s?" selected":"")+'>'+STATUS_LABEL[s]+'</option>').join("") +
     '</select></div>' +
     modalFooter(existing?"Save changes":"Create quote","f-save"));
-  bindItemRows(body); updateLiveTotals(body); qnBindMaterials(body); 
+  bindItemRows(body); updateLiveTotals(body); qnBindMaterials(body); qnBindServiceLibrary(body); 
   body.querySelector("#f-save").addEventListener("click", ()=>{
     const items = readItems(body);
     if (!items.length) { alert("Add a service name or scope of work for at least one line item."); return; }
@@ -1176,13 +1186,13 @@ function buildPDF(kind, id) {
   const pdf=new NS.jsPDF({unit:"pt",format:"letter"});
    pdf.setProperties({title:(isQ?"Quote ":"Invoice ")+String(doc.number)+" - Quote.Noble",subject:"Quote.Noble Elegant PDF v2",creator:"Quote.Noble"});
   const W=612,H=792,M=46,R=W-M,contentW=R-M;
-  const ink=[29,38,50], muted=[103,115,128], accent=[188,104,38], light=[248,249,251], border=[224,230,236];
+  const ink=[29,38,50], muted=[103,115,128], accent=[198,106,39], light=[255,248,234], border=[236,211,177];
   const color=(rgb)=>pdf.setTextColor(...rgb);
   const font=(size,bold=false)=>{pdf.setFont("helvetica",bold?"bold":"normal");pdf.setFontSize(size);};
   const text=(value,x,y,opts)=>pdf.text(String(value??""),x,y,opts||{});
   let page=1,y=0;
   function header(first=false){
-    pdf.setFillColor(255,255,255);pdf.rect(0,0,W,H,"F");
+    pdf.setFillColor(255,255,255);pdf.rect(0,0,W,H,"F");pdf.setFillColor(255,248,234);pdf.rect(0,0,W,first?91:46,"F");pdf.setFillColor(198,106,39);pdf.rect(0,first?89:44,W,2,"F");
     // Elegant white document: no large colored header band.
     // Brand accent is reserved for headings, not a full-width stripe.
     if(first){
@@ -1238,7 +1248,7 @@ function buildPDF(kind, id) {
   function tableHeader(){
     need(40);
     // Minimal table heading without a filled band.
-    font(8.5,true);color(muted);
+    pdf.setFillColor(255,248,234);pdf.roundedRect(M,y-2,contentW,33,4,4,'F');font(8.5,true);color(accent);
     text("DESCRIPTION",M+12,y+21);text("QTY",393,y+21,{align:"right"});
     text("RATE",468,y+21,{align:"right"});text("AMOUNT",R-10,y+21,{align:"right"});
     y+=49;
@@ -1275,6 +1285,7 @@ function buildPDF(kind, id) {
   need(isQ?118:153);
   const boxX=327,boxW=R-boxX;
   // White totals area without background panel.
+  pdf.setFillColor(255,248,234);pdf.roundedRect(boxX,y+4,boxW,isQ?100:142,7,7,'F');
   let ty=y+23;
   const totalLine=(label,value,emphasis=false)=>{
     font(emphasis?11:9,emphasis);color(emphasis?ink:muted);text(label,boxX+13,ty);
