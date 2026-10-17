@@ -1307,6 +1307,10 @@ function buildPDF(kind, id) {
   return {pdf,filename:(isQ?"Quote-":"Invoice-")+String(doc.number).replace(/[^a-z0-9_-]/gi,"-")+"-Elegant.pdf"};
 }
 function downloadPDF(kind, id) {
+  if (typeof window.qnOpenPDFPreview === "function") {
+    window.qnOpenPDFPreview(kind, id);
+    return;
+  }
   const b = buildPDF(kind, id);
   if (!b) return;
   b.pdf.save(b.filename);
@@ -2264,5 +2268,6 @@ window.qnTemplateDialog=function(opts){
 };
 </script><script defer src="/smart-templates/library.js"></script><script defer src="/smart-templates/live-ui.js"></script>
 <script defer src="/document-preview/brand-preview.js"></script>
+<script defer src="/document-preview/in-app-pdf.js"></script>
 </body>
 </html>
