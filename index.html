@@ -368,7 +368,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
 #cloud-account-card .qn-password-wrap button.qn-password-toggle {position:absolute!important;top:50%!important;right:9px!important;left:auto!important;transform:translateY(-50%)!important;width:auto!important;min-width:0!important;min-height:0!important;height:36px!important;padding:0 12px!important;margin:0!important;border:0!important;border-radius:9px!important;background:#fff0e7!important;color:#a9430c!important;font-size:13px!important;line-height:36px!important;font-weight:750!important;display:inline-flex!important;align-items:center;justify-content:center;z-index:3;box-shadow:none!important;}
 </style><style id="qn-more-clean-css">
 .qn-more-clean{--qm:#ff681b}.qn-more-header{margin:4px 0 20px}.qn-more-header h1{font-size:29px;letter-spacing:-.8px;margin:0 0 5px;color:#1b1d23}.qn-more-header p{margin:0;color:#808591;font-size:14px}.qn-more-business-banner{display:flex;align-items:center;gap:13px;padding:19px 16px;background:#1b1d23;border-radius:18px;color:#fff;margin-bottom:24px}.qn-more-banner-icon{background:#34363c;color:#ff8b43;width:46px;height:46px;display:grid;place-items:center;border-radius:13px;font-size:25px}.qn-more-business-banner>div:nth-child(2){flex:1;min-width:0}.qn-more-business-banner strong,.qn-more-business-banner span{display:block}.qn-more-business-banner strong{font-size:16px}.qn-more-business-banner span{font-size:12px;color:#bfc0c6;margin-top:3px}.qn-more-business-banner button{background:transparent;border:0;color:#fff;font-size:30px;min-width:30px;cursor:pointer}.qn-more-section-label{font-size:11px;letter-spacing:1.1px;font-weight:800;color:#b0521e;margin:22px 0 10px 3px}.qn-more-menu{border:1px solid #eaecf0;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 3px 14px #16181b06}.qn-more-item{display:flex;align-items:center;gap:12px;width:100%;padding:15px 13px;border:0!important;border-radius:0!important;background:#fff!important;color:#20232a!important;text-align:left;box-shadow:none!important;min-height:70px;cursor:pointer}.qn-more-item+.qn-more-item{border-top:1px solid #eff0f2!important}.qn-more-item-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#fff0e7;color:#dc611a;font-size:23px;font-weight:750}.qn-more-item>span:nth-child(2){flex:1;min-width:0}.qn-more-item strong,.qn-more-item small{display:block}.qn-more-item strong{font-size:14px;font-weight:750}.qn-more-item small{color:#7c828d;font-size:12px;margin-top:3px}.qn-more-item b{color:#a6abb3;font-size:25px;font-weight:400}.qn-more-footer{text-align:center;color:#9ca0a9;font-size:12px;margin:24px 0}.qn-more-clean.qn-more-panel-open>.qn-more-header,.qn-more-clean.qn-more-panel-open>.qn-more-business-banner,.qn-more-clean.qn-more-panel-open>.qn-more-section-label,.qn-more-clean.qn-more-panel-open>.qn-more-menu,.qn-more-clean.qn-more-panel-open>.qn-more-footer{display:none!important}.qn-more-panel[hidden]{display:none!important}.qn-more-panel>h2{margin:12px 0 20px;font-size:23px}.qn-more-back{background:transparent!important;color:#d85b15!important;border:0!important;padding:8px 0!important;font-weight:750;cursor:pointer}.qn-more-panel .card{margin-bottom:14px}.qn-more-panel .qn-premium-tools{display:block}
-</style></head>
+</style><style>
+#doc-root .doc-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:sticky;bottom:0;padding:12px 10px;background:#fffaf5;z-index:10}
+#doc-root .doc-actions #doc-share{background:#fff;color:#142238;border:1px solid #dfcbb5}
+#doc-root .doc-actions #doc-pdf{background:#df7900;color:white;border:0;font-weight:750}
+#doc-root .doc-actions #doc-close{grid-column:1/-1;background:transparent;border:0}
+#doc-root .doc-actions button{min-height:52px;border-radius:12px}
+@media(max-width:450px){#doc-root .doc-actions{gap:8px;padding:9px 6px}#doc-root .doc-actions button{font-size:14px}}
+</style>
+</head>
 <body>
 <header class="app-header">
   <div class="brand">
@@ -498,7 +506,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
     <div id="qn-more-membership" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Membership</h2>    <div class="card" id="membership-card">
       <h2>Quote.Noble membership</h2>
       <p style="color:var(--muted);font-size:.92rem;line-height:1.55">You're using the <strong>free beta</strong>. All existing tools remain available while we test reliability. No credit card required.</p>
-      <p id="qn-membership-status" role="status" aria-live="polite" style="font-weight:650">Checking Stripe subscription…</p><div class="btn-row"><button class="btn btn-primary" data-action="view-plans">View Free &amp; Pro plans</button></div>
+      <div class="btn-row"><button class="btn btn-primary" data-action="view-plans">View Free &amp; Pro plans</button></div>
     </div>
 </div>
     <div id="qn-more-advanced" class="qn-more-panel" hidden><button type="button" class="qn-more-back" data-qn-more-back>← Back to More</button><h2>Advanced Settings</h2>    <div class="card" id="qn-install-card" style="border:1px solid #f1dfc7;background:#fffaf3;margin-bottom:16px">
@@ -518,7 +526,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
     </div>
 </div>
   </section>
-  <!-- PLANS: Stripe checkout requires server configuration -->
+  <!-- PLANS: informational only; no payment provider connected -->
   <section id="view-plans" class="view">
     <div class="card" style="text-align:center">
       <h2 style="font-size:1.55rem">Simple pricing for every business</h2>
@@ -526,15 +534,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #f59e0b;outline-offset:3p
       <div style="text-align:left;border:1px solid #e3e6ea;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Free</strong><strong style="font-size:1.4rem">$0</strong></div>
         <p style="color:var(--muted)">Planned launch tier</p>
-        <p>✓ Up to 10 quotes / month<br>✓ Up to 10 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
+        <p>✓ Up to 3 quotes / month<br>✓ Up to 3 invoices / month<br>✓ Client records<br>✓ Basic PDF exports</p>
       </div>
       <div style="text-align:left;border:2px solid #d97706;border-radius:16px;padding:18px;margin:16px 0">
         <div style="display:flex;justify-content:space-between;align-items:center"><strong>Pro</strong><strong style="font-size:1.4rem">$14.99<span style="font-size:.8rem">/mo CAD</span></strong></div>
-        <p style="color:var(--muted)">CAD $149.99/year · Save compared with monthly billing</p>
+        <p style="color:var(--muted)">Planned price · or $149/year CAD</p>
         <p>✓ Unlimited quotes and invoices<br>✓ Business logo on PDFs<br>✓ Detailed scope of work<br>✓ Payment tracking<br>✓ Client management</p>
-        <div class="btn-row"><button type="button" class="btn btn-primary" id="qn-pro-monthly">Subscribe monthly · $14.99 CAD</button><button type="button" class="btn btn-outline" id="qn-pro-yearly">Subscribe yearly · $149.99 CAD</button></div><div class="btn-row"><button type="button" class="btn btn-outline" id="qn-pro-manage">Manage billing</button><button type="button" class="btn btn-outline" id="qn-pro-refresh">Check subscription</button></div><p id="qn-pro-status" role="status" style="font-size:.84rem;color:var(--muted)">Sign in to view subscription status.</p>
+        <button class="btn btn-outline" style="width:100%" disabled>Pro subscriptions coming soon</button>
       </div>
-      <p style="font-size:.83rem;color:var(--muted)"><strong>Billing preview:</strong> Checkout requires configured Vercel Stripe functions. Existing app features are not yet restricted by plan. Do not launch paid access until entitlements are enforced and verified.</p>
+      <p style="font-size:.83rem;color:var(--muted)"><strong>Beta notice:</strong> All current features remain free during testing. Subscription checkout, accounts, and paid entitlements are <strong>not yet enabled</strong>. The Pro subscription button is disabled until secure billing is ready.</p>
       <div class="btn-row"><button class="btn btn-outline" data-action="back-more">← Back to More</button></div>
     </div>
   </section>
@@ -667,7 +675,7 @@ const STATUS_LABEL = { draft:"Draft", sent:"Sent", accepted:"Accepted", declined
 /* ================= NAV ================= */
 function showView(name) {
   if (!document.getElementById("view-"+name)) return;
-  if (name !== "setup") { try { localStorage.setItem("qn_last_view",name); if(LS_KEY.startsWith("quotenoble_user_"))localStorage.setItem("qn_last_view_"+LS_KEY.slice(16),name); } catch(e) {} }
+  if (name !== "setup") { try { localStorage.setItem("qn_last_view",name); } catch(e) {} }
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   const el = document.getElementById("view-"+name);
   if (el) el.classList.add("active");
@@ -944,7 +952,6 @@ function openQuoteForm(existing, presetClientId) {
   const q = existing || { clientId: presetClientId||DB.clients[0].id, items:[{desc:"",qty:1,price:0}], materials:[], materialNotes:"", notes:"", validUntil:"", status:"draft" };
   const body = openModal(existing?("Edit "+q.number):"New quote",
     '<div class="field"><label>Client</label><select id="f-client">'+clientOptionsHTML(q.clientId)+'</select></div>' +
-    '<div class="field" style="padding:14px;border:1px solid var(--border,#dce2eb);border-radius:12px"><label style="font-weight:750">⭐ My saved templates</label><div class="hint" style="margin:5px 0 10px">Reuse your own scope, prices, notes and private materials. Templates are private to your account.</div><select id="qn-smart-select" style="width:100%"><option value="">Choose a saved template</option></select><div class="btn-row" style="margin-top:9px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-outline btn-small" id="qn-smart-apply">Use template</button><button type="button" class="btn btn-outline btn-small" id="qn-smart-save">Save current as template</button><button type="button" class="btn btn-outline btn-small" id="qn-smart-delete">Delete template</button></div></div>' +
     '<div class="field"><label>Line items</label><div id="items-wrap">'+itemRowsHTML(q.items)+'</div>' +
     '<button type="button" class="btn btn-outline btn-small" id="add-item" style="margin-top:8px;">+ Add line</button></div>' +
     '<div class="field" style="margin-top:18px;padding:15px;border:1px solid var(--border,#dce2eb);border-radius:12px;background:var(--surface,#fff)"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><label style="font-size:16px;font-weight:750">🔒 Materials list</label><span style="font-size:12px;color:var(--muted)">Internal only · Hidden from customer</span></div><div class="hint" style="margin:6px 0 12px">Prepare your material order while creating the quote. Not included in the customer quote, PDF or invoice.</div><div id="qn-material-wrap">'+qnMaterialRows(q.materials||[])+'</div><button type="button" class="btn btn-outline btn-small" id="qn-add-material">+ Add material</button><label for="qn-material-notes" style="display:block;margin-top:12px">Supplier / delivery notes</label><textarea id="qn-material-notes" rows="3" placeholder="Colour, supplier, delivery address, etc.">'+esc(q.materialNotes||'')+'</textarea></div>' +
@@ -1114,8 +1121,12 @@ function openQuoteDetail(id) {
 }
 
 /* ================= DOCUMENT VIEW + PDF ================= */
+function qnBulletDescription(value){
+  return String(value||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean)
+    .map(x=>"• "+x.replace(/^[•●*\-]\s*/,"")).join("\n");
+}
 function docItemsRows(items) {
-  return items.map(it=>'<tr><td><strong>'+esc(it.service||'Service')+'</strong>'+(it.desc?'<div style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px">'+esc(it.desc)+'</div>':'')+'</td><td class="num">'+it.qty+'</td><td class="num">'+money(it.price)+'</td><td class="num">'+money(Math.round(it.qty*it.price))+'</td></tr>').join("");
+  return items.map(it=>'<tr><td><strong>'+esc(it.service||'Service')+'</strong>'+(it.desc?'<div style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px">'+esc(qnBulletDescription(it.desc))+'</div>':'')+'</td><td class="num">'+it.qty+'</td><td class="num">'+money(it.price)+'</td><td class="num">'+money(Math.round(it.qty*it.price))+'</td></tr>').join("");
 }
 function openDocument(kind, id) {
   const isQ = kind==="q";
@@ -1145,7 +1156,7 @@ function openDocument(kind, id) {
     '</div></div>' +
     (doc.notes?'<div class="note">'+esc(doc.notes)+'</div>':"") +
     '</div></div>' +
-    '<div class="doc-actions"><button class="btn btn-primary" id="doc-share">↗ Share</button><button class="btn btn-outline" id="doc-pdf">⬇ PDF</button><button class="btn btn-outline" id="doc-close">Close</button></div></div>';
+    '<div class="doc-actions"><button class="btn btn-primary" id="doc-share">↗ Share</button><button class="btn btn-outline" id="doc-pdf">⬇ Download PDF</button><button class="btn btn-outline" id="doc-close">Close</button></div></div>';
   document.getElementById("doc-close").addEventListener("click", ()=>{ root.innerHTML=""; });
   document.getElementById("doc-share").addEventListener("click", ()=>shareDocument(kind, id));
   document.getElementById("doc-pdf").addEventListener("click", ()=>downloadPDF(kind, id));
@@ -1159,8 +1170,8 @@ function buildPDF(kind, id) {
   if(!doc)return;
   const t=isQ?quoteTotals(doc):invoiceTotals(doc), p=DB.profile, c=getClient(doc.clientId);
   const pdf=new NS.jsPDF({unit:"pt",format:"letter"});
-  const W=612,H=792,M=46,R=W-M,contentW=R-M;
-  const ink=[45,40,36], muted=[113,105,98], accent=[218,119,36], light=[255,246,237], border=[239,225,213];
+  const W=612,H=792,M=36,R=W-M,contentW=R-M;
+  const ink=[22,34,53], muted=[69,79,93], accent=[199,104,13], light=[255,247,236], border=[236,219,199];
   const color=(rgb)=>pdf.setTextColor(...rgb);
   const font=(size,bold=false)=>{pdf.setFont("helvetica",bold?"bold":"normal");pdf.setFontSize(size);};
   const text=(value,x,y,opts)=>pdf.text(String(value??""),x,y,opts||{});
@@ -1168,7 +1179,7 @@ function buildPDF(kind, id) {
   function header(first=false){
     pdf.setFillColor(255,255,255);pdf.rect(0,0,W,H,"F");
     pdf.setFillColor(...light);pdf.rect(0,0,W,94,"F");
-    pdf.setFillColor(...accent);pdf.rect(0,0,W,5,"F");
+    pdf.setFillColor(...accent);pdf.rect(0,96,W,2,"F");
     if(first){
       let logoW=0;
       if(p.logo&&/^data:image\/(png|jpe?g);base64,/.test(p.logo)){
@@ -1182,20 +1193,20 @@ function buildPDF(kind, id) {
       font(8.5);color(muted);
       const contact=[p.phone,p.email].filter(Boolean).join("  |  ");
       pdf.text(pdf.splitTextToSize(contact,Math.max(135,310-(bx-M))).slice(0,2),bx,65);
-      font(20,true);color(ink);text(isQ?"ESTIMATE":"INVOICE",R,45,{align:"right"});
+      font(20,true);color(ink);text(isQ?"QUOTE":"INVOICE",R,45,{align:"right"});
       font(9);color(accent);text("#"+String(doc.number),R,64,{align:"right"});
-      pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,103,R,103);
+      
     }else{
       font(9,true);color(ink);text(p.businessName||"Your Business",M,33);
-      font(9);color(muted);text((isQ?"ESTIMATE":"INVOICE")+"  #"+doc.number,R,33,{align:"right"});
+      font(9);color(muted);text((isQ?"QUOTE":"INVOICE")+"  #"+doc.number,R,33,{align:"right"});
       pdf.setDrawColor(...border);pdf.line(M,43,R,43);
     }
   }
   function footer(){
     const count=pdf.getNumberOfPages();
     for(let i=1;i<=count;i++){
-      pdf.setPage(i);pdf.setDrawColor(...border);pdf.setLineWidth(.7);pdf.line(M,747,R,747);
-      font(8);color(muted);text("Created with Quote.Noble",M,762);
+      pdf.setPage(i);
+      font(8);color(muted);text("Quote.Noble  |  All amounts in CAD",M,762);
       text("Page "+i+" of "+count,R,762,{align:"right"});
     }
   }
@@ -1231,14 +1242,27 @@ function buildPDF(kind, id) {
   const items=Array.isArray(doc.items)?doc.items:[];
   items.forEach((it,index)=>{
     const service=String(it.service||"Service");
-    const titleLines=pdf.splitTextToSize(service,285);
-    const descLines=String(it.desc||"").split(/\r?\n/).flatMap(part=>pdf.splitTextToSize(part||" ",285));
-    let lines=[...titleLines.map(v=>({v,bold:true})),...descLines.map(v=>({v,bold:false}))];
+    const titleLines=pdf.splitTextToSize(service,305);
+    // Use the same normalized bullet points for PDF as for the on-screen quote.
+    // Existing saved quotes can contain a single paragraph with multiple sentences.
+    const rawDesc=String(it.desc||"").trim();
+    const points=rawDesc.split(/\r?\n/).flatMap(line=>{
+      line=line.trim();
+      if(!line)return [];
+      // A leading bullet belongs to the line, not the entire paragraph.
+      line=line.replace(/^[•●*\-]\s*/,"");
+      return (line.match(/[^.!?]+(?:[.!?]+|$)/g)||[line]).map(x=>x.trim()).filter(Boolean);
+    });
+    const descLines=points.flatMap(point=>{
+      const wrapped=pdf.splitTextToSize(point,270);
+      return wrapped.map((v,i)=>({v,bold:false,bullet:i===0,indent:20}));
+    });
+    let lines=[...titleLines.map(v=>({v,bold:true})),...descLines];
     if(!lines.length)lines=[{v:"Service",bold:true}];
     let first=true;
     while(lines.length){
       if(y>707){nextPage();tableHeader();}
-      const available=Math.max(1,Math.floor((713-y)/13.5));
+      const available=Math.max(1,Math.floor((713-y)/15));
       const chunk=lines.splice(0,available);
       if(first){
         font(9);color(ink);
@@ -1248,8 +1272,9 @@ function buildPDF(kind, id) {
         first=false;
       }
       for(const row of chunk){
-        font(row.bold?10:9,row.bold);color(row.bold?ink:muted);
-        text(row.v,M+12,y);y+=13.5;
+        font(row.bold?11:10,row.bold);color(row.bold?ink:muted);
+        if(row.bullet){pdf.setFillColor(0,0,0);pdf.setDrawColor(0,0,0);pdf.circle(M+17,y-3,1.25,"F");}
+        text(row.v,M+12+(row.indent||0),y);y+=15;
       }
     }
     y+=12;need(14);
@@ -1277,7 +1302,7 @@ function buildPDF(kind, id) {
     for(const ln of noteLines){need(15);text(ln,M,y);y+=14;}
   }
   footer();
-  return {pdf,filename:(isQ?"Estimate-":"Invoice-")+doc.number+".pdf"};
+  return {pdf,filename:(isQ?"Quote-":"Invoice-")+doc.number+"-BLACK-BULLETS-v7-1_25pt.pdf"};
 }
 function downloadPDF(kind, id) {
   const b = buildPDF(kind, id);
@@ -1556,7 +1581,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     } else {
       // Auth must not override the selected tab on every reload.
       let remembered = "home";
-      try { remembered = localStorage.getItem("qn_last_view_"+user.id) || localStorage.getItem("qn_last_view") || "home"; } catch(e) {}
+      try { remembered = localStorage.getItem("qn_last_view") || "home"; } catch(e) {}
       if (!/^(home|quotes|invoices|clients|jobs|more|plans|help)$/.test(remembered) || !document.getElementById("view-"+remembered)) remembered = "home";
       setTimeout(() => { const saved=window.qnResumeView?.(); showView(saved||remembered); }, 0);
     }
@@ -1945,114 +1970,31 @@ document.addEventListener("click",function(event){
         const localHasWork=hasRecords(localBeforeRestore);
         const remoteHasWork=hasRecords(remote);
         if(localHasWork && remoteHasWork && old!==JSON.stringify(remote)){
+          /* Single-device local-first recovery. Never replace the remote without preserving a copy. */
+          try {
+            const backupKey="qn_cloud_before_sync_"+uid+"_"+Date.now();
+            localStorage.setItem(backupKey,JSON.stringify(remote));
+            if(localStorage.getItem(backupKey)!==JSON.stringify(remote))throw new Error("Backup verification failed");
+          } catch(e) {
+            console.warn("Cloud snapshot backup failed:",e);
+            ready=false;
+            status("Cloud sync paused · backup could not be saved",true);
+            return;
+          }
           const baselineKey="qn_last_cloud_snapshot_"+uid;
           const baseline=localStorage.getItem(baselineKey);
           const remoteString=JSON.stringify(remote);
-          // An identical baseline means the phone contains edits made after the last cloud save.
-          if(baseline===remoteString){
-            ready=true;
-            status("Syncing your latest changes…");
-            window.qnCloudSave();
-            return;
+          if(baseline && baseline===old){
+            DB=remote; storage.save(DB); lastSnapshot=remoteString;
+            localStorage.setItem(baselineKey,remoteString);
+            ready=true; status("Cloud changes restored ✓"); return;
           }
-          // The phone has not changed since the last successful cloud save.
-          if(baseline===old){
-            DB=remote;
-            DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
-            DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
-            storage.save(DB);
-            lastSnapshot=JSON.stringify(DB);
-            try{localStorage.setItem(baselineKey,lastSnapshot)}catch(e){}
-            ready=true;
-            status("Cloud data restored ✓");
-            return;
+          if(baseline && baseline===remoteString){
+            ready=true; status("Local changes preserved · syncing…");
+            window.qnCloudSave(); return;
           }
-          // First run or a genuinely diverged state: reconcile records by stable ID.
-          // Never silently overwrite different versions of the SAME record.
-          const merged=JSON.parse(JSON.stringify(remote));
-          let conflict=false;
-          for(const key of ["clients","quotes","invoices","jobs","smartTemplates"]){
-            const fromCloud=Array.isArray(remote[key])?remote[key]:[];
-            const fromPhone=Array.isArray(DB[key])?DB[key]:[];
-            const index=new Map(fromCloud.map((r,i)=>[String(r.id),i]));
-            merged[key]=fromCloud.map(r=>({...r}));
-            for(const item of fromPhone){
-              const at=index.get(String(item.id));
-              if(at===undefined){
-                merged[key].push(item);
-              }else if(JSON.stringify(merged[key][at])!==JSON.stringify(item)){
-                // Same ID, different content. Only choose local automatically if
-                // the cloud record matches the known previously-synced baseline.
-                let oldCloud;
-                try{
-                  oldCloud=baseline?JSON.parse(baseline):null;
-                }catch(e){}
-                const previous=oldCloud&&Array.isArray(oldCloud[key])?
-                  oldCloud[key].find(r=>String(r.id)===String(item.id)):null;
-                if(previous && JSON.stringify(previous)===JSON.stringify(merged[key][at])){
-                  merged[key][at]=item;
-                }else if(previous && JSON.stringify(previous)===JSON.stringify(item)){
-                  // Cloud changed; keep cloud record.
-                }else{
-                  conflict=true;
-                }
-              }
-            }
-          }
-          // Profile and sequence numbers are not record collections; avoid
-          // replacing different business settings without a known baseline.
-          if(JSON.stringify(DB.profile)!==JSON.stringify(remote.profile)){
-            let base;
-            try{base=baseline?JSON.parse(baseline):null}catch(e){}
-            if(base && JSON.stringify(base.profile)===JSON.stringify(remote.profile))merged.profile=DB.profile;
-            else if(!base || JSON.stringify(base.profile)!==JSON.stringify(DB.profile))conflict=true;
-          }
-          merged.seq={
-            quote:Math.max(Number(DB.seq?.quote)||1001,Number(remote.seq?.quote)||1001),
-            invoice:Math.max(Number(DB.seq?.invoice)||2001,Number(remote.seq?.invoice)||2001)
-          };
-          // Always preserve BOTH original copies before any merged cloud write.
-          let backedUp=false;
-          try{
-            const stamp=Date.now();
-            const localKey="qn_local_before_merge_"+uid+"_"+stamp;
-            const cloudKey="qn_cloud_before_merge_"+uid+"_"+stamp;
-            localStorage.setItem(localKey,old);
-            localStorage.setItem(cloudKey,remoteString);
-            backedUp=localStorage.getItem(localKey)===old &&
-              localStorage.getItem(cloudKey)===remoteString;
-          }catch(e){console.warn("Merge backup failed",e)}
-          if(!backedUp || conflict){
-            ready=false;
-            status(!backedUp?"Sync paused · backup failed":
-              "Sync needs review · tap here to export both copies",true);
-            if(backedUp){
-              const notice=document.getElementById("qn-save-status");
-              if(notice){
-                notice.style.cursor="pointer";
-                notice.title="Download both saved versions for safe review";
-                notice.onclick=()=>{
-                  const exportData={type:"Quote.Noble sync conflict backup",createdAt:new Date().toISOString(),userId:uid,device:JSON.parse(old),cloud:remote};
-                  const blob=new Blob([JSON.stringify(exportData,null,2)],{type:"application/json"});
-                  const url=URL.createObjectURL(blob);
-                  const a=document.createElement("a");a.href=url;a.download="QuoteNoble_Sync_Review_"+new Date().toISOString().slice(0,10)+".json";
-                  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-                };
-              }
-            }
-            return;
-          }
-          DB=merged;
-          if(!storage.save(DB)){
-            ready=false;
-            status("Sync paused · device storage unavailable",true);
-            return;
-          }
-          lastSnapshot=remoteString;
-          try{localStorage.setItem(baselineKey,remoteString)}catch(e){}
-          ready=true;
-          window.qnCloudSave();
-          status("Reconciling saved records…");
+          ready=false;
+          status("Sync paused · both copies backed up. Review before merging.",true);
           return;
         }
         if(localHasWork && !remoteHasWork){
@@ -2139,74 +2081,23 @@ document.addEventListener("click",function(event){
 })();
 </script>
 <script>
-/* Quote.Noble subscription client: server verifies Supabase JWT and Stripe status. */
-(()=>{
- const URL='https://jssfjaggsjtwppokjpns.supabase.co';
- const KEY='sb_publishable_9Nr32yruSbg_VXyZiowqJA_BynvkOCt';
- const status=()=>document.getElementById('qn-pro-status');
- function notice(t){if(status())status().textContent=t;const m=document.getElementById('qn-membership-status');if(m)m.textContent=t;}
- async function request(path,body){
-   if(!window.supabase?.createClient)throw Error('Sign-in service unavailable');
-   const client=window.supabase.createClient(URL,KEY);
-   const {data,error}=await client.auth.getSession();
-   if(error||!data?.session?.access_token)throw Error('Please sign in before subscribing.');
-   const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(body||{})});
-   const json=await response.json().catch(()=>({}));
-   if(!response.ok)throw Error(json.error||'Billing service unavailable');return json;
- }
- async function go(path,body){try{notice('Connecting to secure billing…');const r=await request(path,body);if(r.url&&new URL(r.url).protocol==='https:')location.assign(r.url);else throw Error('Checkout link unavailable');}catch(e){notice(e.message)}}
- let latestStatus=null;
- async function refresh(){
-   try{
-     notice('Checking subscription…');
-     const r=await request('/api/stripe/status');
-     latestStatus=r;
-     if(r.pro){
-       notice('✓ Pro Active · '+(r.status==='trialing'?'Trial':'Subscribed')+' · Unlimited quotes & invoices');
-     }else{
-       notice('Free plan · Subscription status: '+(r.status||'none'));
-     }
-     document.documentElement.dataset.qnPlan=r.pro?'pro':'free';
-     for(const id of ['qn-pro-monthly','qn-pro-yearly']){const b=document.getElementById(id);if(b)b.hidden=!!r.pro;}
-     const manage=document.getElementById('qn-pro-manage');if(manage)manage.hidden=!r.pro;
-     return r;
-   }catch(e){
-     notice('Unable to verify subscription: '+e.message);
-     document.documentElement.dataset.qnPlan='unknown';
-     return null;
-   }
- }
- // Stripe redirects back with checkout=success. Always ask the server for
- // authoritative subscription status, never trust the URL as proof of payment.
- const params=new URLSearchParams(location.search);
- if(params.get('checkout')==='success'){
-   const show=()=>{
-     if(typeof showView==='function')showView('plans');
-     refresh();
-   };
-   if(document.readyState==='complete')setTimeout(show,600);
-   else window.addEventListener('load',()=>setTimeout(show,600),{once:true});
-   params.delete('checkout');params.delete('session_id');
-   history.replaceState(history.state,'',location.pathname+(params.toString()?'?'+params:'')+location.hash);
- }
- // Keep Billing up to date when opened and after returning from Stripe.
- document.addEventListener('click',e=>{
-   if(e.target.closest('[data-action="view-plans"],[data-qn-more-go="plans"],[data-qn-more-go="membership"]')){
-     setTimeout(refresh,100);
-   }
- });
- window.addEventListener('focus',()=>{
-   if(document.getElementById('view-plans')?.classList.contains('active'))refresh();
- });
-
- document.addEventListener('click',e=>{
-   if(e.target.closest('#qn-pro-monthly,#cloud-checkout'))go('/api/stripe/checkout',{plan:'monthly'});
-   if(e.target.closest('#qn-pro-yearly'))go('/api/stripe/checkout',{plan:'yearly'});
-   if(e.target.closest('#qn-pro-manage,#cloud-portal'))go('/api/stripe/portal');
-   if(e.target.closest('#qn-pro-refresh'))refresh();
- });
- window.addEventListener('load',()=>setTimeout(refresh,1200),{once:true});
- window.qnSubscriptionStatus=refresh;
+(function(){
+const services=[{"trade": "Roofing", "name": "Asphalt Shingle Roof Replacement", "description": "Remove existing roofing in the agreed area. Inspect exposed decking, install specified underlayment, ice and water protection, flashing, asphalt shingles and ridge caps. Clean up job debris. Concealed deck repairs are excluded unless approved."}, {"trade": "Roofing", "name": "Flat Roof Replacement", "description": "Remove designated existing flat roof layers and inspect exposed substrate. Install specified insulation, membrane, edge flashings and penetration seals, following manufacturer requirements. Check drainage paths and remove debris. Concealed substrate repairs are additional."}, {"trade": "Roofing", "name": "Metal Roof Installation", "description": "Prepare the agreed roof area and install specified metal roof panels, compatible underlayment, flashings, trims and fasteners. Complete ridge, eave, valley and penetration details as applicable. Inspect exposed work and clear installation debris."}, {"trade": "Roofing", "name": "Cedar Roof Replacement", "description": "Remove existing roofing in the designated area and assess exposed decking. Install specified cedar shakes or shingles with compatible underlayment, ventilation details, flashings and fasteners. Remove debris; hidden repairs require separate approval."}, {"trade": "Roofing", "name": "Synthetic Slate Installation", "description": "Prepare the agreed roof area and install specified synthetic slate tiles with manufacturer-approved underlayment, fastening pattern, ridge components and flashing details. Verify alignment and finish transitions. Remove installation debris."}, {"trade": "Roofing", "name": "Roof Leak Repair", "description": "Inspect accessible roofing near the reported leak. Repair identified localized defects in shingles, membrane, flashing or sealant as appropriate. Clean up debris and report concerns. Concealed or multiple leak sources may require further work."}, {"trade": "Roofing", "name": "Shingle Repair", "description": "Remove and replace damaged or missing asphalt shingles in the agreed area, using compatible materials where available. Secure exposed fasteners and check nearby visible flashing. Color match may vary with weathering."}, {"trade": "Roofing", "name": "Skylight Installation or Replacement", "description": "Remove existing skylight if applicable and prepare the opening. Install specified skylight, compatible flashing kit and weatherproof transitions. Seal and inspect exterior connections. Interior finishing and structural changes are excluded unless listed."}, {"trade": "Roofing", "name": "Roof Ventilation Upgrade", "description": "Review accessible roof ventilation locations and install specified intake or exhaust vents, including necessary roof openings, flashings and sealing. Remove debris and check visible weatherproofing. Electrical connections are excluded unless stated."}, {"trade": "Roofing", "name": "Chimney Removal & Roof Closure", "description": "Dismantle the specified chimney section to the agreed level, remove debris and close the roof opening with suitable framing and sheathing. Install matching underlayment and roofing as practical. Interior repairs and concealed structural work are separate."}, {"trade": "Gutters & Aluminum", "name": "Complete Eavestrough, Downspout, Soffit & Fascia Installation", "description": "Install specified eavestroughs, downspouts, soffit panels and fascia coverings in the agreed areas. Fit hangers, outlets, trim and sealed gutter connections. Direct discharge to approved locations and remove debris. Hidden wood repairs are additional."}, {"trade": "Gutters & Aluminum", "name": "Eavestrough Replacement", "description": "Remove designated existing eavestrough sections and install new gutters with appropriate hangers, slope, outlets and sealed joints. Connect to agreed downspouts and remove discarded materials. Fascia repairs are excluded unless listed."}, {"trade": "Gutters & Aluminum", "name": "Gutter Cleaning & Downspout Flushing", "description": "Remove accessible leaves, sediment and loose debris from designated gutters. Flush accessible downspouts to check flow and clear minor loose blockages where practical. Collect debris and report visible issues. Underground drains are excluded."}, {"trade": "Gutters & Aluminum", "name": "Leaking Corner Repair", "description": "Clean and prepare accessible leaking gutter corner joints. Remove failed sealant as needed and apply compatible gutter sealant or replace the corner component where specified. Check joint after curing where practical. Corroded sections may need replacement."}, {"trade": "Gutters & Aluminum", "name": "Gutter Re-Sloping", "description": "Adjust existing gutter hangers or supports in the agreed area to improve pitch toward the outlet. Refasten and check drainage where accessible. Repairs to deteriorated fascia or distorted gutter sections are additional."}, {"trade": "Gutters & Aluminum", "name": "Downspout Repair or Replacement", "description": "Repair or replace the designated downspout sections, elbows and straps. Secure connections and direct discharge to the agreed location. Confirm accessible flow and remove old materials. Buried drainage is excluded."}, {"trade": "Gutters & Aluminum", "name": "Leaf Guard Installation", "description": "Prepare accessible gutters and install specified leaf guard system along agreed lengths using compatible fasteners and edge details. Check visible alignment and clean up. Guards reduce debris entry but do not eliminate maintenance."}, {"trade": "Gutters & Aluminum", "name": "Soffit Replacement", "description": "Remove designated soffit panels and install new matching or specified ventilated or solid soffit, including required trims and secure fastening. Remove debris. Concealed framing or pest damage is excluded."}, {"trade": "Gutters & Aluminum", "name": "Fascia Replacement", "description": "Remove designated fascia covering or board as specified. Install replacement fascia material and compatible edge trims, ensuring secure fastening and neat transitions. Hidden rot or structural repairs are additional."}, {"trade": "Gutters & Aluminum", "name": "Gutter Hanger Reinforcement", "description": "Inspect accessible gutter supports in the designated area. Replace or add suitable hangers and fasteners to secure loose sections, then check visible alignment. Damaged fascia or bent gutters require separate repair."}, {"trade": "Painting", "name": "Interior Wall Painting", "description": "Protect nearby floors and fixtures, prepare designated wall surfaces, fill minor nail holes, sand and spot-prime as needed. Apply specified primer and finish coats. Remove masking and normal work debris. Major drywall repairs are additional."}, {"trade": "Painting", "name": "Exterior House Painting", "description": "Wash and prepare designated exterior surfaces, scrape loose coating, caulk accessible minor gaps and spot-prime exposed areas. Apply specified exterior paint coats in suitable weather. Repair of deteriorated substrate is excluded."}, {"trade": "Painting", "name": "Ceiling Painting", "description": "Protect room contents and adjacent finishes. Prepare designated ceiling surfaces, patch minor imperfections and apply specified primer and finish coats. Clean up and remove masking. Water-damage remediation is excluded."}, {"trade": "Painting", "name": "Trim & Door Painting", "description": "Prepare agreed doors and trim by cleaning, light sanding, filling minor defects and priming where needed. Apply specified finish coats and protect adjacent surfaces. Hardware removal or replacement only if stated."}, {"trade": "Painting", "name": "Deck & Fence Staining", "description": "Clean and prepare designated wood surfaces, remove loose coating where practical and allow appropriate drying. Apply specified stain or protective finish following product directions. Board replacement and structural repairs are excluded."}, {"trade": "Renovations", "name": "Bathroom Renovation", "description": "Complete the agreed bathroom renovation scope, including designated demolition, surface preparation and installation of specified fixtures and finishes. Coordinate required trades and leave the work area clean. Hidden damage and scope changes require approval."}, {"trade": "Renovations", "name": "Kitchen Renovation", "description": "Remove designated existing finishes or fixtures and prepare the kitchen for the approved layout. Install specified cabinets, countertops, backsplash and finishes as listed. Plumbing, electrical and concealed repairs are included only where expressly stated."}, {"trade": "Renovations", "name": "Drywall Installation & Repair", "description": "Install or repair drywall in designated areas, including appropriate fastening, joint tape, compound application and sanding to the agreed finish level. Prime or paint only if specified. Dust containment is provided where practical."}, {"trade": "Renovations", "name": "Flooring Installation", "description": "Prepare accessible substrate and install the specified flooring in the agreed rooms, including underlayment, transitions and trims as listed. Remove normal debris. Subfloor leveling and hidden repairs are additional unless included."}, {"trade": "Renovations", "name": "Interior Demolition", "description": "Protect adjacent areas and remove designated non-structural interior finishes or fixtures. Sort and dispose of demolition debris as agreed. Structural alterations, hazardous material remediation and unexpected utilities require separate authorization."}, {"trade": "Plumbing", "name": "Faucet Replacement", "description": "Shut off accessible water supply and remove the designated faucet. Install the specified replacement with compatible connections and seals, restore water and check for visible leaks. Repairs to defective shutoff valves or supply piping are additional."}, {"trade": "Plumbing", "name": "Toilet Installation", "description": "Remove the designated toilet and install the specified replacement with appropriate seal, bolts and supply connection. Test flushing and inspect for visible leaks. Subfloor and flange repairs are additional unless included."}, {"trade": "Plumbing", "name": "Drain Repair", "description": "Inspect the accessible drain section identified in the approved scope. Repair or replace specified piping, traps or fittings and test accessible connections for leaks and drainage. Concealed piping and major blockages require separate authorization."}, {"trade": "Plumbing", "name": "Water Supply Line Replacement", "description": "Isolate the affected supply, remove the designated accessible water line and install compatible replacement piping and fittings. Restore supply and test visible joints. Wall repairs and concealed system defects are additional."}, {"trade": "Plumbing", "name": "Sump Pump Installation", "description": "Remove existing pump if applicable and install specified sump pump, discharge connections and check valve in an existing suitable basin. Test operation and visible discharge path. Electrical upgrades and excavation are excluded unless listed."}, {"trade": "Electrical", "name": "Light Fixture Installation", "description": "Safely isolate the circuit, remove an existing fixture where applicable and install the specified compatible light fixture at the designated location. Secure connections and test operation. New wiring or support modifications are additional."}, {"trade": "Electrical", "name": "Switch & Outlet Replacement", "description": "Safely isolate the affected circuit and replace designated switches or receptacles with specified compatible devices and cover plates. Test basic operation. Faulty wiring or circuit upgrades require separate approval."}, {"trade": "Electrical", "name": "Recessed Lighting Installation", "description": "Lay out designated recessed light locations, prepare suitable ceiling openings and install specified compatible fixtures and connections. Test operation and leave work area clean. Ceiling patching and new circuits are excluded unless stated."}, {"trade": "Electrical", "name": "Electrical Troubleshooting", "description": "Inspect and test accessible components associated with the reported electrical issue, identify likely causes and document recommended corrective work. Repairs or replacement beyond the approved diagnostic scope require separate authorization."}, {"trade": "Electrical", "name": "Ceiling Fan Installation", "description": "Safely isolate the circuit and install the specified ceiling fan at the agreed location using an appropriate rated support and compatible controls. Test fan and light functions as applicable. New wiring or structural support is additional."}];
+function bulletLines(description){return String(description||'').split(/\r?\n|(?<=[.!?])\s+(?=[A-Z])/).map(x=>x.trim().replace(/^[•*-]\s*/, '')).filter(Boolean).map(x=>'• '+x).join('\n');}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function init(){
+ const wrap=document.querySelector('#items-wrap'), add=document.querySelector('#add-item');
+ if(!wrap||!add||document.querySelector('#qn-library-open'))return;
+ const btn=document.createElement('button');btn.id='qn-library-open';btn.type='button';btn.className='btn btn-outline btn-small';btn.style.cssText='margin:8px 8px 0 0;background:#fff7ed;border:1px solid #f59e0b;color:#92400e;font-weight:700';btn.textContent='✦ Smart Service Library (40)';add.parentNode.insertBefore(btn,add);
+ btn.addEventListener('click',()=>{
+ if(document.querySelector('#qn-library-overlay'))return;
+ const layer=document.createElement('div');layer.id='qn-library-overlay';layer.style.cssText='position:fixed;inset:0;z-index:2147483646;background:#0009;display:flex;justify-content:center;align-items:flex-end;padding:0';
+ layer.innerHTML='<section style="width:100%;max-width:580px;height:min(88vh,800px);background:white;border-radius:22px 22px 0 0;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 30px #0003;color:#1f2937"><header style="display:flex;justify-content:space-between;align-items:center"><strong style="font-size:20px">✦ Smart Service Library</strong><button type="button" id="qn-lib-close" style="font-size:24px;border:0;background:none">×</button></header><input id="qn-lib-search" aria-label="Search services" placeholder="Search 40 services..." style="width:100%;padding:13px;border:1px solid #d1d5db;border-radius:10px"><select id="qn-lib-trade" aria-label="Filter trade" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px"><option value="">All trades</option>'+[...new Set(services.map(s=>s.trade))].map(x=>'<option>'+esc(x)+'</option>').join('')+'</select><div id="qn-lib-results" style="overflow-y:auto;flex:1"></div><p style="font-size:12px;color:#6b7280;margin:0">Descriptions can be edited in the quote. You enter your own prices.</p></section>';
+ document.body.appendChild(layer);layer.querySelector('#qn-lib-close').onclick=()=>layer.remove();layer.addEventListener('click',e=>{if(e.target===layer)layer.remove()});const results=layer.querySelector('#qn-lib-results');
+ function render(){const q=layer.querySelector('#qn-lib-search').value.toLowerCase(),t=layer.querySelector('#qn-lib-trade').value;const matches=services.filter(s=>(!t||s.trade===t)&&(!q||(s.name+' '+s.description).toLowerCase().includes(q)));results.innerHTML=matches.map(s=>{const idx=services.indexOf(s);return '<div style="padding:12px 2px;border-bottom:1px solid #e5e7eb"><div style="font-size:11px;color:#d97706;font-weight:700">'+esc(s.trade)+'</div><strong>'+esc(s.name)+'</strong><p style="font-size:13px;line-height:1.5;color:#4b5563">'+esc(bulletLines(s.description)).replace(/\n/g,'<br>')+'</p><button type="button" data-idx="'+idx+'" style="background:#d97706;color:white;border:0;padding:11px 16px;border-radius:9px;font-weight:700">Insert into quote</button></div>'}).join('')||'<p>No matching services</p>';}
+ results.addEventListener('click',e=>{const insert=e.target.closest('[data-idx]');if(!insert)return;const service=services[Number(insert.dataset.idx)];const current=document.querySelector('#items-wrap');if(!current)return;const blank=[...current.querySelectorAll('.item-row')].find(row=>!row.querySelector('.service')?.value.trim()&&!row.querySelector('.desc')?.value.trim());if(!blank)document.querySelector('#add-item')?.click();const row=blank||[...current.querySelectorAll('.item-row')].at(-1);if(!row)return;row.querySelector('.service').value=service.name;row.querySelector('.desc').value=bulletLines(service.description);row.querySelector('.qty').value='1';row.querySelector('.price').value='0.00';row.querySelector('.desc').dispatchEvent(new Event('input',{bubbles:true}));layer.remove();});
+ layer.querySelector('#qn-lib-search').addEventListener('input',render);layer.querySelector('#qn-lib-trade').addEventListener('change',render);render();});}
+const obs=new MutationObserver(init);obs.observe(document.body,{subtree:true,childList:true});init();
 })();
 </script>
 </body>
