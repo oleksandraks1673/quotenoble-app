@@ -15,14 +15,9 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           changes=[
-            ('font(8.5,true);color(accent);text("PREPARED FOR",M,y);','font(9.5,true);color(accent);text("PREPARED FOR",M,y);'),
-            ('font(8.5,true);color(accent);text("DOCUMENT DETAILS",333,y);','font(9.5,true);color(accent);text("DOCUMENT DETAILS",333,y);'),
-            ('font(9);color(muted);\n  let cy=y+19;', 'font(10);color(muted);\n  let cy=y+19;'),
-            ('font(8.5,true);color(muted);\n    text("DESCRIPTION"', 'font(9.5,true);color(muted);\n    text("DESCRIPTION"'),
-            ('const available=Math.max(1,Math.floor((713-y)/13.5));','const available=Math.max(1,Math.floor((713-y)/15));'),
             ('font(row.bold?10:9,row.bold);color(row.bold?ink:muted);','font(row.bold?11:10,row.bold);color(row.bold?ink:muted);'),
             ('text(row.v,M+12,y);y+=13.5;','text(row.v,M+12,y);y+=15;'),
-            ('font(9);color(ink);\n        text(String(it.qty??1)', 'font(10);color(ink);\n        text(String(it.qty??1)')
+            ('const available=Math.max(1,Math.floor((713-y)/13.5));','const available=Math.max(1,Math.floor((713-y)/15));')
           ]
           for name in ('index.html','app.html'):
             p=Path(name);s=p.read_text()
