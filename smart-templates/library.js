@@ -243,6 +243,11 @@ const templates=[
     "description": "Provide ceiling fan installation for the agreed work area using appropriate materials and installation methods for the existing conditions. Inspect and prepare accessible surfaces or components before beginning work, carry out the specified service, check the completed work for visible deficiencies, and remove normal job-related debris. Any concealed damage, additional repairs, permits, or work outside the approved scope will be discussed and priced separately before proceeding."
   }
 ];
+// Display and insert each scope sentence as an editable bullet point.
+for (const template of templates) {
+  const sentences=String(template.description||"").trim().split(/(?<=[.!?])\\s+(?=[A-Z])/).map(s=>s.trim()).filter(Boolean);
+  template.description=sentences.map(s=>"• "+s).join("\\n");
+}
 const search=(query="",trade="")=>templates.filter(t=>(!trade||t.trade===trade)&&(!query||(t.name+" "+t.description).toLowerCase().includes(query.toLowerCase())));
 root.QuoteNobleSmartTemplates=Object.freeze({templates:Object.freeze(templates),trades:Object.freeze(["Roofing","Gutters & Aluminum","Painting","Renovations","Plumbing","Electrical"]),search});
 })(typeof window!=="undefined"?window:globalThis);
