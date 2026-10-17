@@ -1,0 +1,35 @@
+name: Match PDF scope bullets to quote preview
+on:
+  push:
+    branches: [fix/billing-portal-access-20261017]
+    paths: ['.github/workflows/sync-pdf-bullet-scopes.yml']
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render each scope item on its own line in PDFs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          old='const descLines=String(it.desc||"").trim()?String(it.desc).split(/\\r?\\n/).flatMap(part=>pdf.splitTextToSize(part||" ",285)):[];'
+          new='''const scopeText=String(it.desc||"").trim();
+              const scopeItems=scopeText ? scopeText.split(/\\r?\\n/).flatMap(part=>part.replace(/^\\s*[•-]\\s*/, "").split(/(?<=[.!?])\\s+(?=[A-Z])/)).map(part=>part.trim().replace(/^\\s*[•-]\\s*/, "")).filter(Boolean) : [];
+              const descLines=scopeItems.flatMap(part=>pdf.splitTextToSize("- "+part,285));'''
+          for name in ('index.html','app.html'):
+              p=Path(name);s=p.read_text()
+              assert s.count(old)==1, 'Expected one PDF description renderer in '+name
+              s=s.replace(old,new,1)
+              assert s.count('const scopeItems=scopeText')==1
+              p.write_text(s)
+          assert Path('index.html').read_bytes()==Path('app.html').read_bytes()
+          PY
+      - name: Commit verified patch
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.html
+          git diff --cached --quiet || (git commit -m "Render consistent itemized scope in quote and invoice PDFs" && git push)
