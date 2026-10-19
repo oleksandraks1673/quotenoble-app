@@ -1,0 +1,21 @@
+/* Run with Node: node smart-templates/test-adapter.js */
+const fs=require("fs"),vm=require("vm"),assert=require("assert");
+const context={};vm.createContext(context);
+for(const f of ["library.js","quote-adapter.js"])vm.runInContext(fs.readFileSync(__dirname+"/"+f,"utf8"),context);
+const lib=context.QuoteNobleSmartTemplates,adapter=context.QuoteNobleSmartTemplateAdapter;
+assert.strictEqual(lib.templates.length,40);
+assert.strictEqual(lib.trades.length,6);
+assert.strictEqual(new Set(lib.templates.map(x=>x.id)).size,40);
+assert(lib.templates.every(x=>x.name&&x.description&&!Object.hasOwn(x,"price")));
+const first=lib.templates[0];
+const original={id:"quote-1",items:[{name:"Existing work",unitPrice:25}],customer:"Test"};
+const updated=adapter.insertIntoQuote(original,first.id,{quantity:2,unitPrice:175,description:"Edited scope"});
+assert.strictEqual(original.items.length,1,"Must not mutate original quote");
+assert.strictEqual(updated.items.length,2);
+assert.strictEqual(updated.items[1].description,"Edited scope");
+assert.strictEqual(updated.items[1].unitPrice,175);
+assert.strictEqual(updated.customer,"Test");
+assert(adapter.findTemplates("shingle").length>0);
+assert.throws(()=>adapter.toQuoteItem(first.id,{unitPrice:-1}));
+assert.throws(()=>adapter.toQuoteItem("missing"));
+console.log("Smart Templates adapter: all tests passed");
