@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
-    <application android:label="Quote Noble" android:usesCleartextTraffic="false"
+    <application android:label="Quote Noble" android:icon="@drawable/ic_launcher" android:usesCleartextTraffic="false"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:allowBackup="false">
         <activity android:name=".MainActivity" android:exported="true">
