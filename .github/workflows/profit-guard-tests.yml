@@ -1,0 +1,25 @@
+name: Profit Guard tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/quote-noble-safety-profit-guard]
+    paths:
+      - 'features/**'
+      - '.github/workflows/profit-guard-tests.yml'
+  pull_request:
+    paths:
+      - 'features/**'
+      - '.github/workflows/profit-guard-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check features/profit-guard.mjs
+      - run: node --check features/profit-guard-ui.mjs
+      - run: node --test features/profit-guard.test.mjs
