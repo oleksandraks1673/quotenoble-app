@@ -188,6 +188,8 @@
   window.qnCloudSave = function () {
     if (!ready) return;
     if (running) { pending = true; return; }
+    // A fresh user edit supersedes the previous failure backoff.
+    retryFailures = 0;
     status("Saving…"); clearTimeout(timer); timer = setTimeout(push, 800);
   };
   window.qnCloudConnect = async function (sb, user) {
