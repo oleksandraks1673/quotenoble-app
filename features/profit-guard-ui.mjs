@@ -1,22 +1,25 @@
 import { calculateProfitGuard } from './profit-guard.mjs';
 
 /**
- * Optional, contractor-only profit calculator.
- * This component never modifies a quote, saves costs, or exposes them in a PDF.
- * The host quote editor must explicitly mount it inside an authenticated owner view.
+ * Optional contractor-only calculator.
+ * Mount ONLY in an authenticated contractor view. Never render in customer
+ * previews or PDFs. No persistence or quote mutations are performed here.
  */
 export function mountProfitGuard(container, getRevenue) {
-  if (!container || typeof getRevenue !== 'function') throw new TypeError('Missing host container or revenue provider');
-  const details = document.createElement('details');
+  if (!container || typeof container.append !== 'function' || typeof getRevenue !== 'function') {
+    throw new TypeError('Missing host container or revenue provider');
+  }
+  const doc = container.ownerDocument || document;
+  const details = doc.createElement('details');
   details.className = 'qn-profit-guard';
-  const summary = document.createElement('summary');
-  summary.textContent = 'Profit Guard (optional · private)';
+  const summary = doc.createElement('summary');
+  summary.textContent = 'Profit Guard (optional, private)';
   details.append(summary);
   const fields = {};
   for (const [key, title] of [['materials', 'Materials'], ['labour', 'Labour'], ['other', 'Other costs']]) {
-    const label = document.createElement('label');
+    const label = doc.createElement('label');
     label.textContent = title;
-    const input = document.createElement('input');
+    const input = doc.createElement('input');
     input.type = 'number';
     input.min = '0';
     input.step = '0.01';
@@ -27,15 +30,29 @@ export function mountProfitGuard(container, getRevenue) {
     details.append(label);
     fields[key] = input;
   }
-  const result = document.createElement('output');
+  const result = doc.createElement('output');
   result.setAttribute('aria-live', 'polite');
   details.append(result);
+  const money = value => new Intl.NumberFormat('en-CA', {
+    style: 'currency', currency: 'CAD'
+  }).format(value);
+
   function render() {
     try {
       const revenue = getRevenue();
-      const values = Object.fromEntries(Object.entries(fields).map(([key, input]) => [key, input.value.trim() === '' ? 0 : Number(input.value)]));
-      const p = calculateProfitGuard({ revenue, ...values });
-      const money = n => new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(n);
+      const costs = Object.fromEntries(Object.entries(fields).map(([key, input]) => {
+        // Number('') is zero, but incomplete and malformed values must not
+        // silently become zero and display a misleading profit.
+        if (input.validity?.badInput || input.validity?.rangeUnderflow || input.validity?.stepMismatch) {
+          throw new RangeError('Invalid cost');
+        }
+        const raw = input.value.trim();
+        if (raw !== '' && !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(raw)) {
+          throw new RangeError('Invalid cost');
+        }
+        return [key, raw === '' ? 0 : Number(raw)];
+      }));
+      const p = calculateProfitGuard({ revenue, ...costs });
       result.textContent = `Estimated profit: ${money(p.profit)} · Margin: ${p.marginPercent.toFixed(1)}%`;
     } catch {
       result.textContent = 'Enter valid quote revenue and non-negative costs';
