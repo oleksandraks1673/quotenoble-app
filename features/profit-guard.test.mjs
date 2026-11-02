@@ -26,3 +26,15 @@ test('accepts valid decimal strings and zero costs', () => {
   const result = calculateProfitGuard({ revenue: '125.50', materials: '25.25', labour: 0 });
   assert.equal(result.profit, 100.25);
 });
+
+test('uses cent arithmetic for typical currency amounts', () => {
+  const result = calculateProfitGuard({ revenue: '0.30', materials: '0.10', labour: '0.20' });
+  assert.equal(result.costs, 0.3);
+  assert.equal(result.profit, 0);
+});
+test('rounds fractional cents at input boundary', () => {
+  const result = calculateProfitGuard({ revenue: '10.009', materials: '0.004' });
+  assert.equal(result.revenue, 10.01);
+  assert.equal(result.costs, 0);
+  assert.equal(result.profit, 10.01);
+});
