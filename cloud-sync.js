@@ -4,7 +4,7 @@
   const collections = ["clients", "quotes", "invoices", "jobs", "smartTemplates"];
   let client, uid, scope, generation = 0, ready = false, running = false, connecting = false;
   let timer, hideTimer, lastSnapshot = "", remoteRow = null, conflict = null, dialog = null;
-  let retryConnect = false, pending = false, backupValue = "", backupKey = "";
+  let retryConnect = false, pending = false, backupValue = "", backupKey = "", retryFailures = 0;
   const clone = value => JSON.parse(JSON.stringify(value));
   function normalize(value) {
     const copy = clone(value);
@@ -160,7 +160,7 @@
     try {
       const written = await writeCloud(sb, userId, value, expected);
       if (gen !== generation) return;
-      remoteRow = written; remember(value);
+      remoteRow = written; remember(value); retryFailures = 0;
       pending = fingerprint(DB) !== signature;
       status(pending ? "Saving newer changes…" : "Saved to cloud ✓");
     } catch (e) {
@@ -171,10 +171,12 @@
         // A transient network/server error must not leave an unsynced edit
         // waiting for another user action. Retry without changing local data.
         if (navigator.onLine) {
+          retryFailures = Math.min(retryFailures + 1, 6);
+          const delay = Math.min(60000, 5000 * (2 ** (retryFailures - 1)));
           clearTimeout(timer);
           timer = setTimeout(() => {
             if (gen === generation && ready && !running) push();
-          }, 10000);
+          }, delay);
         }
       }
     } finally {
