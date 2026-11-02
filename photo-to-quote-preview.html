@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Photo to Quote · Development Preview</title>
+<style>body{font-family:system-ui,sans-serif;background:#f5f7fa;color:#16253b;margin:0}main{max-width:720px;margin:3rem auto;padding:24px;background:white;border-radius:18px}label{display:block;margin:16px 0 7px;font-weight:650}input,textarea,button{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}button{background:#123a68;color:white;cursor:pointer;margin-top:20px}button:disabled{opacity:.6}small{color:#475569}li{margin:9px 0}.warning{background:#fff8e7;padding:12px;border-radius:8px}article{padding:12px 0;border-bottom:1px solid #ddd}</style></head>
+<body><main><h1>AI Photo-to-Quote</h1><p><strong>Development preview only.</strong> This creates an editable draft, not a saved Quote.Noble quote.</p>
+<p class="warning">Do not rely on photographs for quantities, measurements, safety assessments, or final pricing. Contractor verification is required.</p>
+<form id="f"><label for="token">Supabase sign-in access token (developer preview)</label><input id="token" type="password" autocomplete="off" required><small>This preview does not store your token.</small>
+<label for="photos">Job photos (1–4)</label><input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
+<label for="trade">Trade</label><input id="trade" placeholder="Roofing, gutters, siding…">
+<label for="notes">Job notes (optional)</label><textarea id="notes" rows="3" maxlength="1000"></textarea>
+<button id="go" type="submit">Analyze photos</button></form><p id="status" role="status"></p><section id="result" aria-live="polite"></section></main>
+<script>
+const f=document.getElementById('f'),status=document.getElementById('status'),out=document.getElementById('result'),go=document.getElementById('go');
+const readFile=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)});
+function item(name,text){const p=document.createElement(name);p.textContent=text;return p}
+f.addEventListener('submit',async e=>{e.preventDefault();out.replaceChildren();const files=[...document.getElementById('photos').files];
+if(files.length<1||files.length>4||files.some(file=>file.size>4*1024*1024)){status.textContent='Choose 1–4 images, each under 4 MB.';return}
+go.disabled=true;status.textContent='Analyzing images…';
+try{const photos=await Promise.all(files.map(readFile));const res=await fetch('/api/ai/photo-to-quote',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({photos,tradeHint:document.getElementById('trade').value,notes:document.getElementById('notes').value})});
+const body=await res.json();if(!res.ok)throw Error(body.error||'Analysis failed');const d=body.draft;out.append(item('h2','Draft: '+d.trade),item('p',d.summary));
+out.append(item('h3','Suggested work (review and edit)'));for(const it of d.suggested_items){const a=document.createElement('article');const description=document.createElement('input');description.value=it.description;description.setAttribute('aria-label','Work description');a.append(description,item('small','Quantity: '+(it.quantity===null?'Measure onsite':it.quantity)+' '+it.unit+' — '+it.rationale));out.append(a)}
+out.append(item('h3','Questions to confirm'));for(const q of d.questions)out.append(item('p','• '+q));
+out.append(item('p','Warning: '+d.warning));status.textContent='Draft created. Review quantities and pricing before creating a quote. Nothing was saved.';
+}catch(err){status.textContent=err.message||'Analysis failed'}finally{go.disabled=false}});
+</script></body></html>
