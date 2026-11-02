@@ -166,7 +166,17 @@
     } catch (e) {
       if (gen !== generation) return;
       if (e.stale) { ready = false; retryConnect = true; }
-      else status("Saved on device · cloud sync pending", true);
+      else {
+        status("Saved on device · cloud sync pending", true);
+        // A transient network/server error must not leave an unsynced edit
+        // waiting for another user action. Retry without changing local data.
+        if (navigator.onLine) {
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            if (gen === generation && ready && !running) push();
+          }, 10000);
+        }
+      }
     } finally {
       running = false;
       if (retryConnect) { retryConnect = false; window.qnCloudConnect(client, {id: uid}); }
