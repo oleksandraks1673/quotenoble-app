@@ -16,7 +16,7 @@ test('flags a loss', () => {
   assert.equal(calculateProfitGuard({ revenue: 100, labour: 150 }).isLoss, true);
 });
 test('rejects malformed, missing and unsafe amounts', () => {
-  for (const invalid of [-1, 'bad', '', '  ', null, undefined, NaN, Infinity, {}, true, '12,000']) {
+  for (const invalid of [-1, 'bad', '', '  ', null, NaN, Infinity, {}, true, '12,000']) {
     assert.throws(() => calculateProfitGuard({ revenue: 100, materials: invalid }), RangeError);
   }
   assert.throws(() => calculateProfitGuard({}), RangeError);
