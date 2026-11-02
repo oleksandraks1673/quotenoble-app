@@ -15,7 +15,14 @@ test('handles zero revenue', () => {
 test('flags a loss', () => {
   assert.equal(calculateProfitGuard({ revenue: 100, labour: 150 }).isLoss, true);
 });
-test('rejects invalid costs', () => {
-  assert.throws(() => calculateProfitGuard({ revenue: 100, materials: -1 }), RangeError);
-  assert.throws(() => calculateProfitGuard({ revenue: 'bad' }), RangeError);
+test('rejects malformed, missing and unsafe amounts', () => {
+  for (const invalid of [-1, 'bad', '', '  ', null, undefined, NaN, Infinity, {}, true, '12,000']) {
+    assert.throws(() => calculateProfitGuard({ revenue: 100, materials: invalid }), RangeError);
+  }
+  assert.throws(() => calculateProfitGuard({}), RangeError);
+  assert.throws(() => calculateProfitGuard({ revenue: 1e308, materials: 1e308 }), RangeError);
+});
+test('accepts valid decimal strings and zero costs', () => {
+  const result = calculateProfitGuard({ revenue: '125.50', materials: '25.25', labour: 0 });
+  assert.equal(result.profit, 100.25);
 });
