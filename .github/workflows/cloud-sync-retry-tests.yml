@@ -1,0 +1,20 @@
+name: Cloud sync retry policy tests
+on:
+  push:
+    branches: [fix/cloud-sync-retry-preview-20261102]
+  pull_request:
+    paths:
+      - 'cloud-sync-retry-policy*.mjs'
+      - '.github/workflows/cloud-sync-retry-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check cloud-sync.js
+      - run: node --test cloud-sync-retry-policy.test.mjs
