@@ -1,0 +1,26 @@
+/* Flat document lists: rows and dividers instead of separate rounded cards. */
+@media screen {
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item {
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid #dce1e7!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:20px 4px!important;
+  margin:0!important;
+ }
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item:hover {
+  background:#eef1f5!important;
+  border-color:#dce1e7!important;
+  box-shadow:none!important;
+ }
+ html:root:root body .card.qn-recent-documents {
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:10px 0!important;
+ }
+ html:root:root body .qn-recent-documents>h2 {margin-bottom:12px;}
+ html:root:root body .qn-review-row {border-color:#dce1e7;}
+}
