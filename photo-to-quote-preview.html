@@ -1,24 +1,22 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Photo to Quote · Development Preview</title>
-<style>body{font-family:system-ui,sans-serif;background:#f5f7fa;color:#16253b;margin:0}main{max-width:720px;margin:3rem auto;padding:24px;background:white;border-radius:18px}label{display:block;margin:16px 0 7px;font-weight:650}input,textarea,button{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}button{background:#123a68;color:white;cursor:pointer;margin-top:20px}button:disabled{opacity:.6}small{color:#475569}li{margin:9px 0}.warning{background:#fff8e7;padding:12px;border-radius:8px}article{padding:12px 0;border-bottom:1px solid #ddd}</style></head>
-<body><main><h1>AI Photo-to-Quote</h1><p><strong>Development preview only.</strong> This creates an editable draft, not a saved Quote.Noble quote.</p>
-<p class="warning">Do not rely on photographs for quantities, measurements, safety assessments, or final pricing. Contractor verification is required.</p>
-<form id="f"><label for="token">Supabase sign-in access token (developer preview)</label><input id="token" type="password" autocomplete="off" required><small>This preview does not store your token.</small>
-<label for="photos">Job photos (1–4)</label><input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
-<label for="trade">Trade</label><input id="trade" placeholder="Roofing, gutters, siding…">
-<label for="notes">Job notes (optional)</label><textarea id="notes" rows="3" maxlength="1000"></textarea>
-<button id="go" type="submit">Analyze photos</button></form><p id="status" role="status"></p><section id="result" aria-live="polite"></section></main>
-<script>
-const f=document.getElementById('f'),status=document.getElementById('status'),out=document.getElementById('result'),go=document.getElementById('go');
-const readFile=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file)});
-function item(name,text){const p=document.createElement(name);p.textContent=text;return p}
-f.addEventListener('submit',async e=>{e.preventDefault();out.replaceChildren();const files=[...document.getElementById('photos').files];
-if(files.length<1||files.length>4||files.some(file=>file.size>4*1024*1024)){status.textContent='Choose 1–4 images, each under 4 MB.';return}
-go.disabled=true;status.textContent='Analyzing images…';
-try{const photos=await Promise.all(files.map(readFile));const res=await fetch('/api/ai/photo-to-quote',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+document.getElementById('token').value},body:JSON.stringify({photos,tradeHint:document.getElementById('trade').value,notes:document.getElementById('notes').value})});
-const body=await res.json();if(!res.ok)throw Error(body.error||'Analysis failed');const d=body.draft;out.append(item('h2','Draft: '+d.trade),item('p',d.summary));
-out.append(item('h3','Suggested work (review and edit)'));for(const it of d.suggested_items){const a=document.createElement('article');const description=document.createElement('input');description.value=it.description;description.setAttribute('aria-label','Work description');a.append(description,item('small','Quantity: '+(it.quantity===null?'Measure onsite':it.quantity)+' '+it.unit+' — '+it.rationale));out.append(a)}
-out.append(item('h3','Questions to confirm'));for(const q of d.questions)out.append(item('p','• '+q));
-out.append(item('p','Warning: '+d.warning));status.textContent='Draft created. Review quantities and pricing before creating a quote. Nothing was saved.';
-}catch(err){status.textContent=err.message||'Analysis failed'}finally{go.disabled=false}});
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Photo to Quote · Quote.Noble</title>
+<style>:root{font-family:system-ui,-apple-system,sans-serif;color:#23314b;background:#f7f7f9}*{box-sizing:border-box}body{margin:0}header{background:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e6e7eb}header b{font-size:20px}header a{color:#a96338;text-decoration:none}main{max-width:650px;margin:auto;padding:25px 16px 60px}h1{font-size:27px;margin:0 0 8px}p{line-height:1.5;color:#607087}article{background:#fff;border:1px solid #e7e7ec;border-radius:16px;padding:20px;margin:18px 0}label{display:block;font-weight:650;margin:16px 0 8px}input,textarea,select{font:inherit;width:100%;border:1px solid #d8dce5;border-radius:10px;padding:12px;background:white;color:#23314b}input[type=file]{padding:16px}button{width:100%;padding:15px;background:#d98a45;color:white;border:0;border-radius:12px;font:inherit;font-weight:700;margin-top:20px}button:disabled{opacity:.5}.subtle{font-size:13px}.info{background:#fff6e8;padding:13px;border-radius:10px;color:#815525}.item{padding:15px 0;border-bottom:1px solid #eceef3}.item input{margin-top:6px}#result[hidden]{display:none}#photosPreview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}#photosPreview img{width:74px;height:74px;object-fit:cover;border-radius:9px}a{color:#ae6831}</style></head>
+<body><header><b>Quote.Noble</b><a href="https://www.quotenoble.com">Home</a></header><main>
+<h1>Photo to Quote <span aria-hidden="true">✨</span></h1><p>Add job photos and create a draft estimate in a few steps.</p>
+<div class="info"><b>Development preview.</b> The live Quote.Noble login and cloud saving are not connected here yet. Never enter an access token on this page.</div>
+<article><label for="photos">1. Add job photos</label><input id="photos" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" multiple><div id="photosPreview"></div>
+<label for="trade">2. Choose your trade</label><select id="trade"><option>Gutters</option><option>Roofing</option><option>Siding</option><option>General repair</option><option>Other</option></select>
+<label for="notes">Job details (optional)</label><textarea id="notes" rows="3" placeholder="Example: Leaking gutter corner, two-storey home"></textarea>
+<button id="analyze" type="button">Analyze Photos</button><p id="status" role="status" class="subtle"></p></article>
+<article id="result" hidden><h2>Quote draft</h2><p id="summary"></p><div id="items"></div><p class="info">Check all work and measurements on site. AI cannot reliably calculate dimensions, material quantities or prices from photos alone.</p><button id="copy" type="button">Copy Draft Items</button><p class="subtle">To save a quote, open Quote.Noble and create a quote using these items. Automatic save is not yet available in this preview.</p></article>
+</main><script>
+const $=id=>document.getElementById(id),photos=$('photos'),preview=$('photosPreview');let draft=[];
+photos.addEventListener('change',()=>{preview.replaceChildren();const files=[...photos.files];for(const file of files.slice(0,4)){if(!file.type.startsWith('image/'))continue;const img=document.createElement('img');const url=URL.createObjectURL(file);img.src=url;img.onload=()=>URL.revokeObjectURL(url);preview.append(img)}if(files.length>4)$('status').textContent='Please select no more than four photos.'});
+$('analyze').addEventListener('click',()=>{const files=[...photos.files];if(!files.length||files.length>4){$('status').textContent='Choose 1–4 photos first.';return}if(files.some(f=>f.size>4*1024*1024)){$('status').textContent='Each photo must be under 4 MB.';return}
+$('status').textContent='This standalone preview cannot analyze photos until it is connected to Quote.Noble sign-in. Below is an example editable draft—not AI analysis.';
+const trade=$('trade').value,note=$('notes').value.trim();
+draft=[trade+' — inspect photographed area',trade+' — confirm repair scope and site measurements',trade+' — materials and labour (quantity and cost to confirm)'];
+$('summary').textContent=(note?note+' · ':'')+'Example draft for '+trade.toLowerCase()+'. No photo analysis has been performed.';
+const box=$('items');box.replaceChildren();for(const [i,value] of draft.entries()){const line=document.createElement('div');line.className='item';const label=document.createElement('label');label.textContent='Work item '+(i+1);const input=document.createElement('input');input.value=value;input.className='line-item';line.append(label,input);box.append(line)}$('result').hidden=false;$('result').scrollIntoView({behavior:'smooth'});});
+$('copy').addEventListener('click',async()=>{const value=[...document.querySelectorAll('.line-item')].map(n=>n.value).join('\n');try{await navigator.clipboard.writeText(value);$('status').textContent='Draft items copied.'}catch{$('status').textContent='Copy unavailable: select and copy items manually.'}});
 </script></body></html>
