@@ -3,7 +3,7 @@
  'use strict';
  if(window.qnDocumentFirstInitialized)return;
  window.qnDocumentFirstInitialized=true;
- const copy={ru:{'More options':'Дополнительные действия','Quote options':'Действия со сметой','Invoice options':'Действия со счётом','Approvals & photos':'Подтверждения и фото','More project tools':'Дополнительные инструменты','More tools':'Дополнительные инструменты','Edit':'Изменить','More':'Ещё','Record payment':'Записать оплату','View quote':'Открыть смету','View invoice':'Открыть счёт'},uk:{'More options':'Додаткові дії','Quote options':'Дії з кошторисом','Invoice options':'Дії з рахунком','Approvals & photos':'Підтвердження та фото','More project tools':'Додаткові інструменти','More tools':'Додаткові інструменти','Edit':'Змінити','More':'Ще','Record payment':'Записати оплату','View quote':'Відкрити кошторис','View invoice':'Відкрити рахунок'}};
+ const copy={ru:{'Send':'Отправить','More options':'Дополнительные действия','Quote options':'Действия со сметой','Invoice options':'Действия со счётом','Approvals & photos':'Подтверждения и фото','More project tools':'Дополнительные инструменты','More tools':'Дополнительные инструменты','Edit':'Изменить','More':'Ещё','Record payment':'Записать оплату','View quote':'Открыть смету','View invoice':'Открыть счёт'},uk:{'Send':'Надіслати','More options':'Додаткові дії','Quote options':'Дії з кошторисом','Invoice options':'Дії з рахунком','Approvals & photos':'Підтвердження та фото','More project tools':'Додаткові інструменти','More tools':'Додаткові інструменти','Edit':'Змінити','More':'Ще','Record payment':'Записати оплату','View quote':'Відкрити кошторис','View invoice':'Відкрити рахунок'}};
  const text=s=>copy[window.qnLanguage?.get?.()]?.[s]||window.qnLanguage?.translate?.(s)||s;
  function label(el,s){el.dataset.docfirstLabel=s;const value=text(s);if(el.textContent!==value)el.textContent=value;return el;}
  const scope=()=>[typeof LS_KEY==='undefined'?'':LS_KEY,window.qnApprovalSession?.user?.id||'',window.qnCompanySession?.ownerId||''].join('|');
@@ -45,6 +45,7 @@
   let menu=actions.querySelector('.qn-doc-more');
   if(!menu){menu=document.createElement('details');menu.className='qn-doc-more';const content=document.createElement('div');content.className='qn-doc-action-list';menu.append(label(document.createElement('summary'),'More'),content);actions.append(menu);}
   const list=menu.querySelector('.qn-doc-action-list');if(!list)return;
+  const share=root.querySelector('#doc-share');if(share)label(share,'Send');
   const edit=root.querySelector('#doc-edit');if(edit){label(edit,'Edit');actions.insertBefore(edit,menu);}
   const pdf=root.querySelector('#doc-pdf');if(pdf&&!list.contains(pdf))list.prepend(pdf);
   if(!list.querySelector('[data-docfirst-manage]')){
@@ -54,10 +55,13 @@
    const inv=typeof DB==='undefined'?null:DB.invoices.find(x=>x.id===id);
    if(inv&&invoiceTotals(inv).balance>0){const pay=button('Record payment',()=>{window.openInvoiceDetail(id);document.getElementById('i-pay')?.click();});pay.dataset.docfirstPayment='';list.prepend(pay);}
   }
-  const doc=back.querySelector(':scope > .doc');
+  let content=back.querySelector(':scope > .qn-document-content');
+  if(!content){content=document.createElement('div');content.className='qn-document-content';back.insertBefore(content,actions);}
+  const doc=back.querySelector('.doc');if(doc&&doc.parentElement!==content)content.append(doc);
+  const previousExtras=back.querySelector(':scope > [data-docfirst-section="document-extras"]');if(previousExtras)content.append(previousExtras);
   const extras=[...root.querySelectorAll('.doc-body > details.qn-form-details,.doc-body > details.qn-simple-section')];
   const panels=[...root.querySelectorAll('.doc-body > [data-qn-approval]')];
-  if(extras.length||panels.length){const group=disclosure(back,'document-extras','Approvals & photos');for(const el of [...extras,...panels])moveInto(group,el);if(doc)doc.after(group.details);}
+  if(extras.length||panels.length){const group=disclosure(content,'document-extras','Approvals & photos');for(const el of [...extras,...panels])moveInto(group,el);if(doc)doc.after(group.details);}
   const heading=root.querySelector('.doc-title-row h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
  }
  const originalDocument=window.openDocument;
