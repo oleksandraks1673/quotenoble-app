@@ -1,0 +1,23 @@
+/* Compact, readable lists and document metadata. */
+@media screen {
+ html:root:root body.qn-authenticated #qn-home-backdrop {display:none!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item {padding:12px 2px!important;margin:0!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .top {display:grid!important;grid-template-columns:minmax(0,1fr) max-content!important;column-gap:12px!important;row-gap:5px!important;align-items:start!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .top>div:first-child,
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .top>div:last-child {display:contents!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .title {grid-column:1;grid-row:1;font-size:16px!important;line-height:1.4!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .amt {grid-column:2;grid-row:1;justify-self:end;font-size:18px!important;line-height:1.4!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .top>div:first-child>.sub {grid-column:1;grid-row:2;margin:0!important;font-size:14px!important;line-height:1.4!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .badge {grid-column:2;grid-row:2;justify-self:end;align-self:start;margin:0!important;}
+ html:root:root body :is(#quote-list,#invoice-list,#dash-recent) .list-item .top>div:last-child>.sub {grid-column:2;grid-row:3;margin:0!important;justify-self:end;font-size:12px!important;line-height:1.3!important;}
+ html:root:root body #doc-root .qn-document-nav {padding:7px 12px!important;}
+ html:root:root body #doc-root .qn-business-logo-top {padding:8px 16px 0!important;}
+ html:root:root body #doc-root .qn-business-logo-top img {max-width:110px!important;max-height:40px!important;}
+ html:root:root body #doc-root .doc-body {padding-top:10px!important;}
+ html:root:root body #doc-root .doc-title-row {margin-bottom:8px!important;}
+ html:root:root body #doc-root .qn-document-parties {gap:10px!important;margin:8px 0 12px!important;}
+ html:root:root body #doc-root .qn-document-parties .doc-meta {line-height:1.4!important;}
+ html:root:root body #doc-root .doc-table {margin-top:8px!important;}
+ html:root:root body #doc-root .doc-body>.note {margin:8px 0!important;padding:8px 0!important;}
+ html:root:root body .qn-document-options {margin-top:12px!important;}
+}
