@@ -14,8 +14,8 @@
  html:root:root body .qn-review-row .right {display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;}
  html:root:root body .qn-review-row .amount {font-size:23px;white-space:nowrap;}
  html:root:root body .qn-review-row .badge {font-size:13px;white-space:nowrap;margin:0;}
- html:root:root body #quote-list .list-item .top,html:root:root body #invoice-list .list-item .top {display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px;}
- html:root:root body #quote-list .list-item .top>div:last-child,html:root:root body #invoice-list .list-item .top>div:last-child {justify-self:stretch;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;}
+ html:root:root body #dash-recent .list-item .top,html:root:root body #quote-list .list-item .top,html:root:root body #invoice-list .list-item .top {display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px;}
+ html:root:root body #dash-recent .list-item .top>div:last-child,html:root:root body #quote-list .list-item .top>div:last-child,html:root:root body #invoice-list .list-item .top>div:last-child {justify-self:stretch;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;}
  html:root:root body .list-item .title {font-size:18px;}
  html:root:root body .list-item .sub {font-size:16px;}
  html:root:root body .list-item .amt {font-size:23px;}
