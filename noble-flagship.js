@@ -105,49 +105,67 @@
     window.renderDashboard = wrapped;
   }
 
-  function photo(title, roof, sky) {
+  function photo(kind) {
     const canvas = document.createElement("canvas");
     canvas.width = 900;
     canvas.height = 640;
     const g = canvas.getContext("2d");
-    g.fillStyle = sky;
-    g.fillRect(0, 0, 900, 640);
-    g.fillStyle = "#d6d3cd";
-    g.fillRect(0, 360, 900, 280);
-    g.fillStyle = roof;
-    g.beginPath();
-    g.moveTo(70, 370);
-    g.lineTo(450, 120);
-    g.lineTo(830, 370);
-    g.closePath();
-    g.fill();
+    const wall = (color) => { g.fillStyle = color; g.fillRect(0, 0, 900, 640); };
+    const floor = (color) => { g.fillStyle = color; g.fillRect(0, 430, 900, 210); };
+    if (kind === "panel") {
+      wall("#e7e5e4"); floor("#a8a29e");
+      g.fillStyle = "#1f2937"; g.fillRect(280, 90, 340, 420);
+      g.fillStyle = "#f8fafc";
+      for (let row = 0; row < 4; row++) for (let col = 0; col < 2; col++) g.fillRect(320 + col * 150, 130 + row * 90, 110, 60);
+    } else if (kind === "paint") {
+      wall("#fdba74"); floor("#d6d3d1");
+      g.fillStyle = "#fff7ed"; g.fillRect(0, 0, 280, 430);
+      g.fillStyle = "#9a3412"; g.fillRect(620, 180, 40, 220);
+    } else if (kind === "yard") {
+      wall("#bae6fd"); floor("#65a30d");
+      g.fillStyle = "#166534"; g.beginPath(); g.arc(180, 360, 90, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(700, 340, 70, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "#d6d3d1"; g.fillRect(300, 470, 300, 50);
+    } else if (kind === "pipes") {
+      wall("#f1f5f9"); floor("#cbd5e1");
+      g.strokeStyle = "#0369a1"; g.lineWidth = 28;
+      g.beginPath(); g.moveTo(80, 160); g.lineTo(820, 160); g.stroke();
+      g.beginPath(); g.moveTo(220, 160); g.lineTo(220, 500); g.stroke();
+      g.strokeStyle = "#e85d04"; g.beginPath(); g.moveTo(560, 160); g.lineTo(560, 420); g.stroke();
+    } else if (kind === "hvac") {
+      wall("#e2e8f0"); floor("#94a3b8");
+      g.fillStyle = "#cbd5e1"; g.fillRect(180, 160, 540, 320);
+      g.fillStyle = "#334155"; g.fillRect(230, 220, 180, 200);
+      g.fillStyle = "#e85d04"; g.fillRect(480, 250, 180, 40);
+    } else {
+      wall("#f8fafc"); floor("#e7e5e4");
+      g.fillStyle = "#bfdbfe"; g.fillRect(80, 80, 260, 180);
+      g.fillStyle = "#111827"; g.fillRect(460, 140, 280, 16);
+      g.fillRect(460, 180, 200, 16);
+    }
     return canvas.toDataURL("image/jpeg", 0.86);
   }
 
   function demoPhotos() {
     if (window.__qnDemoPhotos) return window.__qnDemoPhotos;
-    window.__qnDemoPhotos = [
-      photo("Before", "#6b7280", "#bfdbfe"),
-      photo("During", "#c2410c", "#fed7aa"),
-      photo("After", "#374151", "#e0f2fe"),
-      photo("Gutters", "#1f2937", "#dbeafe"),
-      photo("Flashing", "#9a3412", "#ffedd5"),
-      photo("Complete", "#14532d", "#dcfce7")
-    ];
+    window.__qnDemoPhotos = ["panel", "pipes", "paint", "hvac", "yard", "room"].map(photo);
     return window.__qnDemoPhotos;
   }
 
   function paintJobPhotos() {
     if (!new URLSearchParams(location.search).has("designpreview")) return;
     const photos = demoPhotos();
-    document.querySelectorAll("#job-list .list-item").forEach((row, index) => {
+    document.querySelectorAll("#job-list .list-item").forEach((row) => {
       if (row.querySelector(".qn-job-photos")) return;
+      const title = (row.querySelector(".title")?.textContent || "").toLowerCase();
+      const pick = title.includes("panel") || title.includes("oak") ? [0, 1, 3]
+        : title.includes("paint") || title.includes("birch") ? [2, 5, 2]
+        : [4, 5, 4];
       const strip = document.createElement("div");
       strip.className = "qn-job-photos";
-      const start = (index * 2) % photos.length;
-      [0, 1, 2].forEach((offset) => {
+      pick.forEach((index) => {
         const img = document.createElement("img");
-        img.src = photos[(start + offset) % photos.length];
+        img.src = photos[index];
         img.alt = "";
         strip.appendChild(img);
       });
@@ -160,7 +178,7 @@
     const section = document.getElementById("view-photos");
     if (!section) return;
     const photos = demoPhotos();
-    const labels = ["Maple Ave · before", "Maple Ave · during", "Maple Ave · after", "Birch Cres · gutters", "Harbour St · flashing", "Harbour St · complete"];
+    const labels = ["Oak St · panel open", "Oak St · new breakers", "Birch · first coat", "Harbour · furnace", "Harbour · beds before", "Harbour · beds after"];
     section.innerHTML = '<div class="qn-page-intro"><h2>Project photos</h2><p>Before, during, and after for open jobs.</p></div><div class="qn-photo-board"></div>';
     const board = section.querySelector(".qn-photo-board");
     photos.forEach((src, index) => {
