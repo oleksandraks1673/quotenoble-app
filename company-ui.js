@@ -81,7 +81,7 @@
   const key='quotenoble_user_'+user.id+(candidate===user.id?'':'_company_'+candidate);
   if(LS_KEY!==key){LS_KEY=key;const loaded=await QNInspectionPhotos.hydrate(storage.load()||seedDB(),LS_KEY);if(generation!==requestGeneration)throw Error('Your account changed.');DB=loaded;if(!storage.save(DB))throw Error('Saved photos could not be opened safely. Retry without clearing site data.');}
   let result;
-  try{result=await api({action:'list'});}catch(e){if(candidate!==user.id||pendingInvite())throw e;result={workspaces:[{ownerId:user.id,isOwner:true,name:DB.profile?.businessName||'My own business',shared:false}]};}
+  try{result=await api({action:'list'});window.qnCompanyListFailed=false;}catch(e){if(candidate!==user.id||pendingInvite())throw e;window.qnCompanyListFailed=true;result={workspaces:[{ownerId:user.id,isOwner:true,name:DB.profile?.businessName||'My own business',shared:false}]};}
   if(generation!==requestGeneration)throw Error('Your account changed.');
   workspaces=result.workspaces;
   invitations=Array.isArray(result.invitations)?result.invitations:[];

@@ -166,15 +166,27 @@
     }
   }
   async function readCloud(sb, userId) {
-    if(window.qnCompanySession?.shared&&window.qnCompanySession.ownerId!==userId&&window.qnCompanyRead){
-      const row=await window.qnCompanyRead(window.qnCompanySession.ownerId);
-      if(row&&(!valid(row.payload)||!row.updated_at))throw Error('Invalid company data. Your device copy is kept.');
-      return row;
+    const company=window.qnCompanySession;
+    let companyRow=null;
+    if(company?.ownerId&&window.qnCompanyRead){
+      try{
+        const row=await window.qnCompanyRead(company.ownerId);
+        if(row&&(!valid(row.payload)||!row.updated_at))throw Error('Invalid company data. Your device copy is kept.');
+        if(row)companyRow={...row,source:'company'};
+      }catch(error){
+        if(company.shared&&company.ownerId!==userId)throw error;
+      }
     }
-    const {data, error} = await sb.from("user_documents").select("payload,updated_at").eq("user_id", userId).maybeSingle();
-    if (error) throw error;
-    if (data && (!valid(data.payload) || !data.updated_at)) throw Error("Cloud data needs review. Your device copy has been kept.");
-    return data;
+    let userRow=null;
+    if(!company?.shared||company.ownerId===userId){
+      const {data, error} = await sb.from("user_documents").select("payload,updated_at").eq("user_id", userId).maybeSingle();
+      if (error) throw error;
+      if (data && (!valid(data.payload) || !data.updated_at)) throw Error("Cloud data needs review. Your device copy has been kept.");
+      if(data)userRow={...data,source:'user'};
+    }
+    if(companyRow&&hasWork(companyRow.payload))return companyRow;
+    if(userRow&&hasWork(userRow.payload))return userRow;
+    return companyRow||userRow||null;
   }
   function nextTimestamp(row) {
     return new Date(Math.max(Date.now(), row ? Date.parse(row.updated_at) + 1 : 0)).toISOString();
@@ -194,9 +206,10 @@
     return next;
   }
   async function writeCloud(sb, userId, value, expected) {
-    if(window.qnCompanySession?.shared&&window.qnCompanySession.ownerId!==userId&&window.qnCompanyWrite){
-      const row=await window.qnCompanyWrite(window.qnCompanySession.ownerId,value,expected?.updated_at||null);
-      return {payload:clone(value),updated_at:row.updated_at};
+    const company=window.qnCompanySession;
+    if((expected?.source==='company'||company?.shared&&company.ownerId!==userId)&&window.qnCompanyWrite&&company?.ownerId){
+      const row=await window.qnCompanyWrite(company.ownerId,value,expected?.updated_at||null);
+      return {payload:clone(value),updated_at:row.updated_at,source:'company'};
     }
     const changes = {payload: value, updated_at: nextTimestamp(expected)};
     const query = expected
@@ -268,7 +281,17 @@
       const row = await readCloud(sb, user.id);
       if (gen !== generation) return;
       remoteRow = row;
-      if (!row) { lastSnapshot = ""; ready = true; if (hasWork(DB)) pending = true; else status("Ready to save ✓"); return; }
+      if (!row) {
+        lastSnapshot = "";
+        // An empty new origin must not upload a blank workspace when the company
+        // list could not be loaded. That insert would be a second cloud copy.
+        if (window.qnCompanyListFailed && !hasWork(DB)) {
+          ready = false;
+          status("Saved on device · company cloud access unavailable", true);
+          return;
+        }
+        ready = true; if (hasWork(DB)) pending = true; else status("Ready to save ✓"); return;
+      }
       const local = fingerprint(DB), remote = fingerprint(row.payload), base = baseline();
       if (local === remote) { remember(DB); ready = true; status("Saved to cloud ✓"); return; }
       if (!hasWork(DB) && !base || base && base === local) {
