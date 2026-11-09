@@ -1,0 +1,24 @@
+/* Warm branded job workspace. Existing details controls and actions are retained. */
+@media screen{
+.modal:has(#modal-body[data-simple-job]){background:#fffcf7}
+.modal:has(#modal-body[data-simple-job]) .qn-dialog-top{display:flex;align-items:center;gap:14px;background:#fffcf7;border:0;border-bottom:1px solid #e9e1d6;border-radius:0;padding:0 0 10px;margin-bottom:12px;box-shadow:none}
+.modal:has(#modal-body[data-simple-job]) .qn-dialog-top h2{flex:1;min-width:0;margin:0!important;font-size:clamp(18px,4vw,22px)!important;line-height:1.25;color:#3e2c20;letter-spacing:-.25px}
+.modal:has(#modal-body[data-simple-job]) .qn-dialog-top .qn-simple-back{flex:none;min-height:44px;margin:0;padding:6px 0;color:#925119;font-size:13px}
+#modal-body[data-simple-job]>.qn-simple-section,#modal-body[data-simple-job]>.qn-job-costs{border:1px solid #e9ddcc;border-radius:15px;background:#fff;box-shadow:0 3px 10px #62391205;margin:12px 0;overflow:clip}
+#modal-body[data-simple-job]>.qn-simple-section>summary,#modal-body[data-simple-job]>.qn-job-costs>summary{display:grid;grid-template-columns:36px minmax(0,1fr) 22px;align-items:center;gap:12px;list-style:none;min-height:76px;padding:16px;color:#4c3b2e;font-size:15px;font-weight:650;line-height:1.45;cursor:pointer}
+#modal-body[data-simple-job] summary::-webkit-details-marker{display:none}
+#modal-body[data-simple-job]>.qn-simple-section>summary::before,#modal-body[data-simple-job]>.qn-job-costs>summary::before{content:'⋯';display:grid;place-items:center;width:36px;height:36px;background:#fff1dd;border:1px solid #f5dfbf;border-radius:11px;color:#a55c17;font-size:21px;font-weight:600;line-height:1}
+#modal-body[data-simple-job]>[data-qn-section="Deposits & payments"]>summary::before{content:'$';background:#edf6ef;border-color:#dbeade;color:#43734d}
+#modal-body[data-simple-job]>[data-qn-section="Extra work & approvals"]>summary::before{content:'✓'}
+#modal-body[data-simple-job]>[data-qn-section="Materials & supplier orders"]>summary::before{content:'▤'}
+#modal-body[data-simple-job]>[data-qn-section="Crew & assignments"]>summary::before{content:'♧';background:#eef2fb;border-color:#dfe5f3;color:#626c9a}
+#modal-body[data-simple-job]>.qn-job-costs>summary::before{content:'≋';background:#f3f0ec;border-color:#e7e1d9;color:#776653}
+#modal-body[data-simple-job]>.qn-simple-section>summary::after,#modal-body[data-simple-job]>.qn-job-costs>summary::after{content:'+';color:#a47649;font-size:22px;font-weight:400;justify-self:center}
+#modal-body[data-simple-job]>.qn-simple-section[open]>summary,#modal-body[data-simple-job]>.qn-job-costs[open]>summary{background:#fff6e9;border-bottom:1px solid #f0dfc8}
+#modal-body[data-simple-job]>.qn-simple-section[open]>summary::after,#modal-body[data-simple-job]>.qn-job-costs[open]>summary::after{content:'−'}
+#modal-body[data-simple-job]>.qn-job-costs>.kv{margin:12px 16px}
+#modal-body[data-simple-job]>.qn-simple-danger{background:transparent;border-color:transparent;box-shadow:none;margin-top:26px}
+#modal-body[data-simple-job]>.qn-simple-danger>summary{color:#a34b42;font-size:13px;min-height:58px}
+#modal-body[data-simple-job]>.qn-simple-danger>summary::before{content:'×';background:#fff0ec;border-color:#f1d7d0;color:#a34b42}
+#modal-body[data-simple-job] .qn-simple-main-actions>.btn-primary{background:#ff9900;color:#2b210f;border:1px solid #e98900;box-shadow:0 3px 10px #b76c0710}
+}

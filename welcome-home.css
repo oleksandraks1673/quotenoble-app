@@ -1,0 +1,13 @@
+@media screen {
+body.qn-authenticated #view-home .qn-day-welcome{display:block;position:relative;isolation:isolate;margin:0 0 12px;padding:20px 0 6px;letter-spacing:-.6px;line-height:1.2;max-width:100%;overflow:visible}
+body.qn-authenticated #view-home .qn-day-welcome::before{content:'';position:absolute;z-index:-1;pointer-events:none;right:0;top:-12px;width:180px;height:130px;background:radial-gradient(ellipse at 75% 40%,rgba(245,185,78,.17),transparent 70%)}
+.qn-day-line{display:flex;align-items:center;gap:10px;font-size:clamp(26px,6vw,36px);font-weight:750;letter-spacing:-.8px}
+body.qn-authenticated .qn-home-greeting .qn-day-icon{color:#d97706;font-size:28px;font-weight:400;flex:none}
+body.qn-authenticated #view-home .qn-home-company{display:block;width:100%;min-width:0;margin-top:9px;font-size:24px;font-weight:600;line-height:1.5;letter-spacing:-.2px;white-space:nowrap;overflow-x:auto;overflow-wrap:normal}
+.qn-home-company:empty{display:none!important}
+}
+@media screen {
+#view-project-photos [data-photo-pdf],.qn-photo-actions [data-photo-pdf]{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;padding:18px 20px!important;border:1px solid #e9e1d6!important;border-radius:16px!important;background:#fffdf9!important;color:#26221e!important;box-shadow:0 2px 12px #43301b08!important}
+.qn-photo-actions [data-photo-pdf] small{font:400 13px/1.45 inherit;color:#716b63}
+.qn-photo-actions [data-photo-pdf]:hover{border-color:#bc650d!important;background:#fff9ef!important}
+}

@@ -1,0 +1,989 @@
+/* Quote.Noble flagship visual system.
+   Presentation only: tokens, surfaces, type, and motion.
+   Feature behaviour, storage, and billing are untouched. */
+
+:root {
+  --qn-ink: #1c1612;
+  --qn-ink-soft: #3c322b;
+  --qn-muted: #7b7066;
+  --qn-faint: #a3988c;
+  --qn-paper: #f3eee6;
+  --qn-paper-deep: #e7dfd2;
+  --qn-card: rgba(255, 251, 246, 0.78);
+  --qn-card-solid: #fffaf4;
+  --qn-line: rgba(28, 22, 18, 0.1);
+  --qn-line-strong: rgba(28, 22, 18, 0.16);
+  --qn-accent: #c4622d;
+  --qn-accent-deep: #8e3d14;
+  --qn-accent-soft: #f8e6d6;
+  --qn-brass: #e0a15a;
+  --qn-good: #1c7a4d;
+  --qn-good-soft: #e4f5ec;
+  --qn-bad: #9d2f2f;
+  --qn-bad-soft: #f8e6e3;
+  --qn-warn-soft: #f8ecd6;
+  --qn-shadow: 0 18px 50px rgba(48, 28, 12, 0.08);
+  --qn-shadow-soft: 0 10px 28px rgba(48, 28, 12, 0.05);
+  --qn-radius: 22px;
+  --qn-font: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  --qn-display: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
+  --qn-ease: cubic-bezier(.2, .7, .2, 1);
+  /* Legacy tokens used throughout the original stylesheets. */
+  --blue: var(--qn-accent);
+  --blue-dark: var(--qn-accent-deep);
+  --blue-light: var(--qn-accent-soft);
+  --orange: var(--qn-brass);
+  --orange-dark: var(--qn-accent);
+  --white: var(--qn-card-solid);
+  --gray: var(--qn-paper);
+  --gray-border: var(--qn-line-strong);
+  --text: var(--qn-ink);
+  --muted: var(--qn-muted);
+  --green: var(--qn-good);
+  --red: var(--qn-bad);
+  --radius: 18px;
+  --qn-report-orange: var(--qn-accent);
+  --qn-report-ink: var(--qn-ink);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --qn-ink: #f6f1ea;
+  --qn-ink-soft: #ddd4c8;
+  --qn-muted: #b3a89c;
+  --qn-faint: #8d8276;
+  --qn-paper: #100e0c;
+  --qn-paper-deep: #1a1613;
+  --qn-card: rgba(32, 27, 23, 0.78);
+  --qn-card-solid: #1c1815;
+  --qn-line: rgba(246, 241, 234, 0.1);
+  --qn-line-strong: rgba(246, 241, 234, 0.16);
+  --qn-accent: #e08a52;
+  --qn-accent-deep: #f0b27a;
+  --qn-accent-soft: rgba(224, 138, 82, 0.16);
+  --qn-brass: #e7b56a;
+  --qn-good: #7dcea8;
+  --qn-good-soft: rgba(125, 206, 168, 0.14);
+  --qn-bad: #f0a39a;
+  --qn-bad-soft: rgba(240, 163, 154, 0.14);
+  --qn-warn-soft: rgba(231, 181, 106, 0.14);
+  --qn-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  --qn-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.28);
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------ app */
+html:root:root:root body {
+  font-family: var(--qn-font) !important;
+  color: var(--qn-ink);
+  background: var(--qn-paper) !important;
+  letter-spacing: -0.011em;
+}
+
+html:root:root:root body.qn-authenticated {
+  background:
+    radial-gradient(1100px 520px at 110% -10%, rgba(224, 161, 90, 0.22), transparent 55%),
+    radial-gradient(800px 480px at -15% 8%, rgba(196, 98, 45, 0.1), transparent 50%),
+    var(--qn-paper) !important;
+  font-size: 16px;
+}
+
+html:root:root:root body.qn-authenticated::before,
+html:root:root:root #qn-home-backdrop {
+  display: none !important;
+  content: none !important;
+}
+
+html:root:root:root body :is(h1, h2, h3, .qn-page-intro h2, .qn-more-header h1, .qn-home-greeting) {
+  font-family: var(--qn-display);
+  font-weight: 560;
+  letter-spacing: -0.035em;
+}
+
+html:root:root:root body.qn-authenticated .app-header {
+  background: color-mix(in srgb, var(--qn-paper) 78%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border-bottom: 1px solid var(--qn-line) !important;
+  box-shadow: none !important;
+}
+
+html:root:root:root body.qn-authenticated .app-header .brand {
+  max-width: 1180px;
+}
+
+html:root:root:root body.qn-authenticated .app-header .logo,
+html:root:root:root body.qn-authenticated .app-header .logo img {
+  border-radius: 14px !important;
+  box-shadow: 0 8px 20px rgba(140, 62, 20, 0.22);
+}
+
+html:root:root:root body.qn-authenticated .app-header .qn-brand-copy h1 {
+  font-family: var(--qn-display) !important;
+  color: var(--qn-ink) !important;
+  font-weight: 560 !important;
+  letter-spacing: -0.04em !important;
+}
+
+html:root:root:root body.qn-authenticated .app-header .qn-brand-copy p {
+  color: var(--qn-muted) !important;
+}
+
+html:root:root:root body #qn-create-toggle {
+  background: linear-gradient(180deg, #d97842, #a3471b) !important;
+  color: #fffaf4 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(163, 71, 27, 0.28) !important;
+  letter-spacing: -0.01em;
+}
+
+html:root:root:root body #qn-create-toggle:hover {
+  background: linear-gradient(180deg, #e28752, #8e3d14) !important;
+}
+
+html:root:root:root body #qn-create-menu {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--qn-shadow) !important;
+  overflow: hidden;
+}
+
+html:root:root:root body #qn-create-menu button {
+  color: var(--qn-ink) !important;
+  border-radius: 12px !important;
+}
+
+html:root:root:root body #qn-create-menu button:hover {
+  background: var(--qn-accent-soft) !important;
+}
+
+html:root:root:root body.qn-authenticated main {
+  max-width: 1120px;
+}
+
+html:root:root:root body.qn-authenticated .qn-home-greeting,
+html:root:root:root body.qn-authenticated .qn-home-greeting .qn-day-line,
+html:root:root:root body.qn-authenticated #qn-home-greeting-text {
+  font-family: var(--qn-display) !important;
+  font-size: clamp(36px, 5.4vw, 60px) !important;
+  font-weight: 560 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.04em !important;
+  color: var(--qn-ink) !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html:root:root:root body.qn-authenticated .qn-home-company {
+  font-family: var(--qn-font) !important;
+  font-size: 16px !important;
+  font-weight: 460 !important;
+  color: var(--qn-muted) !important;
+  letter-spacing: 0 !important;
+}
+
+html:root:root:root body.qn-authenticated .qn-day-icon {
+  color: var(--qn-accent) !important;
+}
+
+html:root:root:root body .qn-flagship-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 6px 0 22px;
+}
+
+html:root:root:root body .qn-flagship-kpis .stat {
+  position: relative;
+  overflow: hidden;
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 20px !important;
+  border-top: 1px solid var(--qn-line) !important;
+  box-shadow: var(--qn-shadow-soft) !important;
+  padding: 16px 16px 14px !important;
+  margin: 0 !important;
+}
+
+html:root:root:root body .qn-flagship-kpis .stat::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--qn-accent), var(--qn-brass));
+}
+
+html:root:root:root body .qn-flagship-kpis .stat.warn::after { background: var(--qn-bad); }
+html:root:root:root body .qn-flagship-kpis .stat.ok::after { background: var(--qn-good); }
+
+html:root:root:root body .qn-flagship-kpis .stat .label {
+  font-size: 11px !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  color: var(--qn-muted) !important;
+  font-weight: 650;
+}
+
+html:root:root:root body .qn-flagship-kpis .stat .value {
+  font-family: var(--qn-display) !important;
+  font-size: clamp(26px, 3vw, 34px) !important;
+  font-weight: 560 !important;
+  letter-spacing: -0.04em;
+  color: var(--qn-ink) !important;
+  margin-top: 10px !important;
+}
+
+html:root:root:root body .qn-home-actions {
+  display: grid !important;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 10px !important;
+}
+
+html:root:root:root body .qn-home-actions .btn,
+html:root:root:root body .btn {
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+  transition: transform .18s var(--qn-ease), box-shadow .18s var(--qn-ease), background .18s var(--qn-ease);
+}
+
+html:root:root:root body .btn-primary,
+html:root:root:root body .btn-blue {
+  background: linear-gradient(180deg, #d97842, #a3471b) !important;
+  color: #fffaf4 !important;
+  border: 0 !important;
+  box-shadow: 0 10px 22px rgba(163, 71, 27, 0.22) !important;
+}
+
+html:root:root:root body .btn-primary:hover,
+html:root:root:root body .btn-blue:hover,
+html:root:root:root body #qn-auth-submit:hover {
+  transform: translateY(-1px);
+}
+
+html:root:root:root body .btn-outline {
+  background: var(--qn-card-solid) !important;
+  color: var(--qn-ink) !important;
+  border: 1px solid var(--qn-line-strong) !important;
+  box-shadow: none !important;
+}
+
+html:root:root:root body .btn-outline:hover {
+  border-color: var(--qn-accent) !important;
+  background: var(--qn-accent-soft) !important;
+}
+
+html:root:root:root body .btn-danger {
+  background: transparent !important;
+  color: var(--qn-bad) !important;
+  border: 1px solid color-mix(in srgb, var(--qn-bad) 35%, transparent) !important;
+}
+
+html:root:root:root body .qn-find-launch {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 16px !important;
+  color: var(--qn-muted) !important;
+  box-shadow: var(--qn-shadow-soft) !important;
+  min-height: 54px !important;
+}
+
+html:root:root:root body .qn-find-icon { color: var(--qn-accent) !important; }
+
+@media (min-width: 900px) {
+  html:root:root:root body .qn-find-launch::after {
+    content: "Ctrl K";
+    margin-left: auto;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    border: 1px solid var(--qn-line);
+    border-radius: 8px;
+    padding: 4px 7px;
+    color: var(--qn-faint);
+  }
+}
+
+html:root:root:root body .card,
+html:root:root:root body .qn-more-menu,
+html:root:root:root body .qn-more-business-banner,
+html:root:root:root body .qn-simple-section,
+html:root:root:root body .qn-home-allowance {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: var(--qn-radius) !important;
+  box-shadow: var(--qn-shadow-soft) !important;
+  color: var(--qn-ink);
+}
+
+html:root:root:root body .card.qn-recent-documents {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+html:root:root:root body .qn-recent-documents > h2,
+html:root:root:root body .qn-page-intro h2,
+html:root:root:root body .qn-more-header h1,
+html:root:root:root body .qn-report-heading h1 {
+  font-family: var(--qn-display) !important;
+  font-size: clamp(30px, 4vw, 44px) !important;
+  font-weight: 560 !important;
+  letter-spacing: -0.04em !important;
+  color: var(--qn-ink) !important;
+}
+
+html:root:root:root body .qn-page-intro p,
+html:root:root:root body .qn-more-header p,
+html:root:root:root body .qn-report-heading p,
+html:root:root:root body .qn-report-sub {
+  color: var(--qn-muted) !important;
+  font-size: 15px !important;
+}
+
+html:root:root:root body :is(#quote-list, #invoice-list, #dash-recent, #client-list) .list-item {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--qn-shadow-soft) !important;
+  padding: 16px 16px !important;
+  margin: 0 0 10px !important;
+}
+
+html:root:root:root body :is(#quote-list, #invoice-list, #dash-recent) .list-item:hover {
+  border-color: color-mix(in srgb, var(--qn-accent) 45%, var(--qn-line)) !important;
+  box-shadow: var(--qn-shadow) !important;
+  transform: translateY(-1px);
+}
+
+html:root:root:root body .list-item .title,
+html:root:root:root body .qn-review-row strong {
+  color: var(--qn-ink) !important;
+  font-weight: 640 !important;
+}
+
+html:root:root:root body .list-item .sub,
+html:root:root:root body .qn-review-row .sub {
+  color: var(--qn-muted) !important;
+}
+
+html:root:root:root body .list-item .amt,
+html:root:root:root body .qn-review-row .amount {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--qn-ink) !important;
+}
+
+html:root:root:root body .badge,
+html:root:root:root body .ins-badge,
+html:root:root:root body .qn-pro-label,
+html:root:root:root body .qn-tier-badge {
+  border-radius: 999px !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  padding: 4px 8px !important;
+  background: var(--qn-paper-deep) !important;
+  color: var(--qn-ink-soft) !important;
+  border: 0 !important;
+}
+
+html:root:root:root body .badge.draft,
+html:root:root:root body .badge.sample { background: var(--qn-paper-deep) !important; color: var(--qn-ink-soft) !important; }
+html:root:root:root body .badge.sent,
+html:root:root:root body .badge.partial { background: var(--qn-warn-soft) !important; color: var(--qn-accent-deep) !important; }
+html:root:root:root body .badge.accepted,
+html:root:root:root body .badge.paid,
+html:root:root:root body .badge.invoiced { background: var(--qn-good-soft) !important; color: var(--qn-good) !important; }
+html:root:root:root body .badge.declined,
+html:root:root:root body .badge.overdue { background: var(--qn-bad-soft) !important; color: var(--qn-bad) !important; }
+
+html:root:root:root body .empty,
+html:root:root:root body .qn-photo-empty {
+  border: 1px dashed var(--qn-line-strong) !important;
+  border-radius: 24px !important;
+  background:
+    radial-gradient(420px 160px at 50% 0%, rgba(224, 161, 90, 0.2), transparent 70%),
+    var(--qn-card) !important;
+  color: var(--qn-muted) !important;
+  text-align: center;
+  padding: 42px 22px !important;
+  line-height: 1.6 !important;
+}
+
+html:root:root:root body .qn-first-quote {
+  margin-top: 16px !important;
+  background: var(--qn-ink) !important;
+  color: var(--qn-paper) !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+}
+
+html[data-theme="dark"] body .qn-first-quote {
+  background: var(--qn-accent) !important;
+  color: #1c1612 !important;
+}
+
+html:root:root:root body .field label,
+html:root:root:root body .qn-simple-filter label {
+  color: var(--qn-ink-soft) !important;
+  font-weight: 620;
+  font-size: 13px !important;
+}
+
+html:root:root:root body :is(.field input, .field select, .field textarea, .qn-tools-search input, .ins-toolbar input, .qn-simple-filter select, #view-inspections input, #view-inspections select, #view-inspections textarea) {
+  background: var(--qn-card-solid) !important;
+  color: var(--qn-ink) !important;
+  border: 1px solid var(--qn-line-strong) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+html:root:root:root body :is(input, textarea)::placeholder { color: var(--qn-faint); }
+
+html:root:root:root body :is(.field input, .field select, .field textarea):focus {
+  border-color: var(--qn-accent) !important;
+  box-shadow: 0 0 0 4px var(--qn-accent-soft) !important;
+  outline: none !important;
+}
+
+html:root:root:root body :is(button, a, summary, input, select, textarea):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--qn-accent) 70%, white) !important;
+  outline-offset: 3px;
+}
+
+html:root:root:root body .modal-back {
+  background: rgba(18, 14, 11, 0.56) !important;
+  backdrop-filter: blur(8px);
+}
+
+html:root:root:root body .modal {
+  background: var(--qn-card-solid) !important;
+  color: var(--qn-ink);
+  border-radius: 28px 28px 0 0 !important;
+  box-shadow: var(--qn-shadow) !important;
+}
+
+html:root:root:root body .modal h2,
+html:root:root:root body #doc-root .doc-title-row h2 {
+  font-family: var(--qn-display) !important;
+  color: var(--qn-ink) !important;
+  letter-spacing: -0.03em;
+}
+
+html:root:root:root body .modal:has(#items-wrap) {
+  background:
+    radial-gradient(700px 240px at 100% 0%, rgba(224, 161, 90, 0.16), transparent 50%),
+    var(--qn-paper) !important;
+}
+
+html:root:root:root body .item-row,
+html:root:root:root body .totals-box,
+html:root:root:root body .qn-form-details {
+  background: var(--qn-card-solid);
+  border: 1px solid var(--qn-line);
+  border-radius: 16px;
+}
+
+html:root:root:root body #doc-root {
+  background: var(--qn-paper-deep) !important;
+}
+
+html:root:root:root body #doc-root .qn-document-nav,
+html:root:root:root body #doc-root .doc-actions {
+  background: color-mix(in srgb, var(--qn-paper) 88%, transparent) !important;
+  backdrop-filter: blur(16px);
+  border-color: var(--qn-line) !important;
+}
+
+html:root:root:root body #doc-root .qn-document-content > .doc {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--qn-shadow) !important;
+  margin-top: 16px !important;
+}
+
+html:root:root:root body #doc-root .doc-table tbody tr {
+  border-bottom: 1px solid var(--qn-line) !important;
+}
+
+html:root:root:root body #doc-root .doc-totals .row.grand {
+  color: var(--qn-ink) !important;
+  font-family: var(--qn-display);
+}
+
+/* navigation */
+html:root:root:root body #tabbar {
+  background: color-mix(in srgb, var(--qn-card-solid) 82%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--qn-line) !important;
+  box-shadow: 0 16px 40px rgba(28, 18, 10, 0.16) !important;
+  border-radius: 24px !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+  width: auto !important;
+  padding: 6px !important;
+  z-index: 60;
+}
+
+html:root:root:root body #tabbar button {
+  color: var(--qn-muted) !important;
+  border-radius: 16px !important;
+  font-weight: 600 !important;
+  min-height: 54px !important;
+}
+
+html:root:root:root body #tabbar button.active {
+  background: var(--qn-ink) !important;
+  color: var(--qn-paper) !important;
+}
+
+html:root:root:root body.qn-authenticated main {
+  padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (min-width: 900px) {
+  html:root:root:root body.qn-authenticated {
+    padding-left: 248px !important;
+  }
+  html:root:root:root html[dir="rtl"] body.qn-authenticated,
+  html[dir="rtl"]:root:root:root body.qn-authenticated {
+    padding-left: 0 !important;
+    padding-right: 248px !important;
+  }
+  html:root:root:root body #tabbar {
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    width: 248px !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(255, 244, 230, 0.08) !important;
+    padding: 28px 14px 22px !important;
+    background:
+      radial-gradient(280px 180px at 20% 0%, rgba(224, 161, 90, 0.22), transparent 70%),
+      linear-gradient(180deg, #1a1410 0%, #120f0c 100%) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+  html[dir="rtl"]:root:root:root body #tabbar {
+    left: auto !important;
+    right: 0 !important;
+    border-right: 0 !important;
+    border-left: 1px solid rgba(255, 244, 230, 0.08) !important;
+  }
+  html:root:root:root body #tabbar::before {
+    content: "Quote.Noble";
+    display: block;
+    font-family: var(--qn-display);
+    color: #f6f1ea;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+    padding: 8px 12px 22px;
+  }
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy h1 {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+  }
+  html:root:root:root body #tabbar button {
+    color: #d9cfc3 !important;
+    justify-content: flex-start !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    min-height: 48px !important;
+    font-size: 15px !important;
+    text-align: left;
+  }
+  html:root:root:root body #tabbar button.active {
+    background: rgba(224, 161, 90, 0.16) !important;
+    color: #fff8ef !important;
+    box-shadow: inset 0 0 0 1px rgba(224, 161, 90, 0.35);
+  }
+  html:root:root:root body #tabbar button:hover {
+    background: rgba(255, 248, 239, 0.06) !important;
+  }
+  html:root:root:root body .qn-flagship-kpis,
+  html:root:root:root body .qn-home-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  html:root:root:root body .qn-home-actions { grid-template-columns: 280px 220px; }
+  html:root:root:root body .modal { border-radius: 24px !important; }
+}
+
+@media (max-width: 640px) {
+  html:root:root:root body .qn-home-actions { grid-template-columns: 1fr !important; }
+  html:root:root:root body.qn-authenticated .qn-home-greeting,
+  html:root:root:root body.qn-authenticated .qn-home-greeting .qn-day-line,
+  html:root:root:root body.qn-authenticated #qn-home-greeting-text {
+    font-size: 38px !important;
+  }
+}
+
+/* more, plans, reports, photos, inspections */
+html:root:root:root body .qn-more-section-label,
+html:root:root:root body .qn-report-kicker,
+html:root:root:root body .qn-plan-eyebrow,
+html:root:root:root body .qn-welcome-eyebrow {
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase;
+  font-size: 11px !important;
+  color: var(--qn-accent) !important;
+  font-weight: 700;
+}
+
+html:root:root:root body .qn-more-item {
+  min-height: 72px;
+}
+
+html:root:root:root body .qn-more-item strong { color: var(--qn-ink) !important; }
+html:root:root:root body .qn-simple-section > summary {
+  color: var(--qn-ink) !important;
+  background: transparent !important;
+}
+html:root:root:root body .qn-more-item small { color: var(--qn-muted) !important; }
+
+html:root:root:root body .qn-more-item-icon {
+  background: var(--qn-accent-soft) !important;
+  color: var(--qn-accent-deep) !important;
+  border-radius: 14px !important;
+}
+
+html:root:root:root body .qn-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+html:root:root:root body .qn-tier-card {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 22px !important;
+  padding: 22px !important;
+  box-shadow: var(--qn-shadow-soft);
+}
+
+html:root:root:root body .qn-tier-card.recommended {
+  background:
+    radial-gradient(400px 180px at 80% 0%, rgba(224, 161, 90, 0.28), transparent 60%),
+    var(--qn-ink) !important;
+  color: var(--qn-paper) !important;
+  border-color: transparent !important;
+}
+
+html:root:root:root body .qn-tier-card.recommended :is(h3, p, li) { color: inherit; }
+html:root:root:root body .qn-tier-price {
+  font-family: var(--qn-display);
+  font-size: 40px;
+  letter-spacing: -0.04em;
+  margin: 8px 0 0;
+}
+
+html:root:root:root body .qn-report-cards { gap: 12px; }
+html:root:root:root body .qn-report-stat {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--qn-shadow-soft);
+  border-top: 3px solid var(--qn-accent) !important;
+}
+html:root:root:root body .qn-report-stat strong {
+  font-family: var(--qn-display);
+  color: var(--qn-ink) !important;
+}
+html:root:root:root body .qn-report-bar {
+  background: linear-gradient(180deg, var(--qn-brass), var(--qn-accent-deep)) !important;
+  border-radius: 9px 9px 3px 3px !important;
+  min-height: 4px;
+}
+html:root:root:root body .qn-report-chart {
+  border-bottom-color: var(--qn-line) !important;
+}
+
+html:root:root:root body .qn-photo-tile,
+html:root:root:root body .qn-photo-job,
+html:root:root:root body .ins-list-row,
+html:root:root:root body .ins-finding {
+  background: var(--qn-card-solid) !important;
+  border: 1px solid var(--qn-line) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--qn-shadow-soft);
+  overflow: hidden;
+}
+
+html:root:root:root body .qn-photo-tile canvas,
+html:root:root:root body .qn-photo-tile img {
+  height: 180px;
+}
+
+html:root:root:root body .qn-photo-tabs button[aria-pressed="true"],
+html:root:root:root body .qn-photo-tools button[aria-pressed="true"] {
+  background: var(--qn-ink) !important;
+  color: var(--qn-paper) !important;
+  border-color: transparent !important;
+}
+
+html:root:root:root body .qn-workspace-hero {
+  border: 1px solid var(--qn-line) !important;
+  border-top: 0 !important;
+  border-radius: 24px !important;
+  background:
+    radial-gradient(500px 180px at 100% 0%, rgba(224, 161, 90, 0.28), transparent 60%),
+    var(--qn-card-solid) !important;
+}
+
+html:root:root:root body .view.active {
+  animation: qn-rise .42s var(--qn-ease);
+}
+
+@keyframes qn-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:root:root:root body .view.active,
+  html:root:root:root body .btn,
+  html:root:root:root body .list-item { animation: none !important; transition: none !important; }
+}
+
+/* theme toggle */
+#qn-theme-toggle {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--qn-line-strong);
+  background: var(--qn-card-solid);
+  color: var(--qn-ink);
+  font: 600 12px/1 var(--qn-font);
+  cursor: pointer;
+  box-shadow: var(--qn-shadow-soft);
+}
+
+html:root:root:root body .qn-create-wrap {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+body:not(.qn-authenticated) #qn-theme-toggle {
+  position: fixed;
+  z-index: 80;
+  top: 16px;
+  right: 16px;
+  left: auto;
+  bottom: auto;
+  background: rgba(255, 250, 244, 0.1);
+  color: #f6f1ea;
+  border-color: rgba(255, 244, 230, 0.2);
+}
+
+/* ------------------------------------------------------------------ auth */
+html:root:root:root body:not(.qn-authenticated) {
+  background: #120f0c !important;
+}
+
+html:root:root:root #qn-auth-screen {
+  background:
+    radial-gradient(900px 520px at 12% 10%, rgba(224, 161, 90, 0.32), transparent 58%),
+    radial-gradient(700px 480px at 90% 90%, rgba(196, 98, 45, 0.28), transparent 55%),
+    #120f0c !important;
+  color: #f6f1ea;
+}
+
+html:root:root:root #qn-auth-screen .qn-welcome-story { color: #f6f1ea; }
+html:root:root:root #qn-auth-screen .qn-welcome-story h2,
+html:root:root:root #qn-auth-screen .qn-welcome-story h2 span {
+  font-family: var(--qn-display) !important;
+  font-weight: 520 !important;
+  color: #f7f2ea !important;
+  letter-spacing: -0.045em !important;
+}
+html:root:root:root #qn-auth-screen .qn-welcome-story h2 span[data-noble-copy="2"] {
+  color: #e7b56a !important;
+}
+html:root:root:root #qn-auth-screen .qn-welcome-description { color: #d9cfc3 !important; }
+html:root:root:root #qn-auth-screen .qn-welcome-benefits li { color: #efe6db; }
+html:root:root:root #qn-auth-screen .qn-welcome-benefits svg {
+  background: rgba(255, 248, 239, 0.08) !important;
+  color: #e7b56a !important;
+}
+html:root:root:root #qn-auth-screen .qn-welcome-free {
+  color: #d9cfc3;
+  border-top-color: rgba(255, 244, 230, 0.14);
+}
+html:root:root:root #qn-auth-screen .qn-auth-card {
+  background: rgba(255, 250, 244, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28) !important;
+  backdrop-filter: blur(16px);
+}
+html[data-theme="dark"] #qn-auth-screen .qn-auth-card {
+  background: rgba(28, 24, 21, 0.86) !important;
+  border-color: rgba(255, 244, 230, 0.12) !important;
+  color: #f6f1ea;
+}
+html:root:root:root #qn-auth-screen .qn-auth-brand h1 {
+  font-family: var(--qn-display) !important;
+  letter-spacing: -0.04em !important;
+}
+html:root:root:root #qn-auth-screen #qn-auth-submit {
+  background: linear-gradient(180deg, #e7b56a, #c4622d) !important;
+  color: #1c1612 !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 28px rgba(196, 98, 45, 0.28) !important;
+}
+html:root:root:root #qn-auth-screen .qn-auth-card input {
+  background: #fff !important;
+  border-radius: 14px !important;
+}
+html:root:root:root #qn-auth-screen .qn-language label,
+html:root:root:root #qn-auth-screen .qn-language,
+html:root:root:root #qn-auth-screen .qn-language small {
+  color: #3c322b !important;
+}
+html[data-theme="dark"] #qn-auth-screen .qn-auth-card input {
+  background: #14110e !important;
+  color: #f6f1ea !important;
+  border-color: rgba(255, 244, 230, 0.14) !important;
+}
+
+@media (max-width: 760px) {
+  html:root:root:root #qn-auth-screen .qn-welcome-description,
+  html:root:root:root #qn-auth-screen .qn-welcome-benefits {
+    display: block !important;
+  }
+  html:root:root:root #qn-auth-screen .qn-welcome-benefits { display: grid !important; }
+  html:root:root:root #qn-auth-screen .qn-welcome-story h2 { font-size: 42px !important; }
+}
+
+/* ------------------------------------------------------------------ landing */
+body.qn-landing {
+  margin: 0;
+  background: #100e0c;
+  color: #f6f1ea;
+  font-family: var(--qn-font);
+}
+.qn-landing a { color: inherit; }
+.qn-land-nav, .qn-land-wrap { width: min(1160px, calc(100% - 36px)); margin: 0 auto; }
+.qn-land-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 0;
+}
+.qn-land-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--qn-display); font-size: 22px; letter-spacing: -0.04em; }
+.qn-land-brand img { width: 42px; height: 42px; border-radius: 12px; }
+.qn-land-nav-links { display: flex; gap: 22px; align-items: center; color: #d9cfc3; text-decoration: none; font-size: 14px; }
+.qn-land-nav-links a { text-decoration: none; }
+.qn-land-cta, .qn-land-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 650;
+}
+.qn-land-cta { background: linear-gradient(180deg, #e7b56a, #c4622d); color: #1c1612 !important; }
+.qn-land-cta-secondary { border: 1px solid rgba(255,244,230,.2); color: #f6f1ea !important; }
+.qn-hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding: 28px 0 70px; }
+.qn-kicker { letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: #e7b56a; font-weight: 700; margin: 0 0 16px; }
+.qn-hero h1 { font-family: var(--qn-display); font-weight: 520; font-size: clamp(48px, 6vw, 84px); line-height: .96; letter-spacing: -.045em; margin: 0 0 18px; }
+.qn-hero h1 em { font-style: italic; color: #e7b56a; }
+.qn-lead { font-size: 19px; line-height: 1.55; color: #d9cfc3; max-width: 520px; margin: 0 0 26px; }
+.qn-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+.qn-proof-row { display: flex; gap: 18px; flex-wrap: wrap; color: #b3a89c; font-size: 13px; }
+.qn-proof-row strong { display: block; color: #f6f1ea; font-size: 15px; font-weight: 640; }
+.qn-phone {
+  justify-self: end;
+  width: min(360px, 100%);
+  background: linear-gradient(180deg, #2a221c, #161310);
+  border: 1px solid rgba(255,244,230,.14);
+  border-radius: 36px;
+  padding: 14px;
+  box-shadow: 0 40px 90px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.qn-phone-screen {
+  background:
+    radial-gradient(280px 140px at 100% 0%, rgba(224,161,90,.28), transparent 60%),
+    #f4efe7;
+  color: #1c1612;
+  border-radius: 26px;
+  padding: 18px 16px 16px;
+  min-height: 520px;
+}
+.qn-phone-top { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #7b7066; }
+.qn-phone-top b { font-family: var(--qn-display); color: #1c1612; font-size: 18px; font-weight: 560; }
+.qn-phone h2 { font-family: var(--qn-display); font-size: 34px; line-height: 1; letter-spacing: -.04em; margin: 18px 0 12px; font-weight: 540; }
+.qn-mini-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qn-mini-kpis div { background: #fffaf4; border: 1px solid rgba(28,22,18,.08); border-radius: 14px; padding: 10px; }
+.qn-mini-kpis span { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #7b7066; }
+.qn-mini-kpis strong { font-family: var(--qn-display); font-size: 22px; font-weight: 540; }
+.qn-mini-row { display: flex; justify-content: space-between; gap: 8px; background: #fffaf4; border-radius: 14px; padding: 12px; margin-top: 8px; border: 1px solid rgba(28,22,18,.08); }
+.qn-mini-row small { color: #7b7066; }
+.qn-pill { border-radius: 999px; background: #e4f5ec; color: #1c7a4d; font-size: 10px; font-weight: 700; letter-spacing: .06em; padding: 3px 7px; }
+.qn-section { padding: 72px 0; }
+.qn-section h2 { font-family: var(--qn-display); font-size: clamp(36px, 5vw, 58px); letter-spacing: -.04em; line-height: 1; font-weight: 520; margin: 0 0 14px; }
+.qn-section .dek { color: #d9cfc3; font-size: 18px; max-width: 560px; line-height: 1.5; }
+.qn-feature-grid, .qn-price-grid, .qn-steps { display: grid; gap: 14px; }
+.qn-feature-grid { grid-template-columns: repeat(3, minmax(0,1fr)); margin-top: 28px; }
+.qn-feature, .qn-price, .qn-step {
+  background: rgba(255,250,244,.04);
+  border: 1px solid rgba(255,244,230,.1);
+  border-radius: 22px;
+  padding: 22px;
+}
+.qn-feature h3, .qn-price h3, .qn-step h3 { margin: 0 0 8px; font-size: 18px; }
+.qn-feature p, .qn-price p, .qn-step p, .qn-price li { color: #d9cfc3; line-height: 1.5; }
+.qn-price.featured {
+  background:
+    radial-gradient(300px 140px at 90% 0%, rgba(224,161,90,.3), transparent 60%),
+    #1c1612;
+  border-color: rgba(231,181,106,.4);
+}
+.qn-price { display: flex; flex-direction: column; }
+.qn-price .amt { font-family: var(--qn-display); font-size: 42px; letter-spacing: -.04em; margin: 8px 0; color: #f6f1ea; }
+.qn-price ul { padding-left: 18px; margin: 0 0 18px; }
+.qn-price .qn-land-cta, .qn-price .qn-land-cta-secondary { margin-top: auto; }
+.qn-steps { grid-template-columns: repeat(4, minmax(0,1fr)); margin-top: 28px; }
+.qn-step b { display: block; color: #e7b56a; font-size: 12px; letter-spacing: .14em; margin-bottom: 10px; }
+.qn-quote-band {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 24px;
+  align-items: center;
+  background: #f4efe7;
+  color: #1c1612;
+  border-radius: 28px;
+  padding: 36px;
+}
+.qn-quote-band p { font-family: var(--qn-display); font-size: clamp(28px, 3vw, 40px); line-height: 1.15; letter-spacing: -.03em; margin: 0; }
+.qn-quote-band span { display: block; margin-top: 12px; color: #7b7066; font-family: var(--qn-font); font-size: 14px; }
+.qn-land-footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 28px 0 48px; color: #b3a89c; font-size: 14px; }
+.qn-land-footer a { color: #f6f1ea; margin-right: 16px; }
+@media (max-width: 900px) {
+  .qn-hero, .qn-feature-grid, .qn-price-grid, .qn-steps, .qn-quote-band { grid-template-columns: 1fr; }
+  .qn-phone { justify-self: center; }
+  .qn-land-nav-links a:not(.qn-land-cta) { display: none; }
+  .qn-section { padding: 48px 0; }
+}

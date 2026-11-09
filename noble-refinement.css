@@ -1,0 +1,115 @@
+/* Quote.Noble: consistent surfaces and a clear introduction. */
+:root{--qn-ink:#26221e;--qn-muted:#716b63;--qn-line:#e9e1d6;--qn-paper:#fffdf9;--qn-accent:#bc5b0b}
+@media screen{
+body.qn-authenticated{background:#fcf8f2!important}
+body.qn-authenticated::before{opacity:.13!important}
+body.qn-authenticated #qn-home-backdrop{opacity:.12}
+body.qn-authenticated main{max-width:1100px;padding-top:30px}
+body.qn-authenticated .app-header{box-shadow:none!important}
+body.qn-authenticated .qn-home-greeting{max-width:100%;font-size:clamp(26px,3.3vw,36px);line-height:1.2;letter-spacing:-1px;color:var(--qn-ink);margin-bottom:12px}
+body.qn-authenticated .qn-home-greeting>span[aria-hidden]{display:inline-block;margin-inline-start:4px;font-size:.9em}
+body.qn-authenticated .qn-simple-intro{color:var(--qn-muted);font-size:16px;margin-bottom:26px}
+body.qn-authenticated .qn-home-actions{padding:0;gap:12px}
+body.qn-authenticated .qn-home-actions>.btn{min-height:62px!important;border-radius:15px!important;font-size:16px!important;box-shadow:none!important}
+body.qn-authenticated .qn-home-actions>.btn-primary{background:#ff9900!important;color:#2b210f!important;border:1px solid #e98900!important}
+body.qn-authenticated .qn-home-actions>.btn-outline{background:#fffdf9!important;color:#7c4214!important;border:1px solid #dcc8b2!important}
+body.qn-authenticated .qn-simple-shortcuts{max-width:none;gap:10px;margin:14px 0 28px}
+body.qn-authenticated .qn-simple-shortcuts .btn{border:1px solid var(--qn-line);background:#fffdf9;color:#615344;border-radius:12px;min-height:48px}
+body.qn-authenticated .card,body.qn-authenticated .qn-more-menu{border:1px solid var(--qn-line);box-shadow:0 2px 8px #4b301004;border-radius:18px;background:#fffdf9}
+body.qn-authenticated .qn-recent-documents{padding:22px;margin-top:26px}
+body.qn-authenticated .qn-recent-documents>h2{font-size:18px;color:var(--qn-ink);margin:0 0 18px}
+body.qn-authenticated .list-item{border:1px solid var(--qn-line);box-shadow:none;border-radius:13px;padding:17px;background:#fff}
+body.qn-authenticated .list-item .title{color:#594332;font-size:16px}
+body.qn-authenticated .list-item .sub{color:var(--qn-muted);line-height:1.5;overflow-wrap:anywhere}
+body.qn-authenticated .list-item .top>div{min-width:0}
+body.qn-authenticated .list-item .amt{color:var(--qn-ink)}
+body.qn-authenticated .badge{font-size:11px;letter-spacing:.02em;padding:4px 9px}
+body.qn-authenticated .empty{padding:30px 12px;line-height:1.7;color:var(--qn-muted)}
+.qn-first-quote{margin:10px auto 0;display:flex;width:auto;max-width:100%;min-height:46px;background:#fff5e8;color:#8b470e;border:1px solid #eed9bf;font-size:14px}
+body.qn-authenticated .qn-more-header h1,.qn-page-intro h2{color:var(--qn-ink)}
+body.qn-authenticated .qn-more-item{min-height:76px}
+body.qn-authenticated .qn-more-item-icon{background:#fff3e3;color:#98501b;border-radius:12px}
+body.qn-authenticated #tabbar{box-shadow:0 -3px 16px #4b301008;border-color:var(--qn-line)}
+body.qn-authenticated #tabbar button.active{color:#91460b;background:#fff0dc}
+.btn,.qn-more-item,input,select,textarea{transition:border-color .15s,background-color .15s}
+button:focus-visible,a:focus-visible,summary:focus-visible,[role=button]:focus-visible{outline:3px solid #b95a0d;outline-offset:3px}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#b95a0d;outline:2px solid #f6d8b1;outline-offset:1px}
+/* Signup remains the same form, with product context alongside it. */
+#qn-auth-screen{position:fixed;inset:0;overflow-y:auto;background:#fcf8f2 url('/assets/launch-documents-v3.webp?v=20261022-fast1') center center/cover no-repeat!important;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(32px,6vw,90px);align-items:center;padding:48px max(32px,calc((100vw - 1120px)/2))!important}
+#qn-auth-screen .qn-auth-card{background:#fffdf9;border:1px solid #e8ddcf;border-radius:24px;padding:32px!important;max-width:440px;box-shadow:0 18px 60px #68411b0b;justify-self:end}
+#qn-auth-screen .qn-auth-brand{flex-direction:row;text-align:left;gap:12px;margin-bottom:28px}
+#qn-auth-screen .qn-auth-logo{width:58px;height:58px;border-radius:13px;flex-shrink:0}
+#qn-auth-screen .qn-auth-brand h1{font-size:30px;letter-spacing:-1px}
+#qn-auth-screen .qn-auth-tagline{font-size:12px;margin:6px 0 0;line-height:1.5}
+#qn-auth-screen #qn-auth-subtitle{text-align:left;font-size:24px}
+#qn-auth-screen #qn-auth-description{text-align:left;margin-bottom:22px}
+#qn-auth-screen .qn-auth-card input{background:white;border-color:#dcd4c9}
+#qn-auth-screen #qn-auth-submit{background:#ff9900;color:#2b210f;box-shadow:none;margin-bottom:16px}
+.qn-welcome-story{max-width:580px;color:var(--qn-ink)}
+.qn-welcome-eyebrow{font-size:12px;font-weight:750;letter-spacing:.14em;text-transform:uppercase;color:#9a4e12;margin:0 0 20px}
+.qn-welcome-story h2{font-size:clamp(38px,4.4vw,62px);font-weight:800;letter-spacing:-2.5px;line-height:1.06;color:var(--qn-ink);margin:0 0 24px;text-wrap:balance}
+.qn-welcome-story h2 span{color:#bc5b0b}
+.qn-welcome-description{font-size:18px;line-height:1.7;color:#736657;max-width:460px;margin:0 0 30px}
+.qn-welcome-benefits{display:grid;gap:18px;list-style:none;padding:0;margin:0 0 30px}
+.qn-welcome-benefits li{display:flex;gap:14px;align-items:center;font-size:15px;color:#594d40;line-height:1.5}
+.qn-welcome-benefits svg{width:40px;height:40px;padding:10px;border-radius:12px;background:#f7e9d6;color:#9e510d;flex-shrink:0}
+.qn-welcome-free{display:inline-flex;gap:8px;align-items:center;border-top:1px solid #e5d8c7;padding-top:20px;font-size:13px;color:#766958}
+.qn-welcome-free::before{content:'✓';color:#477054;font-weight:800}
+#qn-auth-screen:not([data-mode=signup]){grid-template-columns:1fr}
+#qn-auth-screen:not([data-mode=signup]) .qn-welcome-story{display:none}
+#qn-auth-screen:not([data-mode=signup]) .qn-auth-card{justify-self:center}
+#qn-auth-screen[data-invitation=true] .qn-welcome-story{display:none}
+#qn-auth-screen[data-invitation=true]{grid-template-columns:1fr}
+#qn-auth-screen[data-invitation=true] .qn-auth-card{justify-self:center}
+@media(min-width:900px){body.qn-authenticated main{padding-inline:40px}.qn-home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ #qn-auth-screen{grid-template-columns:minmax(0,1fr);gap:20px;align-content:start;padding:24px 20px max(28px,env(safe-area-inset-bottom))!important}
+ .qn-welcome-story{max-width:440px;justify-self:center;width:100%;min-width:0}
+ .qn-welcome-eyebrow{font-size:10px;margin-bottom:12px}
+ .qn-welcome-story h2{font-size:34px;letter-spacing:-1.4px;line-height:1.08;margin-bottom:14px}
+ .qn-welcome-description{display:none}
+ .qn-welcome-benefits{display:none}
+ .qn-welcome-free{font-size:12px;padding-top:12px}
+ #qn-auth-screen .qn-auth-card{justify-self:center;padding:24px!important;border-radius:20px;min-width:0;width:100%}
+ #qn-auth-screen .qn-auth-brand{margin-bottom:22px}
+ body.qn-authenticated main{padding-top:24px}
+ body.qn-authenticated .qn-home-greeting{font-size:28px}
+ body.qn-authenticated .qn-recent-documents{padding:18px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+}
+@media print{.qn-welcome-story,.qn-first-quote{display:none!important}}
+
+@media screen and (min-width:700px){#qn-auth-screen{background-size:auto 100%!important;background-repeat:repeat-x!important}}
+
+/* Home shortcuts: match the inspection/extra-work buttons above. */
+body.qn-authenticated #view-home .qn-simple-shortcuts > .btn {font-family:inherit!important;font-size:16px!important;font-weight:700!important;line-height:1.35!important;color:#7c4214!important;background:#fffdf9!important;border:1px solid #dcc8b2!important;border-radius:15px!important;min-height:62px!important;box-shadow:none!important;}
+
+
+/* Mobile refinement: preserve existing navigation and workflow. */
+@media screen and (max-width: 700px){
+body.qn-authenticated main{padding-top:16px!important}
+body.qn-authenticated .qn-home-greeting{font-size:clamp(25px,7vw,31px)!important;letter-spacing:-.6px;margin-bottom:7px}
+body.qn-authenticated .qn-simple-intro{font-size:14px;margin-bottom:16px;line-height:1.45}
+body.qn-authenticated .qn-home-actions{gap:9px}
+body.qn-authenticated .qn-home-actions>.btn{min-height:52px!important;border-radius:11px!important;font-size:15px!important}
+body.qn-authenticated .qn-simple-shortcuts{margin:10px 0 18px;gap:8px}
+body.qn-authenticated .qn-simple-shortcuts .btn{min-height:44px;border-radius:10px}
+body.qn-authenticated .card,body.qn-authenticated .qn-more-menu{border-radius:13px;box-shadow:none}
+body.qn-authenticated .qn-recent-documents{padding:15px;margin-top:16px}
+body.qn-authenticated .list-item{padding:12px;border-radius:10px}
+body.qn-authenticated .qn-more-item{min-height:60px}
+body.qn-authenticated .qn-more-item-icon{border-radius:9px}
+body.qn-authenticated #tabbar{box-shadow:0 -1px 8px #4b30100a}
+body.qn-authenticated #tabbar button.active{border-radius:10px}
+}
+
+
+/* Unified document-first visual language for home, quotes and invoices. */
+body.qn-authenticated #view-home .qn-home-actions>.btn{min-height:54px!important;border-radius:12px!important;padding:12px 14px!important;font-size:15px!important;font-weight:650!important;box-shadow:none!important}
+body.qn-authenticated #view-home .qn-home-actions>.btn-primary{background:#ff9900!important;color:#2b210f!important;border:1px solid #e98900!important}
+body.qn-authenticated #view-home .qn-home-actions>.btn-outline{background:#fffdf9!important;color:#7c4214!important;border:1px solid #dcc8b2!important}
+body.qn-authenticated #view-home .qn-home-actions>.btn[data-qn-roof-designer]{min-height:46px!important;font-size:14px!important}
+body.qn-authenticated #view-home .qn-recent-documents,body.qn-authenticated #view-quotes .card,body.qn-authenticated #view-invoices .card{border-radius:14px!important;box-shadow:none!important}
+@media(max-width:700px){body.qn-authenticated #view-home .qn-home-actions{gap:9px!important;margin-bottom:14px!important}body.qn-authenticated #view-home .qn-simple-intro{margin-bottom:15px!important}body.qn-authenticated #view-home .qn-recent-documents{margin-top:15px!important}}
+
