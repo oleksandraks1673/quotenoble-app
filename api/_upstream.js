@@ -7,6 +7,10 @@ const ORIGIN = 'https://www.quotenoble.com';
 
 async function proxy(req, res, path) {
   res.setHeader('Cache-Control', 'no-store');
+  const host = String(req.headers.host || '').split(':')[0];
+  if (host === 'www.quotenoble.com' || host === 'quotenoble.com') {
+    return res.status(500).json({error: 'This deployment must not proxy the live site to itself.'});
+  }
   if (req.method === 'OPTIONS') {
     res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(204).end();
