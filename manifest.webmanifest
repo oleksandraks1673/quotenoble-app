@@ -1,7 +1,7 @@
 {
   "name": "Quote.Noble",
   "short_name": "Quote.Noble",
-  "description": "Professional quotes and invoices, made simple.",
+  "description": "Quotes, job photos, and invoices for every home-service trade.",
   "start_url": "/app.html",
   "scope": "/",
   "display": "standalone",
