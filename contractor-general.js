@@ -96,7 +96,7 @@ function tools(){
 function neutral(){
  document.querySelectorAll('#view-home [data-qn-roof-designer]').forEach(n=>n.remove());
  const intro=$('#view-home .qn-simple-intro');if(intro)intro.textContent='Quotes, jobs, customers and invoices. Everything together.';
- const company=$('#setup-name');if(company)company.placeholder='e.g. Your Company Inc.';
+ const company=$('#setup-name');if(company)company.placeholder='e.g. Northline Home Services';
  for(const item of document.querySelectorAll('#modal-body input.service'))if(item.placeholder?.includes('Roof vent'))item.placeholder='Service name (e.g. Install a new door)';
  const banner=$('#view-more .qn-more-business-banner div:nth-child(2)');
  if(banner){let b=banner.querySelector('.qn-trade-caption');if(!b){b=document.createElement('small');b.className='qn-trade-caption';banner.append(b)}
