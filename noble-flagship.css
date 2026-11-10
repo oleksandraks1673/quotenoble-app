@@ -1,6 +1,6 @@
 /* Quote.Noble bright field UI.
-   One sans, near-black on white, one orange for actions.
-   No serif, no italic display, no glass, no heavy gradients. */
+   Near-black chrome, white content, logo orange for actions.
+   Inter only. No serif, no italic display, no glass. */
 
 :root {
   --qn-ink: #111827;
@@ -648,4 +648,201 @@ body.qn-landing {
   html:root:root:root body .qn-job-photos { grid-template-columns: 1fr; }
   html:root:root:root body .qn-job-photos img,
   html:root:root:root body .qn-job-photos img:first-child { height: 210px; min-height: 0; grid-row: auto; }
+}
+
+/* Style C: near-black chrome, orange accent, white work area. */
+html:root:root:root body.qn-authenticated #tabbar { display: none !important; }
+html:root:root:root body.qn-authenticated { background: #f3f4f6 !important; }
+
+#qn-side, #qn-topbar, #qn-phone-tabs { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-style: normal; }
+#qn-side { display: none; }
+#qn-topbar { display: none; }
+#qn-phone-tabs { display: none; }
+
+#qn-side {
+  position: fixed; z-index: 60; top: 0; bottom: 0; left: 0; width: 260px;
+  background: #0b0f19; color: #ffffff; flex-direction: column; padding: 18px 12px 12px;
+}
+html[dir="rtl"] #qn-side { left: auto; right: 0; }
+#qn-side-brand { display: flex; gap: 10px; align-items: center; padding: 4px 8px 16px; }
+#qn-side-brand img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; background: #111111; }
+#qn-side-brand strong { display: block; font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: #ffffff; }
+#qn-side-brand span { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: #e5e7eb; }
+#qn-side nav { flex: 1; overflow: auto; padding-right: 2px; }
+#qn-side .qn-nav-label { margin: 14px 10px 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #e5e7eb; }
+#qn-side button.qn-nav-item, #qn-side-user {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px;
+  border: 0; border-radius: 10px; background: transparent; color: #ffffff;
+  font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; padding: 8px 10px;
+}
+#qn-side button.qn-nav-item svg, #qn-phone-tabs svg { width: 18px; height: 18px; flex: none; }
+#qn-side button.qn-nav-item.active { background: #e85d04; color: #ffffff; }
+#qn-side .qn-nav-count, #qn-notify-badge, #qn-phone-tabs .qn-nav-count {
+  margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+  background: #e85d04; color: #ffffff; font-size: 12px; font-weight: 700; display: inline-grid; place-items: center;
+}
+#qn-side button.qn-nav-item.active .qn-nav-count { background: #ffffff; color: #c2410c; }
+#qn-side-user { margin-top: 8px; border-top: 1px solid rgba(255,255,255,.16); border-radius: 0; padding-top: 12px; }
+#qn-side-user b { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px; background: #e85d04; color: #ffffff; font-size: 13px; }
+#qn-side-user span { display: block; min-width: 0; }
+#qn-side-user strong, #qn-side-user small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#qn-side-user strong { color: #ffffff; font-size: 14px; }
+#qn-side-user small { color: #e5e7eb; font-size: 12px; font-weight: 500; }
+
+#qn-topbar {
+  position: sticky; top: 0; z-index: 45; align-items: center; gap: 12px;
+  background: #ffffff; border-bottom: 1px solid #e5e7eb; padding: 12px 20px;
+}
+#qn-top-search { position: relative; flex: 1; }
+#qn-top-search input {
+  width: 100%; min-height: 44px; border: 1px solid #d1d5db; border-radius: 10px;
+  padding: 0 14px; font: inherit; font-size: 15px; color: #111827; background: #ffffff;
+}
+#qn-top-search input:focus { outline: none; border-color: #e85d04; box-shadow: 0 0 0 3px #fff1e8; }
+#qn-search-results {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #ffffff;
+  border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 12px 32px rgba(17,24,39,.12); padding: 6px; z-index: 5;
+}
+#qn-search-results button { display: block; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 8px; padding: 10px 12px; cursor: pointer; color: #111827; font: inherit; }
+#qn-search-results button:hover { background: #fff1e8; }
+#qn-search-results small { display: block; color: #374151; font-weight: 500; }
+#qn-notify, #qn-new-toggle, #qn-phone-plus {
+  border: 0; cursor: pointer; font: inherit; font-weight: 700;
+}
+#qn-notify {
+  position: relative; width: 44px; height: 44px; border-radius: 10px; background: #ffffff; color: #111827; border: 1px solid #d1d5db;
+}
+#qn-notify .qn-nav-count { position: absolute; top: -6px; right: -6px; margin: 0; }
+#qn-new-wrap, #qn-note-wrap { position: relative; }
+#qn-new-toggle, #qn-phone-plus { background: #e85d04; color: #ffffff; }
+#qn-new-toggle { min-height: 44px; padding: 0 16px; border-radius: 10px; font-size: 15px; }
+#qn-new-toggle:hover, #qn-phone-plus:hover { background: #c2410c; }
+#qn-new-menu, #qn-note-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; width: 220px; background: #ffffff;
+  border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 12px 32px rgba(17,24,39,.14); padding: 6px; z-index: 6;
+}
+#qn-new-menu button, #qn-note-menu button {
+  display: block; width: 100%; text-align: left; background: transparent; border: 0; border-radius: 8px;
+  min-height: 42px; padding: 8px 12px; color: #111827; font: inherit; font-weight: 600; cursor: pointer;
+}
+#qn-new-menu button:hover, #qn-note-menu button:hover { background: #fff1e8; }
+#qn-note-menu { width: 280px; }
+
+#qn-phone-tabs {
+  position: fixed; z-index: 55; left: 10px; right: 10px; bottom: calc(8px + env(safe-area-inset-bottom));
+  height: 64px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(17,24,39,.08); align-items: flex-end; justify-content: space-around; padding: 6px 6px 8px;
+}
+#qn-phone-tabs button {
+  flex: 1; border: 0; background: transparent; color: #374151; font: inherit; font-size: 11px; font-weight: 700;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 48px; cursor: pointer;
+}
+#qn-phone-tabs button.active { color: #e85d04; }
+#qn-phone-tabs #qn-phone-plus {
+  width: 58px; height: 58px; flex: none; border-radius: 999px; margin-top: -28px;
+  background: #e85d04 !important; color: #ffffff !important; font-size: 32px; line-height: 1;
+  box-shadow: 0 8px 18px rgba(232,93,4,.35);
+}
+
+html:root:root:root body.qn-authenticated .qn-dash-date { margin: 4px 0 0; color: #374151; font-size: 14px; font-weight: 600; }
+html:root:root:root body .qn-dash-block { margin: 8px 0 18px; }
+html:root:root:root body .qn-dash-block h2 { margin: 0 0 10px; font-size: 18px; }
+html:root:root:root body .qn-dash-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+html:root:root:root body .qn-dash-photos img, html:root:root:root body .qn-dash-photos .qn-photo-empty {
+  width: 100%; height: 112px; object-fit: cover; border-radius: 12px; background: #ffffff;
+}
+html:root:root:root body .qn-cover-card {
+  position: relative; display: block; width: 100%; min-height: 180px; padding: 0; overflow: hidden;
+  border: 0; border-radius: 16px; cursor: pointer; text-align: left; background: #111827;
+}
+html:root:root:root body .qn-cover-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+html:root:root:root body .qn-cover-shade {
+  position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: flex-end;
+  padding: 42px 14px 12px; color: #ffffff;
+  background: linear-gradient(to top, rgba(11,15,25,.94), rgba(11,15,25,.55) 70%, transparent);
+}
+html:root:root:root body .qn-cover-shade strong { flex: 1 1 160px; font-size: 16px; color: #ffffff; }
+html:root:root:root body .qn-cover-shade small { flex: 1 1 100%; color: #f3f4f6; font-weight: 500; }
+html:root:root:root body .qn-status {
+  border-radius: 999px; padding: 3px 8px; font-size: 12px; font-weight: 700; font-style: normal; background: #fff1e8; color: #c2410c;
+}
+html:root:root:root body .qn-status.done { background: #dcfce7; color: #166534; }
+html:root:root:root body .qn-status.wait { background: #dbeafe; color: #1e3a8a; }
+html:root:root:root body .qn-schedule-row, html:root:root:root body #qn-schedule-list .qn-schedule-row {
+  display: flex; justify-content: space-between; gap: 12px; width: 100%; text-align: left;
+  background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 14px; margin: 0 0 8px; cursor: pointer; color: #111827; font: inherit;
+}
+html:root:root:root body .qn-schedule-row small { display: block; color: #374151; font-weight: 500; }
+html:root:root:root body #view-home .qn-home-actions,
+html:root:root:root body #view-home .qn-find-launch,
+html:root:root:root body #view-home .qn-recent-documents,
+html:root:root:root body #view-home details.qn-simple-section { display: none !important; }
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) { position: relative; padding: 0 !important; overflow: hidden; min-height: 200px; }
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .qn-job-photos { display: block; margin: 0; }
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .qn-job-photos img { width: 100%; height: 210px; object-fit: cover; border-radius: 0; }
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .qn-job-photos img:not(:first-child) { display: none; }
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .top {
+  position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 36px 14px 12px;
+  background: linear-gradient(to top, rgba(11,15,25,.94), rgba(11,15,25,.55) 70%, transparent);
+}
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .title,
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .amt,
+html:root:root:root body #job-list .list-item:has(.qn-job-photos) .sub { color: #ffffff !important; }
+
+@media (min-width: 900px) {
+  html:root:root:root body.qn-authenticated { padding-left: 260px !important; }
+  html[dir="rtl"]:root:root:root body.qn-authenticated { padding-left: 0 !important; padding-right: 260px !important; }
+  #qn-side { display: flex; }
+  #qn-topbar { display: flex; }
+  #qn-phone-tabs { display: none !important; }
+  html:root:root:root body.qn-authenticated .app-header { display: none !important; }
+  html:root:root:root body .qn-dash-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; align-items: start; }
+  html:root:root:root body .qn-dash-jobs { grid-column: 1 / -1; }
+  html:root:root:root body .qn-dash-jobs-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+}
+
+@media (max-width: 899px) {
+  #qn-phone-tabs { display: flex; }
+  html:root:root:root body.qn-authenticated .app-header {
+    background: #0b0f19 !important; color: #ffffff !important; border: 0 !important; box-shadow: none !important;
+    padding: 16px 16px 14px !important; padding-top: calc(16px + env(safe-area-inset-top)) !important;
+  }
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy h1,
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy p,
+  html:root:root:root body.qn-authenticated .app-header .qn-home-greeting,
+  html:root:root:root body.qn-authenticated .app-header #qn-home-greeting-text,
+  html:root:root:root body.qn-authenticated .app-header .qn-home-company,
+  html:root:root:root body.qn-authenticated .app-header .qn-dash-date {
+    color: #ffffff !important; background: none !important; border: 0 !important; box-shadow: none !important;
+  }
+  html:root:root:root body.qn-authenticated .app-header .qn-create-wrap { display: none !important; }
+  html:root:root:root body.qn-authenticated .app-header .qn-home-greeting {
+    display: block; margin: 8px 0 0; padding: 0 0 28px; font-size: 32px !important; line-height: 1.15 !important;
+  }
+  html:root:root:root body.qn-authenticated .app-header #qn-home-greeting-text { font-size: 32px !important; font-weight: 700 !important; }
+  html:root:root:root body.qn-authenticated .app-header .qn-home-company { display: block; font-size: 18px !important; font-weight: 700 !important; color: #ffffff !important; }
+  html:root:root:root body.qn-authenticated .app-header .qn-day-icon { display: none; }
+  html:root:root:root body.qn-authenticated.qn-home-active .app-header { padding-bottom: 64px !important; }
+  html:root:root:root body.qn-authenticated .app-header .brand {
+    display: grid !important; grid-template-columns: 48px minmax(0, 1fr) !important; gap: 12px !important; align-items: center !important;
+  }
+  html:root:root:root body.qn-authenticated .app-header .brand > .logo,
+  html:root:root:root body.qn-authenticated .app-header .logo {
+    grid-area: 1 / 1 !important; width: 48px !important; height: 48px !important; min-width: 48px !important;
+  }
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy { grid-area: 1 / 2 !important; }
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy h1,
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy p { color: #ffffff !important; }
+  html:root:root:root body.qn-authenticated .app-header .logo img { object-fit: cover !important; object-position: center 18% !important; }
+  html:root:root:root body.qn-authenticated.qn-home-active .app-header .qn-brand-copy h1 { display: none !important; }
+  html:root:root:root body.qn-authenticated.qn-home-active .app-header .qn-home-company { display: block !important; color: #ffffff !important; font-size: 18px !important; }
+  html:root:root:root body.qn-authenticated .app-header .qn-brand-copy p { font-size: 18px !important; font-weight: 700 !important; margin: 0 !important; }
+  html:root:root:root body.qn-authenticated .qn-day-icon { display: none !important; }
+  html:root:root:root body.qn-authenticated.qn-home-active #qn-flagship-kpis {
+    position: relative; z-index: 3; margin-top: -52px;
+  }
+  html:root:root:root body .qn-dash-jobs-row { display: grid; gap: 12px; }
+  html:root:root:root body #qn-new-menu.qn-phone-menu {
+    position: fixed; left: 16px; right: 16px; bottom: calc(88px + env(safe-area-inset-bottom)); top: auto; width: auto;
+  }
 }

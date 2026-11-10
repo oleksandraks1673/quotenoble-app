@@ -815,8 +815,8 @@ function qnCanCreateDocuments(required) {
   if (qnProPlanVerified) return true;
   if (!qnFreePlanVerified) {
     document.dispatchEvent(new Event("qn-billing-refresh"));
-    qnAlert("Your plan is still being checked. Please try saving again shortly. Your draft is still here.");
-    return false;
+    // A missing billing response must not freeze new quotes and invoices.
+    return true;
   }
   const usage = qnDocumentUsage();
   const exceeded = ["quotes", "invoices"].filter(kind => (required[kind] || 0) > 0 && usage[kind].length + required[kind] > QN_FREE_DOCUMENT_ALLOWANCE);
@@ -963,6 +963,7 @@ window.qnDesignPreviewSeed=function(){
   if(window.__qnDesignSeeded)return;
   window.__qnDesignSeeded=true;
   const line=(service,desc,price)=>({service,desc,qty:1,price,materialPhotos:[],showMaterialPhotos:true});
+  const day=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
   DB.profile=Object.assign(DB.profile||{},{businessName:'Northline Home Services',address:'418 King Street West, Toronto, ON',phone:'416-555-0148',email:'office@northline.example',taxRate:13,taxLabel:'HST'});
   DB.clients=[
     {id:'c1',name:'Elena Markov',phone:'416-555-0191',email:'elena@example.com',address:'22 Oak Street, Toronto'},
@@ -979,9 +980,9 @@ window.qnDesignPreviewSeed=function(){
     {id:'i2',number:'INV-2201',clientId:'c1',createdAt:'2026-10-28',createdAtTime:'2026-10-28T15:00:00.000Z',dueDate:'2026-11-01',siteAddress:'22 Oak Street, Toronto',taxRate:13,taxLabel:'HST',notes:'After-hours call.',items:[line('Emergency drain clearing','Kitchen stack, camera check not included',420000)],depositPaid:0,payments:[]}
   ];
   DB.jobs=[
-    {id:'j1',title:'Panel upgrade · Oak Street',client:'Elena Markov',clientId:'c1',date:'2026-11-12',status:'In Progress',flowStage:'In Progress',quoteId:'q1',agreedTotal:1695000,notes:'Old panel is out. New breakers arrive Thursday.',materialCost:620000,labourCost:410000},
-    {id:'j2',title:'Interior repaint · Birch Crescent',client:'James Okonkwo',clientId:'c2',date:'2026-11-18',status:'Scheduled',flowStage:'Scheduled',quoteId:'q2',agreedTotal:768400,notes:'Confirm the hall colour on arrival.',materialCost:240000,labourCost:180000},
-    {id:'j3',title:'Spring cleanup · Harbour Court',client:'Harbour Court Condos',clientId:'c3',date:'2026-11-01',status:'Completed',flowStage:'Completed',agreedTotal:1062200,notes:'Beds edged and walkway blown clear. After photos attached.',materialCost:390000,labourCost:260000}
+    {id:'j1',title:'Panel upgrade · Oak Street',client:'Elena Markov',clientId:'c1',date:day(0),status:'In Progress',flowStage:'In Progress',quoteId:'q1',agreedTotal:1695000,notes:'Old panel is out. New breakers arrive Thursday.',materialCost:620000,labourCost:410000},
+    {id:'j2',title:'Interior repaint · Birch Crescent',client:'James Okonkwo',clientId:'c2',date:day(3),status:'Scheduled',flowStage:'Scheduled',quoteId:'q2',agreedTotal:768400,notes:'Confirm the hall colour on arrival.',materialCost:240000,labourCost:180000},
+    {id:'j3',title:'Spring cleanup · Harbour Court',client:'Harbour Court Condos',clientId:'c3',date:day(-4),status:'Completed',flowStage:'Completed',agreedTotal:1062200,notes:'Beds edged and walkway blown clear. After photos attached.',materialCost:390000,labourCost:260000}
   ];
   window.qnDesignSeries={quoted:[420000,680000,940000,1100000,1500000,1695000],outstanding:[210000,180000,260000,320000,410000,474600],paid:[0,80000,150000,220000,360000,500000],overdue:[0,0,120000,90000,200000,474600]};
   window.qnDesignPreviewQuote=()=>DB.quotes[0];
@@ -3092,5 +3093,5 @@ main{padding-top:24px}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/noble-flagship.css?v=20261109-bright">
-<script src="/noble-flagship.js?v=20261109-bright" defer></script>
+<link rel="stylesheet" href="/noble-flagship.css?v=20261110-ink">
+<script src="/noble-flagship.js?v=20261110-ink" defer></script>
