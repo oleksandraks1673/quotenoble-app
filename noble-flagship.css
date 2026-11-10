@@ -840,12 +840,23 @@ html:root:root:root body #job-list .list-item:has(.qn-job-photos) .sub { color: 
   }
   html:root:root:root body.qn-authenticated .app-header .qn-create-wrap { display: none !important; }
   html:root:root:root body.qn-authenticated .app-header .qn-home-greeting {
-    display: block; margin: 8px 0 0; padding: 0 0 28px; font-size: 32px !important; line-height: 1.15 !important;
+    display: block; margin: 8px 0 0; padding: 0 0 12px; font-size: 32px !important; line-height: 1.15 !important;
   }
   html:root:root:root body.qn-authenticated .app-header #qn-home-greeting-text { font-size: 32px !important; font-weight: 700 !important; }
   html:root:root:root body.qn-authenticated .app-header .qn-home-company { display: block; font-size: 18px !important; font-weight: 700 !important; color: #ffffff !important; }
   html:root:root:root body.qn-authenticated .app-header .qn-day-icon { display: none; }
-  html:root:root:root body.qn-authenticated.qn-home-active .app-header { padding-bottom: 64px !important; }
+  html:root:root:root body.qn-authenticated.qn-home-active .app-header {
+    z-index: 2 !important;
+    padding-bottom: 32px !important;
+  }
+  html:root:root:root body.qn-authenticated.qn-home-active .app-header .qn-dash-date {
+    display: block; margin: 6px 0 10px; color: #ffffff !important;
+  }
+  html:root:root:root body.qn-authenticated.qn-home-active > main {
+    position: relative !important;
+    z-index: 5 !important;
+    isolation: isolate !important;
+  }
   html:root:root:root body.qn-authenticated .app-header .brand {
     display: grid !important; grid-template-columns: 48px minmax(0, 1fr) !important; gap: 12px !important; align-items: center !important;
   }
@@ -862,7 +873,13 @@ html:root:root:root body #job-list .list-item:has(.qn-job-photos) .sub { color: 
   html:root:root:root body.qn-authenticated .app-header .qn-brand-copy p { font-size: 18px !important; font-weight: 700 !important; margin: 0 !important; }
   html:root:root:root body.qn-authenticated .qn-day-icon { display: none !important; }
   html:root:root:root body.qn-authenticated.qn-home-active #qn-flagship-kpis {
-    position: relative; z-index: 3; margin-top: -52px;
+    position: relative; z-index: 4; margin-top: -52px; overflow: visible;
+  }
+  html:root:root:root body.qn-authenticated.qn-home-active #qn-flagship-kpis .stat {
+    overflow: visible;
+  }
+  html:root:root:root body.qn-authenticated.qn-home-active #qn-flagship-kpis .label {
+    white-space: normal; overflow: visible;
   }
   html:root:root:root body .qn-dash-jobs-row { display: grid; gap: 12px; }
   html:root:root:root body #qn-new-menu.qn-phone-menu {
