@@ -268,7 +268,7 @@
     const tabs = el("nav", "");
     tabs.id = "qn-phone-tabs";
     tabs.setAttribute("aria-label", "Main");
-    [["home", "Dashboard", "home"], ["quotes", "Quotes", "quote"]].forEach(([view, label, icon]) => tabs.appendChild(navButton(view, label, icon)));
+    [["home", "Home", "home"], ["schedule", "Schedule", "cal"]].forEach(([view, label, icon]) => tabs.appendChild(navButton(view, label, icon)));
     const center = el("button", "", "+");
     center.id = "qn-phone-plus";
     center.type = "button";
@@ -279,7 +279,7 @@
       menu.classList.toggle("qn-phone-menu", !menu.hidden);
     });
     tabs.appendChild(center);
-    [["jobs", "Jobs", "jobs"], ["more", "Settings", "settings"]].forEach(([view, label, icon]) => tabs.appendChild(navButton(view, label, icon)));
+    [["jobs", "Jobs", "jobs"], ["more", "More", "settings"]].forEach(([view, label, icon]) => tabs.appendChild(navButton(view, label, icon)));
     document.body.appendChild(tabs);
     document.addEventListener("click", (event) => {
       if (!event.target.closest("#qn-new-wrap, #qn-phone-plus, #qn-note-wrap, #qn-top-search")) closeMenus();
@@ -311,7 +311,9 @@
       const nameText = companyName() || "Quote.Noble";
       user.querySelector("b").textContent = nameText.slice(0, 1).toUpperCase();
       user.querySelector("strong").textContent = nameText;
-      user.querySelector("small").textContent = data()?.profile?.email || "";
+      const role = user.querySelector("small");
+      role.textContent = "Owner";
+      role.dataset.qnI18n = "";
     }
     const noteMenu = document.getElementById("qn-note-menu");
     const bell = document.getElementById("qn-notify");
@@ -371,8 +373,9 @@
   }
   function statusClass(job) {
     const status = job.flowStage || job.status || "";
-    if (["Completed", "Invoiced"].includes(status)) return "done";
+    if (["Completed", "Invoiced", "Paid"].includes(status)) return "done";
     if (status === "Scheduled") return "wait";
+    if (status === "Sent") return "sent";
     return "";
   }
   function jobCard(job) {
@@ -456,23 +459,26 @@
     });
     const awaitingTotal = (data().quotes || []).filter((q) => q.status === "sent").reduce((sum, q) => sum + (typeof quoteTotals === "function" ? quoteTotals(q).total : 0), 0);
     const cards = [
-      ["Revenue this month", moneyText(revenue), "money", "revenue"],
-      ["Unpaid invoices", moneyText(unpaid), "invoice", "unpaid"],
-      ["Quotes awaiting approval", String(tally.awaiting) + " · " + moneyText(awaitingTotal), "quote", "awaiting"],
-      ["Jobs today", String(tally.todayJobs), "jobs", "today"]
+      ["k1", "Revenue this month", moneyText(revenue), tally.unpaid ? "" : "", "money", "revenue", "This month"],
+      ["k2", "Unpaid invoices", moneyText(unpaid), "", "invoice", "unpaid", tally.unpaid + " open"],
+      ["k3", "Quotes awaiting approval", String(tally.awaiting), "", "quote", "awaiting", moneyText(awaitingTotal)],
+      ["k4", "Jobs today", String(tally.todayJobs), "", "jobs", "today", tally.activeJobs + " active"]
     ];
     let kpis = document.getElementById("qn-flagship-kpis");
     if (!kpis) { kpis = el("div", "qn-flagship-kpis"); kpis.id = "qn-flagship-kpis"; }
     kpis.replaceChildren();
-    cards.forEach(([label, value, icon, key]) => {
-      const card = el("div", "stat");
+    cards.forEach(([kind, label, value, , icon, key, meta]) => {
+      const card = el("div", "stat qn-kpi " + kind);
       const top = el("div", "qn-kpi-top");
       const labelNode = el("div", "label", label);
       labelNode.dataset.qnI18n = "";
       top.append(iconWrap(icon === "jobs" ? "camera" : icon), labelNode);
       const number = el("div", "value", value);
       number.dataset.qnNoTranslate = "";
-      card.append(top, number);
+      const note = el("div", "qn-kpi-meta", meta);
+      if (meta === "This month") note.dataset.qnI18n = "";
+      else note.dataset.qnNoTranslate = "";
+      card.append(top, number, note);
       const line = sparkline(monthSeries(key));
       if (line) card.appendChild(line);
       kpis.appendChild(card);
