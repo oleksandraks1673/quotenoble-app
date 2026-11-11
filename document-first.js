@@ -69,6 +69,20 @@
   }
   let content=back.querySelector(':scope > .qn-document-content');
   if(!content){content=document.createElement('div');content.className='qn-document-content';back.insertBefore(content,actions);}
+  // Saved quotes open in document view: status must be editable here, not only in hidden quote options.
+  if(kind==='q'){
+   const q=typeof DB==='undefined'?null:DB.quotes.find(x=>x.id===id);
+   let picker=content.querySelector('[data-docfirst-status]');
+   if(q&&!q.sourceInvoiceId){
+    if(!picker){picker=document.createElement('div');picker.dataset.docfirstStatus='';picker.className='qn-doc-status-picker';content.prepend(picker);}
+    picker.innerHTML='<strong>Quote status</strong><div class="qn-doc-status-buttons">'+['draft','sent','accepted','declined'].map(st=>'<button type="button" class="btn btn-small '+(q.status===st?'btn-primary':'btn-outline')+'" data-set-quote-status="'+st+'" aria-pressed="'+(q.status===st)+'">'+({draft:'Draft',sent:'Sent',accepted:'Accepted',declined:'Declined'}[st])+'</button>').join('')+'</div>';
+    picker.querySelectorAll('[data-set-quote-status]').forEach(b=>b.onclick=()=>{
+     const current=DB.quotes.find(x=>x.id===id);if(!current||current.sourceInvoiceId)return;
+     const previous=current.status;current.status=b.dataset.setQuoteStatus;
+     try{save();window.openDocument('q',id);renderQuotes();}catch(err){current.status=previous;window.qnAlert?.(err.message||'Could not save quote status');}
+    });
+   }
+  }
   const doc=back.querySelector('.doc');if(doc&&doc.parentElement!==content)content.append(doc);
   const previousExtras=back.querySelector(':scope > [data-docfirst-section="document-extras"]');if(previousExtras)content.append(previousExtras);
   const extras=[...root.querySelectorAll('.doc-body > details.qn-form-details,.doc-body > details.qn-simple-section')];
