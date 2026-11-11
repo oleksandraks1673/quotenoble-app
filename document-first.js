@@ -18,8 +18,14 @@
   const body=document.getElementById('modal-body');if(!body)return;
   const isDocument=!!body.querySelector('#q-view,#i-view');
   const isJob=!!body.querySelector('#j-edit');if(!isDocument&&!isJob)return;
-  const candidates=[...body.querySelectorAll('.qn-materials,.qn-flow-link,[data-extra-work-context],[data-qn-approval],[data-project-link],.qn-simple-section,[data-request-deposit],#q-to-job,#qn-quote-send,#qn-invoice-send')];
-  candidates.push(body.querySelector('[data-qstat]')?.closest('.field'),...body.querySelectorAll('.qn-followup,#q-invoice,#i-quote,#q-del,#i-del,#j-delete'));
+  // Primary quote actions must never be buried inside a collapsed More menu.
+  const candidates=[...body.querySelectorAll('.qn-materials,.qn-flow-link,[data-extra-work-context],[data-project-link],.qn-simple-section,#q-to-job')];
+  candidates.push(...body.querySelectorAll('.qn-followup,#q-invoice,#i-quote,#q-del,#i-del,#j-delete'));
+  const priority=[body.querySelector('[data-qstat]')?.closest('.field'),...body.querySelectorAll('#qn-quote-send,#qn-invoice-send,[data-request-deposit],[data-qn-approval]')].filter(Boolean);
+  const existing=body.querySelector('[data-docfirst-section="record-options"]');
+  if(existing){for(const el of priority){if(existing.contains(el))body.insertBefore(el,existing);}}
+  // Keep the quote status and customer actions directly above the secondary tools.
+  for(const el of priority){if(el.parentElement===body&&existing)body.insertBefore(el,existing);}
   if(isJob)candidates.push(...body.querySelectorAll('#j-invoice,#j-report,#j-edit-quote,#qn-photo-manager'));
   const extras=candidates.filter(el=>el&&!el.closest('[data-docfirst-section]'));
   if(extras.length){const group=disclosure(body,'record-options','More options');for(const el of extras)moveInto(group,el);}
