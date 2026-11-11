@@ -325,3 +325,36 @@ img,video,canvas,svg{max-width:100%}
   #doc-root,#doc-root .doc-body{max-width:100%;min-width:0}
   #doc-root .doc-actions{flex-wrap:wrap}
 }
+
+
+/* Balanced saved-document action bar: primary Send + two equal secondary actions. */
+@media screen and (max-width:767px){
+ html:root:root body #doc-root .doc-actions{
+   display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+   gap:10px!important;align-items:stretch!important
+ }
+ html:root:root body #doc-root .doc-actions > #doc-share{
+   grid-column:1/-1!important;grid-row:1!important;
+   width:100%!important;min-width:0!important;margin:0!important
+ }
+ html:root:root body #doc-root .doc-actions > #doc-edit{
+   grid-column:1!important;grid-row:2!important;
+   width:100%!important;min-width:0!important;margin:0!important;
+   justify-self:stretch!important
+ }
+ html:root:root body #doc-root .doc-actions > .qn-doc-more{
+   grid-column:2!important;grid-row:2!important;
+   width:100%!important;min-width:0!important;margin:0!important;
+   justify-self:stretch!important;position:relative!important
+ }
+ html:root:root body #doc-root .doc-actions > .qn-doc-more > summary{
+   display:flex!important;align-items:center;justify-content:center;
+   width:100%!important;min-width:0!important;height:100%!important;
+   min-height:48px!important;margin:0!important
+ }
+ html:root:root body #doc-root .qn-doc-action-list{
+   left:auto!important;right:0!important;bottom:calc(100% + 8px)!important;
+   width:min(320px,calc(100vw - 32px))!important;
+   max-width:calc(100vw - 32px)!important
+ }
+}
