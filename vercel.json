@@ -1,1 +1,16 @@
-{"functions":{"api/stripe/webhook.js":{"includeFiles":"api/stripe/_common.js"}}}
+{
+  "functions": {
+    "api/stripe/webhook.js": {
+      "includeFiles": "api/stripe/_common.js"
+    },
+    "api/company.js": {"includeFiles": "api/_upstream.js"},
+    "api/approvals.js": {"includeFiles": "api/_upstream.js"},
+    "api/crew.js": {"includeFiles": "api/_upstream.js"},
+    "api/purchases.js": {"includeFiles": "api/_upstream.js"},
+    "api/project.js": {"includeFiles": "api/_upstream.js"},
+    "api/project-photos.js": {"includeFiles": "api/_upstream.js"},
+    "api/photo-share.js": {"includeFiles": "api/_upstream.js"},
+    "api/voice-quote.js": {"includeFiles": "api/_upstream.js"},
+    "api/followups.js": {"includeFiles": "api/_upstream.js"}
+  }
+}

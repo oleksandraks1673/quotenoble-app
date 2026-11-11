@@ -1,0 +1,10 @@
+.qn-app-dialog{box-sizing:border-box;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;border:1px solid #e7ddd0;border-radius:24px;background:#fffdf9;color:#29323e;box-shadow:0 24px 80px #1b233336;overflow:auto;font-family:inherit}.qn-app-dialog::backdrop{background:#20262e80}.qn-app-dialog-content{padding:26px}.qn-app-dialog-brand{font-size:13px;font-weight:800;letter-spacing:1.3px;color:#b86a10}.qn-app-dialog h2{font-size:23px;line-height:1.3;margin:18px 0 12px}.qn-app-dialog p{font-size:16px;line-height:1.6;margin:0 0 24px;white-space:pre-wrap;overflow-wrap:anywhere}.qn-app-dialog-actions{display:flex;gap:12px}.qn-app-dialog-actions .btn{flex:1;min-width:0;min-height:48px;white-space:normal;font:inherit;font-weight:700;border-radius:12px}.qn-app-dialog-danger{background:#b7372a;color:#fff;border:1px solid #b7372a}.qn-app-dialog textarea{box-sizing:border-box;width:100%;padding:12px;margin-bottom:20px;border:1px solid #d8d0c5;border-radius:12px;font:inherit;line-height:1.5}.qn-app-dialog button:focus-visible{outline:3px solid #cf8a30;outline-offset:3px}@media(max-width:380px){.qn-app-dialog-content{padding:21px}.qn-app-dialog h2{font-size:21px}}
+
+.qn-app-dialog .btn{padding:12px 16px;cursor:pointer;border:1px solid #d9cdbd;background:#fff;color:#29323e}.qn-app-dialog .btn-primary{background:#bf700f;border-color:#bf700f;color:#fff}.qn-app-dialog .qn-app-dialog-danger{background:#b7372a;border-color:#b7372a;color:#fff}
+
+/* Uniform Quote.Noble app-owned dialogs; native Chrome prompts cannot be styled. */
+.qn-app-dialog{border:1px solid #e4d4c3;border-top:5px solid #c8792c;border-radius:20px;background:#fffdf9;color:#29323e;box-shadow:0 20px 75px #142b4740}
+.qn-app-dialog::backdrop{background:rgba(17,33,48,.72)}
+.qn-app-dialog-brand{color:#bf700f;letter-spacing:1.1px}
+.qn-app-dialog .btn-primary{background:#c8792c;border-color:#c8792c;color:#fff}
+.qn-app-dialog .btn:focus-visible{outline-color:#c8792c}

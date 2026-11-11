@@ -1,0 +1,43 @@
+/* Approved Quote.Noble signup design, 17 October 2026. */
+body:not(.qn-authenticated){background:#faf8f4;padding-bottom:0}
+#qn-auth-screen{box-sizing:border-box;min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:40px 16px;padding:max(40px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:#faf8f4 url('/assets/launch-documents-v3.webp?v=20261022-fast1') center center/cover no-repeat}
+#qn-auth-screen .qn-auth-card{box-sizing:border-box;width:100%;max-width:480px;padding:28px 24px 54px;border:0;border-radius:0;background:transparent;box-shadow:none}
+#qn-auth-screen .qn-auth-brand{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;margin:0 0 14px;min-width:0}
+#qn-auth-screen .qn-auth-logo{display:block;width:88px;height:88px;object-fit:contain;border-radius:20px}
+#qn-auth-screen .qn-auth-brand-copy{width:100%;min-width:0}
+#qn-auth-screen .qn-auth-brand h1{font-size:clamp(32px,8.7vw,43px);line-height:1.1;font-weight:850;letter-spacing:-1.6px;margin:0;color:#141922;white-space:nowrap}
+#qn-auth-screen .qn-auth-brand h1 span:last-child{color:#f45b08}
+#qn-auth-screen .qn-auth-tagline{font-size:14px;line-height:1.45;color:#707784;font-weight:400;margin:10px auto 0;max-width:390px;text-wrap:balance}
+#qn-auth-screen #qn-auth-subtitle{font-size:clamp(20px,5.3vw,27px);line-height:1.25;font-weight:800;letter-spacing:-.6px;text-align:center;color:#171d27;margin:0}
+#qn-auth-screen #qn-auth-description{font-size:15px;line-height:1.5;text-align:center;color:#707784;margin:8px 0 23px}
+#qn-auth-screen .qn-auth-field{margin-bottom:17px}
+#qn-auth-screen .qn-auth-field label{display:block;font-size:14px;line-height:1.35;font-weight:700;color:#252b35;margin:0 0 8px}
+#qn-auth-screen .qn-auth-card input{box-sizing:border-box;display:block;width:100%;min-width:0;min-height:54px;padding:14px 15px;margin:0;border:1px solid #d3d6de;border-radius:13px;background:rgba(255,255,255,.68);font:inherit;font-size:16px;line-height:1.4;color:#202733;box-shadow:0 1px 2px rgba(20,25,35,.025)}
+#qn-auth-screen .qn-auth-card input::placeholder{color:#7b8290;opacity:1}
+#qn-auth-screen .qn-auth-card .qn-password-wrap{margin:0}
+#qn-auth-screen .qn-auth-card .qn-password-wrap button.qn-password-toggle{min-width:60px!important;min-height:44px!important;height:44px!important;border-radius:7px!important;background:transparent!important;color:#af470c!important;font-size:14px!important;line-height:44px!important}
+#qn-auth-screen #qn-auth-submit{display:block;width:100%;min-height:54px;margin:20px 0 0;padding:14px 12px;border:0;border-radius:13px;background:linear-gradient(105deg,#ffab20,#ff9900);color:#201a11;font-size:17px;font-weight:800;line-height:1.4;cursor:pointer;box-shadow:0 6px 16px rgba(235,141,10,.1)}
+#qn-auth-screen #qn-auth-submit:disabled{opacity:.6;cursor:wait}
+#qn-auth-screen #qn-auth-switch-row{display:flex;flex-wrap:wrap;gap:0 5px;align-items:center;justify-content:center;margin:0;color:#202733;font-size:16px;font-weight:700;line-height:1.5;text-align:center}
+#qn-auth-screen #qn-auth-switch,#qn-auth-screen #qn-auth-reset{display:inline-flex;align-items:center;justify-content:center;min-height:44px;width:auto;margin:0;padding:7px 2px;background:transparent;color:#b54a0b;font-size:14px;font-weight:700;border:0;border-radius:6px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#qn-auth-screen #qn-auth-switch{color:#963a06;font-size:16px;font-weight:800!important;text-decoration-thickness:2px;text-underline-offset:4px}
+#qn-auth-screen #qn-auth-reset{display:flex;margin:0 auto}
+#qn-auth-screen #qn-auth-message:empty{display:none}
+#qn-auth-screen #qn-auth-message{margin:12px 0 0;font-size:14px;line-height:1.5;text-align:center;overflow-wrap:anywhere}
+#qn-auth-screen [hidden]{display:none!important}
+#qn-auth-screen input:focus-visible,#qn-auth-screen button:focus-visible{outline:3px solid #c46b1e;outline-offset:3px}
+@media(min-width:700px){#qn-auth-screen{background-size:auto 100%;background-repeat:repeat-x;padding-top:44px;padding-bottom:44px}#qn-auth-screen .qn-auth-card{padding:32px 30px 56px}}
+@media(max-width:350px){#qn-auth-screen{padding-left:12px;padding-right:12px}#qn-auth-screen .qn-auth-card{padding:24px 18px 50px}#qn-auth-screen .qn-auth-logo{width:76px;height:76px}#qn-auth-screen .qn-auth-tagline{font-size:13px}#qn-auth-screen #qn-auth-subtitle{font-size:19px}}
+@media(max-height:650px){#qn-auth-screen{align-items:flex-start;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom))}}
+
+/* Shared faded artwork behind every signed-in navigation view. */
+body.qn-authenticated{background:#faf8f4}
+body.qn-authenticated #qn-home-backdrop{display:block;position:fixed;inset:88px 0 76px;z-index:0;pointer-events:none;overflow:hidden;background:#faf8f4}
+#qn-home-backdrop img{display:block;width:100%;height:100%;object-fit:fill}
+body.qn-authenticated>main{position:relative;z-index:1;min-height:calc(100svh - 88px)}
+#view-home>.card{background:rgba(255,255,255,.88)}
+#view-home .list-item{background:rgba(255,255,255,.72)}
+#view-home .qn-home-allowance{background:rgba(255,255,255,.86)}
+@media(min-width:900px){body.qn-authenticated #qn-home-backdrop{left:226px;top:90px;bottom:0}#qn-home-backdrop img{object-fit:contain}}
+
+@media print{#qn-home-backdrop{display:none!important}}

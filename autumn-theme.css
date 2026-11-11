@@ -1,0 +1,89 @@
+/* Seasonal decoration stays separate from documents and account data. */
+@media screen {
+ body.qn-authenticated {background-color:#fcf8f2;}
+ body.qn-authenticated main {position:relative;isolation:isolate;}
+ body.qn-authenticated main::before {content:"";position:absolute;top:0;right:0;width:min(76vw,440px);height:min(76vw,440px);background:url('/autumn-leaves.webp') top right/contain no-repeat;opacity:.5;pointer-events:none;z-index:-1;}
+ body.qn-authenticated .app-header {background:rgba(255,253,249,.88);backdrop-filter:blur(12px);}
+ body.qn-authenticated #view-home {padding-top:8px;}
+ body.qn-authenticated .qn-home-greeting {max-width:76%;}
+}
+@media print {main::before {display:none!important;}}
+
+/* Compact shared header on every app page. */
+@media screen {
+ body.qn-authenticated .app-header {padding:6px 14px!important;min-height:0!important;box-shadow:0 1px 5px #78350f08!important;}
+ body.qn-authenticated .app-header .brand {min-height:48px!important;grid-template-columns:48px minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important;}
+ body.qn-authenticated .app-header .brand>.logo {width:48px!important;height:48px!important;min-width:48px!important;}
+ body.qn-authenticated .app-header .brand>.qn-brand-copy h1 {font-size:22px!important;line-height:1.15!important;margin:0!important;}
+ body.qn-authenticated .app-header .brand>.qn-brand-copy p {display:none!important;}
+ body.qn-authenticated .app-header #qn-create-toggle {min-height:44px!important;padding:8px 12px!important;font-size:17px!important;}
+}
+@media screen and (max-width:360px) {
+ body.qn-authenticated .app-header {padding:6px 10px!important;}
+ body.qn-authenticated .app-header .brand>.qn-brand-copy h1 {font-size:19px!important;}
+ body.qn-authenticated .app-header #qn-create-toggle {font-size:16px!important;padding:8px 10px!important;}
+}
+@media screen {
+ body.qn-authenticated .app-header {background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:4px 14px!important;}
+ body.qn-authenticated .app-header .brand {min-height:44px!important;grid-template-columns:44px minmax(0,1fr) auto!important;}
+ body.qn-authenticated .app-header .brand>.logo {width:44px!important;height:44px!important;min-width:44px!important;background:transparent!important;border:0!important;box-shadow:none!important;}
+ body.qn-authenticated .app-header .brand>.qn-create-wrap {grid-column:3!important;grid-row:1!important;align-self:center!important;}
+}
+/* One continuous seasonal background behind the header and every page. */
+@media screen {
+ body.qn-authenticated {isolation:isolate;background:#fcf8f2!important;}
+ body.qn-authenticated::before {content:"";position:fixed;top:0;right:0;width:min(76vw,440px);height:min(76vw,440px);background:url('/autumn-leaves.webp') top right/contain no-repeat;opacity:.5;pointer-events:none;z-index:-1;}
+ body.qn-authenticated main::before {display:none!important;}
+ body.qn-authenticated .app-header,body.qn-authenticated main {background:transparent!important;}
+}
+@media print {body.qn-authenticated::before {display:none!important;}}
+/* Half-transparent shared header backing. */
+@media screen {
+ body.qn-authenticated .app-header .brand {background:rgba(255,253,249,.5)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:0!important;border-radius:14px;padding:4px 8px!important;box-shadow:none!important;box-sizing:border-box;}
+}
+@media screen {
+ body.qn-authenticated .app-header {padding:2px 14px!important;}
+ body.qn-authenticated .app-header .brand {padding:2px 4px!important;border-radius:10px;gap:4px!important;}
+}
+/* Match the visible frame exactly to the Create control height. */
+@media screen {
+ body.qn-authenticated .app-header {padding:0 14px!important;}
+ body.qn-authenticated .app-header .brand {height:44px!important;min-height:44px!important;max-height:44px!important;padding:0 4px!important;border:0!important;grid-template-rows:44px!important;align-items:center!important;}
+ body.qn-authenticated .app-header .brand>.logo {height:44px!important;min-height:44px!important;max-height:44px!important;}
+ body.qn-authenticated .app-header #qn-create-toggle {height:44px!important;min-height:44px!important;max-height:44px!important;box-sizing:border-box!important;}
+}
+
+/* Sign out remains available under More > Account. */
+@media screen {body.qn-authenticated #qn-logout {display:none!important;}}
+
+/* Separate the Create button from the phone status bar. */
+@media screen {
+ body.qn-authenticated .app-header {padding-top:calc(8px + env(safe-area-inset-top, 0px))!important;}
+}
+
+/* Prevent accidental double-tap zoom in app controls, retaining pinch zoom.
+   Document and PDF surfaces are outside these selectors. */
+.view, .app-header, .bottom-nav, button, a, input, select, textarea, summary,
+[role="button"], #modal-root .modal:has(#items-wrap) {
+  touch-action: manipulation;
+}
+
+/* Opaque sticky header: scrolling records stay behind a solid surface. */
+body.qn-authenticated header.app-header {
+  position:sticky!important;
+  top:0!important;
+  z-index:70!important;
+  background:#fffdf9!important;
+  background-image:none!important;
+  border-bottom:1px solid #e8ddcf!important;
+  box-shadow:0 3px 12px rgba(54,37,20,.09)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  isolation:isolate;
+  overflow:visible;
+}
+body.qn-authenticated header.app-header .brand {
+  background:transparent!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}

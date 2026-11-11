@@ -1,0 +1,14 @@
+/* Keep live text in the device's native UI font, with clear text surfaces. */
+html:root{--muted:#525e6d;--qn-muted:#525e6d}
+body,body.qn-crew-page,body.qn-customer-page{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;letter-spacing:normal}
+button,input,select,textarea{font-family:inherit}
+body .list-item .sub,body .field .hint,body .qn-crew-muted,body .qn-voice-dialog .hint{color:#525e6d}
+body .field .hint{font-size:.875rem;line-height:1.5}
+body .app-header .brand>.qn-brand-copy p{color:#525e6d!important}
+body #qn-auth-screen .qn-auth-tagline,body #qn-auth-screen #qn-auth-description{color:#525e6d}
+body .field input::placeholder,body .field textarea::placeholder,body #qn-auth-screen .qn-auth-card input::placeholder{color:#626d7b;opacity:1}
+body #view-home>.card,body #view-home .list-item,body #view-home .qn-home-allowance,body #qn-auth-screen .qn-auth-card input{background:#fff}
+/* Colour feedback avoids resampling button lettering while it is pressed. */
+body .btn:active,body #qn-create-toggle:active{transform:none}
+body .btn{transition:background-color .15s,border-color .15s,box-shadow .15s}
+@media(prefers-reduced-motion:reduce){body .btn{transition:none}}

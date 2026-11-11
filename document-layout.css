@@ -1,0 +1,60 @@
+/* Full-page quote/invoice editors. Keep one touch-scroll surface for the form. */
+body #modal-root .modal-back:has(#items-wrap){
+  align-items:stretch;padding:0;inset:0;height:100vh;height:100dvh;
+  background:#fff;backdrop-filter:none;z-index:140;
+}
+body #modal-root .modal:has(#items-wrap){
+  width:100%;max-width:none;height:100%;max-height:100%;min-height:0;
+  margin:0;border-radius:0;box-shadow:none;overflow:auto;
+  padding:calc(20px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scroll-padding-block:24px;
+}
+body #modal-root .modal:has(#items-wrap)>h2,
+body #modal-root .modal:has(#items-wrap)>#modal-body{width:100%;min-width:0;max-width:1000px;margin-left:auto;margin-right:auto}
+body #modal-root .modal:has(#items-wrap) :is(.field,.qn-details-body,.qn-customer-fields,.qn-template-tools){min-width:0;max-width:100%}
+body #modal-root .modal:has(#items-wrap) :is(input,select,textarea){min-width:0;max-width:100%;box-sizing:border-box}
+body #modal-root .modal:has(#items-wrap) .btn-row{flex-wrap:wrap}
+body #modal-root .modal:has(#items-wrap) .btn-row>.btn{flex:1 1 180px;min-width:0;white-space:normal;overflow-wrap:anywhere}
+body #modal-root .modal:has(#items-wrap) #modal-body>.btn-row:last-child{margin-top:24px}
+body #modal-root .modal:has(#items-wrap) .item-row{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) 44px}
+body #modal-root .modal:has(#items-wrap) .item-row .service{grid-column:1/-1;grid-row:1}
+body #modal-root .modal:has(#items-wrap) .item-row .desc{grid-column:1/-1;grid-row:2;overflow:auto;touch-action:auto}
+body #modal-root .modal:has(#items-wrap) .item-row .qty{grid-column:1;grid-row:3}
+body #modal-root .modal:has(#items-wrap) .item-row .qn-price-field{grid-column:2;grid-row:3;position:relative;min-width:0}
+body #modal-root .modal:has(#items-wrap) .item-row .qn-price-field>span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;font-weight:600;color:#344054;pointer-events:none}
+body #modal-root .modal:has(#items-wrap) .item-row .qn-price-field>.price{width:100%;padding-left:34px}
+body #modal-root .modal:has(#items-wrap) .item-row .rm{grid-column:3;grid-row:3}
+body #modal-root .modal:has(#items-wrap) .qn-item-option{grid-column:1/-1;align-items:flex-start;overflow-wrap:anywhere}
+body #modal-root .modal:has(#items-wrap) .qn-item-option input{width:23px;height:23px;min-height:23px;padding:0;margin:3px 0 0;flex:none}
+body #modal-root .modal:has(#items-wrap) .totals-box .row{gap:12px;flex-wrap:wrap;overflow-wrap:anywhere}
+/* The document scrolls between its navigation and actions; neither covers text. */
+body #doc-root .doc-back{height:100vh;height:100dvh;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+body #doc-root .qn-document-nav{position:static;flex:none}
+body #doc-root .doc{flex:1;min-height:0;width:100%;max-width:none;min-width:0;overflow:auto;padding-bottom:24px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body #doc-root :is(.doc-header,.doc-body,.doc-meta,.note,.doc-title-row,.qn-approval-panel){min-width:0;overflow-wrap:anywhere}
+body #doc-root .doc-title-row{gap:12px;flex-wrap:wrap}
+body #doc-root .doc-title-row h2{min-width:0;overflow-wrap:anywhere}
+body #doc-root .doc-actions{position:static;flex:none;flex-wrap:wrap;gap:8px}
+body #doc-root .doc-actions .btn{flex:1 1 90px;min-width:0;white-space:normal;overflow-wrap:anywhere}
+body #doc-root .doc-table :is(td.num,th.num){white-space:normal;overflow-wrap:anywhere}
+body #doc-root .doc-totals{max-width:100%;width:340px}
+body #doc-root .totals-box .row{gap:12px;flex-wrap:wrap;overflow-wrap:anywhere}
+body #doc-root .qn-approval-panel{margin:16px}
+body #qn-create-menu{max-height:max(80px,calc(100dvh - 140px));overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media(max-width:600px){
+  body #modal-root .modal:has(#items-wrap) .qn-mat-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px!important}
+  body #modal-root .modal:has(#items-wrap) .qn-mat-name{grid-column:1/-1}
+  body #modal-root .modal:has(#items-wrap) .qn-details-body{padding:12px}
+  body #modal-root .modal:has(#items-wrap) .qn-template-tools{padding:10px}
+}
+body #modal-root .modal:has(#items-wrap) .item-row .qn-qty-field{grid-column:1;grid-row:3;position:relative;display:block;margin:0;min-width:0}
+body #modal-root .modal:has(#items-wrap) .item-row .qn-qty-field>span{position:absolute;top:4px;left:14px;font-size:12px;line-height:16px;font-weight:650;color:#667085;pointer-events:none}
+body #modal-root .modal:has(#items-wrap) .item-row .qn-qty-field>.qty{width:100%;max-width:none;min-height:56px;padding:21px 14px 5px}
+
+/* Company logo above the right-hand company details in both document kinds. */
+body #doc-root .qn-business-logo-top{display:flex;justify-content:flex-end;min-height:24px;padding:20px 20px 14px;background:#fff}
+body #doc-root .qn-business-logo-top img{display:block;max-width:170px;max-height:90px;width:auto;height:auto;object-fit:contain}
+body #doc-root .qn-document-parties{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;direction:ltr;margin:12px 0 20px}
+body #doc-root .qn-document-parties .doc-meta{margin:0;line-height:1.55;min-width:0;white-space:pre-line;overflow-wrap:anywhere}
+body #doc-root .qn-document-customer{grid-column:1;text-align:left}
+body #doc-root .qn-document-business{grid-column:2;text-align:right}
