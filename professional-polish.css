@@ -413,3 +413,34 @@ img,video,canvas,svg{max-width:100%}
 @media(max-width:390px) {
  html:root:root body.qn-authenticated #view-home .qn-home-actions .btn {font-size:13px!important}
 }
+
+/* Quote workspace: accessible status, collapsed secondary tools and reliable menu. */
+html:root:root body #doc-root .qn-doc-status-picker {
+ position:relative;z-index:2;background:#fff;border:1px solid #e6e1dc;
+ border-radius:13px;margin:12px 12px 14px;padding:13px 14px;
+ box-shadow:0 2px 8px rgba(24,27,32,.04)
+}
+html:root:root body #doc-root .qn-doc-status-picker>strong {
+ display:block;font-size:15px;color:#292c33;margin-bottom:10px
+}
+html:root:root body #doc-root .qn-doc-status-buttons {
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px
+}
+html:root:root body #doc-root .qn-doc-status-buttons .btn {
+ min-width:0;min-height:44px;font-size:15px!important;padding:9px 7px!important;
+ border-radius:9px!important
+}
+html:root:root body #doc-root .qn-doc-status-buttons .btn-primary {
+ background:#ed6900!important;border-color:#ed6900!important;color:white!important
+}
+html:root:root body #doc-root .qn-document-options {
+ margin:12px!important;border:1px solid #e7e2dc!important;border-radius:12px!important;
+ background:#fff!important
+}
+html:root:root body #doc-root .qn-document-options>summary {
+ cursor:pointer;padding:14px!important;font-size:15px!important;font-weight:650!important
+}
+html:root:root body #doc-root .qn-doc-more[open] {z-index:1005!important}
+html:root:root body #doc-root .qn-doc-action-list {
+ z-index:1006!important;box-shadow:0 12px 32px rgba(0,0,0,.18)!important
+}
