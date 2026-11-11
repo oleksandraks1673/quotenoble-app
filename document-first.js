@@ -57,6 +57,22 @@
   let menu=actions.querySelector('.qn-doc-more');
   if(!menu){menu=document.createElement('details');menu.className='qn-doc-more';const content=document.createElement('div');content.className='qn-doc-action-list';menu.append(label(document.createElement('summary'),'More'),content);actions.append(menu);}
   const list=menu.querySelector('.qn-doc-action-list');if(!list)return;
+  menu.classList.add('qn-tools-drawer');
+  const summary=menu.querySelector(':scope > summary');if(summary)label(summary,'Tools');
+  if(!list.querySelector('[data-qn-tools-title]')){
+   const title=document.createElement('div');title.dataset.qnToolsTitle='';title.className='qn-tools-title';
+   title.innerHTML='<strong>Quote tools</strong><button type="button" class="qn-tools-close" aria-label="Close tools">✕</button>';
+   list.prepend(title);
+   title.querySelector('button').onclick=()=>{menu.open=false;};
+  }
+  if(!list.querySelector('[data-qn-tool-photos]')&&kind==='q'){
+   const photo=button('Photos & drawings',()=>{
+    menu.open=false;
+    const section=root.querySelector('.qn-roof-box,[data-docfirst-section="document-extras"]');
+    if(section?.tagName==='DETAILS')section.open=true;
+    section?.scrollIntoView({block:'start',behavior:'smooth'});
+   });photo.dataset.qnToolPhotos='';list.append(photo);
+  }
   // Close the popover before opening a different screen or modal.
   if(!menu.dataset.docfirstBound){menu.dataset.docfirstBound='1';list.addEventListener('click',e=>{if(e.target.closest('button'))menu.open=false;},true);}
   menu.addEventListener('toggle',()=>{if(menu.open)menu.scrollIntoView({block:'nearest',behavior:'instant'});},{once:true});
