@@ -47,7 +47,7 @@ async function openPDFPreview(kind, id, exportSnapshot) {
     if(closed||error?.name==='RenderingCancelledException')return;
     console.error('PDF preview failed:',error);
     status.hidden=false;
-    status.textContent=built?'Preview could not be displayed. You can still download or share this PDF.':'Could not create the PDF. Close this preview and try again.';
+    status.textContent=built?'PDF preview could not load. Please close and reopen this viewer.':'Could not create the PDF. Close this preview and try again.';
   }
   async function render(){
     const serial=++renderSerial;photoTargets.replaceChildren();
@@ -137,11 +137,11 @@ async function openPDFPreview(kind, id, exportSnapshot) {
         else download.click();
       }catch(error){if(error.name!=='AbortError')fail(error);}
     };
-    if(!qnPdfViewerLibrary)qnPdfViewerLibrary=import('/vendor/pdfjs/pdf.mjs').catch(error=>{qnPdfViewerLibrary=null;throw error;});
+    if(!qnPdfViewerLibrary)qnPdfViewerLibrary=import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs').catch(error=>{qnPdfViewerLibrary=null;throw error;});
     const pdfjs=await qnPdfViewerLibrary;
     if(closed)return;
-    pdfjs.GlobalWorkerOptions.workerSrc='/vendor/pdfjs/pdf.worker.mjs';
-    loadingTask=pdfjs.getDocument({data:new Uint8Array(bytes),standardFontDataUrl:'/vendor/pdfjs/standard_fonts/'});
+    pdfjs.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+    loadingTask=pdfjs.getDocument({data:new Uint8Array(bytes),standardFontDataUrl:'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/standard_fonts/'});
     pdfDoc=await loadingTask.promise;
     if(closed)return;
     await render();
