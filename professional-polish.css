@@ -474,3 +474,15 @@ html:root:root body #doc-root .qn-tools-drawer .qn-doc-action-list>.btn{
  border:1px solid #e6e6e6!important
 }
 html:root:root body #doc-root .qn-tools-drawer>summary{cursor:pointer}
+
+/* Original-style faint Quotes / Customers / Invoices background, kept behind controls. */
+html:root:root body.qn-authenticated #view-home{position:relative;isolation:isolate}
+html:root:root body.qn-authenticated #view-home::before{
+ content:"QUOTES     CUSTOMERS     INVOICES";
+ position:absolute;z-index:-1;pointer-events:none;
+ top:145px;left:0;right:0;text-align:center;
+ color:rgba(37,42,50,.045);font-size:clamp(24px,6vw,56px);
+ font-weight:850;letter-spacing:.07em;line-height:1.7;
+ white-space:normal;overflow:hidden;
+}
+html:root:root body.qn-authenticated #view-home>*{position:relative}
