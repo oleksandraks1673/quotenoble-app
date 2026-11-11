@@ -444,3 +444,33 @@ html:root:root body #doc-root .qn-doc-more[open] {z-index:1005!important}
 html:root:root body #doc-root .qn-doc-action-list {
  z-index:1006!important;box-shadow:0 12px 32px rgba(0,0,0,.18)!important
 }
+
+/* Single mobile slide-out tools drawer: no nested More popover. */
+html:root:root body #doc-root .qn-tools-drawer[open]::before{
+ content:"";position:fixed;inset:0;background:rgba(16,20,26,.45);z-index:1200;
+}
+html:root:root body #doc-root .qn-tools-drawer[open] .qn-doc-action-list{
+ position:fixed!important;top:0!important;bottom:0!important;right:0!important;left:auto!important;
+ width:min(86vw,370px)!important;max-width:370px!important;height:100dvh!important;
+ max-height:100dvh!important;overflow-y:auto!important;z-index:1201!important;
+ background:#fff!important;border:0!important;border-radius:18px 0 0 18px!important;
+ padding:20px 16px calc(25px + env(safe-area-inset-bottom))!important;
+ box-shadow:-14px 0 45px rgba(0,0,0,.22)!important;
+ display:flex!important;flex-direction:column;gap:9px!important
+}
+html:root:root body #doc-root .qn-tools-drawer .qn-tools-title{
+ display:flex;justify-content:space-between;align-items:center;
+ font-size:19px;color:#20252d;padding:8px 3px 16px;border-bottom:1px solid #e8e8e8;
+ margin-bottom:6px
+}
+html:root:root body #doc-root .qn-tools-drawer .qn-tools-close{
+ border:0;background:#f3f3f3;border-radius:9px;padding:8px 12px;font-size:18px;
+ color:#252a32;cursor:pointer
+}
+html:root:root body #doc-root .qn-tools-drawer .qn-doc-action-list>.btn{
+ display:block!important;width:100%!important;text-align:left!important;
+ padding:14px 16px!important;min-height:52px!important;border-radius:10px!important;
+ font-size:16px!important;background:#fff!important;color:#252a32!important;
+ border:1px solid #e6e6e6!important
+}
+html:root:root body #doc-root .qn-tools-drawer>summary{cursor:pointer}
