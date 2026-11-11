@@ -257,7 +257,7 @@
     }
   }
   window.qnCloudSave = function () {
-    if (!ready) { status(window.qnSaveFailed ? "Device storage failed · keep this page open and retry sync" : conflict ? "Saved on device · review copies to finish cloud sync" : "Saved on device · cloud sync pending", true); return; }
+    if (!ready) { pending = true; status(window.qnSaveFailed ? "Device storage failed · keep this page open and retry sync" : conflict ? "Saved on device · review copies to finish cloud sync" : "Saved on device · cloud sync pending", true); return; }
     if (running) { pending = true; return; }
     status("Saving…"); clearTimeout(timer); timer = setTimeout(push, 800);
   };
