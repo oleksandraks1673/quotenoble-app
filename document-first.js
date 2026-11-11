@@ -57,6 +57,9 @@
   let menu=actions.querySelector('.qn-doc-more');
   if(!menu){menu=document.createElement('details');menu.className='qn-doc-more';const content=document.createElement('div');content.className='qn-doc-action-list';menu.append(label(document.createElement('summary'),'More'),content);actions.append(menu);}
   const list=menu.querySelector('.qn-doc-action-list');if(!list)return;
+  // Close the popover before opening a different screen or modal.
+  if(!menu.dataset.docfirstBound){menu.dataset.docfirstBound='1';list.addEventListener('click',e=>{if(e.target.closest('button'))menu.open=false;},true);}
+  menu.addEventListener('toggle',()=>{if(menu.open)menu.scrollIntoView({block:'nearest',behavior:'instant'});},{once:true});
   const share=root.querySelector('#doc-share');if(share)label(share,'Send');
   const edit=root.querySelector('#doc-edit');if(edit){label(edit,'Edit');actions.insertBefore(edit,menu);}
   const pdf=root.querySelector('#doc-pdf');if(pdf&&!list.contains(pdf))list.prepend(pdf);
@@ -91,7 +94,9 @@
   const customer=root.querySelector('.qn-document-customer');
   if(customer)for(const node of [...customer.childNodes])if(node.nodeName==='BR'&&node.previousSibling?.nodeName==='BR')node.remove();
   tidyDocumentExtras();
-  const heading=root.querySelector('.doc-title-row h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
+  const heading=root.querySelector('.doc-title-row h2');if(heading)heading.tabIndex=-1;
+  // Always show the status and main quote actions first, not the last scrolled tool panel.
+  window.scrollTo({top:0,behavior:'instant'});
  }
  const originalDocument=window.openDocument;
  window.openDocument=function(kind,id){const result=originalDocument.apply(this,arguments);tidyDocument(kind,id);return result;};
