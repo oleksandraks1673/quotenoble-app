@@ -278,3 +278,66 @@ html:root:root body #qn-auth-screen #qn-auth-submit { background:#e66a12!importa
  html:root:root body #doc-root .doc-body>.note {margin:8px 0!important;padding:8px 0!important;}
  html:root:root body .qn-document-options {margin-top:12px!important;}
 }
+
+
+/* Saved-document mobile action bar: keep buttons and More menu in viewport. */
+@media screen and (max-width: 767px) {
+  html:root:root body #doc-root,
+  html:root:root body #doc-root .doc-back,
+  html:root:root body #doc-root .qn-document-first {
+    max-width: 100%;
+    min-width: 0;
+  }
+  html:root:root body #doc-root .doc-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom)) !important;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+  html:root:root body #doc-root .doc-actions > #doc-share {
+    grid-column: 1 / -1;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  html:root:root body #doc-root .doc-actions > #doc-edit {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  html:root:root body #doc-root .doc-actions > .qn-doc-more {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: 100% !important;
+    min-width: 0 !important;
+    position: relative;
+  }
+  html:root:root body #doc-root .doc-actions > .qn-doc-more > summary {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  html:root:root body #doc-root .qn-doc-action-list {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(100% + 8px) !important;
+    top: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    max-height: min(65dvh, 420px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    z-index: 1000;
+  }
+  html:root:root body #doc-root .qn-doc-action-list > * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
