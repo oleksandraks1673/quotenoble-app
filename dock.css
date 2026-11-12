@@ -1,0 +1,86 @@
+/* QuoteNoble floating dock (chunk 5).
+   Bolt-on restyle of the existing #tabbar into the floating dock from the
+   approved prototype: same five destinations, same order, same tap targets —
+   only the bar's presentation changes, and only at phone widths.
+   dock.js adds the .qn-dock class to #tabbar (and .qn-dock-on to <body>)
+   after workflow.js / simple-navigation.js have finished rewriting the bar;
+   every rule below is scoped to those classes, and the whole phone block
+   sits inside max-width:899px so the desktop sidebar (which the existing
+   layers build from the same element at min-width:900px) is untouched.
+   Specificity follows the app's own escalation idiom
+   (html:root:root:root body …) because noble-flagship.css and
+   professional-polish.css style this bar with !important at that level;
+   dock.css is linked after them, so equal-or-higher specificity wins. */
+
+/* The dock badge has no home outside the phone dock: on desktop the More
+   button is a sidebar row and grows no new furniture. */
+#tabbar .qn-dock-badge { display: none; }
+
+@media (max-width: 899px) {
+  /* The dock itself: lifted off the bottom edge, rounded, soft shadow. */
+  html:root:root:root body #tabbar.qn-dock {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    padding: 6px !important;
+    gap: 4px;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 22px !important;
+    background: #ffffff !important;
+    box-shadow: 0 14px 34px rgba(24, 34, 48, .16), 0 3px 10px rgba(24, 34, 48, .08) !important;
+  }
+
+  /* Tall tap targets, ~26px icons, clear labels. */
+  html:root:root:root body #tabbar.qn-dock button {
+    position: relative;
+    min-height: 62px !important;
+    padding: 7px 2px 6px;
+    gap: 4px;
+    border-radius: 16px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    background: transparent !important;
+  }
+
+  /* The active destination is a filled pill. */
+  html:root:root:root body #tabbar.qn-dock button.active {
+    background: #ffe8d2 !important;
+    color: #c2410c !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+  }
+
+  /* One icon size across all five items (dock.js swaps the Jobs glyph for
+     an SVG from the same stroke set, so this covers every button). */
+  html:root:root:root body #tabbar.qn-dock button .ico { font-size: 26px; line-height: 1; }
+  html:root:root:root body #tabbar.qn-dock button .ico svg { width: 26px; height: 26px; }
+
+  /* To-sort count badge on the More item: same pill as the chunk 4
+     More-menu badge (.qn-payments-badge), mirrored here by dock.js. */
+  html:root:root:root body #tabbar.qn-dock button .qn-dock-badge:not([hidden]) {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 4px;
+    inset-inline-end: calc(50% - 25px);
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #ff681b;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* Nothing hides behind the dock: the dock's top edge sits at
+     (10px offset + 74px dock) above the safe area, so content gets
+     114px + safe-area of bottom room — a touch more than the 108px
+     noble-flagship.css already allows, matched to the taller dock. */
+  html:root:root:root body.qn-dock-on main {
+    padding-bottom: calc(114px + env(safe-area-inset-bottom)) !important;
+  }
+}

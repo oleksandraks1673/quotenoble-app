@@ -9,7 +9,7 @@ This package is an integration candidate based on the uploaded v10 preview HTML.
  STRIPE_SECRET_KEY=your Stripe LIVE secret key (sensitive, enter in Vercel only)
  SUPABASE_PUBLISHABLE_KEY=your Supabase publishable key
  SUPABASE_URL=https://jssfjaggsjtwppokjpns.supabase.co
- STRIPE_WEBHOOK_SECRET=signing secret from Stripe webhook endpoint (enter in Vercel only)
+STRIPE_WEBHOOK_SECRET=whsec_REDACTED_rotate_in_stripe_dashboard
 3. Stripe webhook URL: https://www.quotenoble.com/api/stripe/webhook. Subscribe to checkout.session.completed, customer.subscription.created, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed. Configure Stripe Billing customer portal.
 4. Test authentication, checkout, yearly/monthly amounts, cancellation, failed payment, portal and Stripe status. A signed-in user is required. The /api/stripe/status endpoint is server-authoritative.
 5. IMPORTANT: This integration does NOT gate existing app features based on status; it provides a trustworthy status endpoint only. Define Pro-only features and enforce server-side permissions before calling it a fully paid SaaS. The original file still includes beta/free feature wording.

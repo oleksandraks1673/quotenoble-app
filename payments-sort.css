@@ -1,0 +1,25 @@
+/* Payments sorting (10/10 fixes, chunk 4) — view-scoped styles only.
+   Layout, headings, forms, rows and notes reuse money.css (.qn-money,
+   .qn-money-form, .qn-money-note, .qn-more-back) which both app pages
+   already load; the section carries the qn-money class for that. */
+#view-payments h3{margin:26px 0 4px;font-size:19px}
+#view-payments .qn-pay-list:first-of-type h3{margin-top:6px}
+.qn-pay-item{padding:14px 0;border-bottom:1px solid var(--border,#ddd)}
+.qn-pay-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.qn-pay-head>span{min-width:0;overflow-wrap:anywhere}
+.qn-pay-head small{display:block;color:var(--muted);margin-top:4px}
+.qn-pay-amount{flex:none;font-size:17px}
+.qn-pay-actions{display:flex;gap:10px;margin-top:12px}
+.qn-pay-actions .btn{flex:1;min-height:52px;font-size:16px;font-weight:700}
+.qn-pay-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.qn-pay-chip{display:inline-block;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:750}
+.qn-pay-chip-in{background:#e7f6ec;color:#157347}
+.qn-pay-chip-out{background:#f1f1f4;color:#55565c}
+.qn-pay-undo{margin-left:auto;min-height:44px}
+.qn-pay-link{display:block;font-weight:650;margin-top:12px}
+.qn-pay-link select{display:block;width:100%;min-height:45px;margin-top:7px}
+.qn-pay-empty{color:var(--muted);line-height:1.5}
+.qn-pay-reason{display:block;width:100%;min-height:52px;margin-top:10px;text-align:left;font-weight:650}
+/* Count of payments waiting to be sorted, on the More menu item. */
+.qn-payments-badge{display:grid;place-items:center;flex:0 0 auto;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#ff681b;color:#fff;font-size:12px;font-weight:800}
+.qn-payments-badge[hidden]{display:none}

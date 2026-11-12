@@ -2,6 +2,25 @@
 
 const { stripe, auth, customer, error } = require('./_common');
 
+const TIERS = ['basic', 'pro', 'ultimate'];
+
+// Resolve the Stripe price ID for a tier + billing cycle.
+// Per-tier env vars win (STRIPE_PRICE_<TIER>_MONTHLY / _YEARLY). The legacy
+// single-plan pair (STRIPE_PRICE_MONTHLY / STRIPE_PRICE_YEARLY) stays as the
+// fallback for Pro — and for requests that name no tier — so the price
+// configuration already live in production keeps working unchanged.
+function priceIdFor(tier, plan) {
+  const cycle = plan === 'yearly' ? 'YEARLY' : 'MONTHLY';
+  if (tier) {
+    const specific = process.env[`STRIPE_PRICE_${tier.toUpperCase()}_${cycle}`];
+    if (specific) return specific;
+    if (tier !== 'pro') return null;
+  }
+  return plan === 'yearly'
+    ? process.env.STRIPE_PRICE_YEARLY
+    : process.env.STRIPE_PRICE_MONTHLY;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -12,14 +31,19 @@ module.exports = async (req, res) => {
     const user = await auth(req);
     const st = stripe();
 
-    const plan = req.body?.plan;
+    const plan = req.body?.plan || 'monthly';
     if (!['monthly', 'yearly'].includes(plan)) {
       return res.status(400).json({ error: 'Invalid subscription plan' });
     }
 
-    const priceId = plan === 'monthly'
-      ? process.env.STRIPE_PRICE_MONTHLY
-      : process.env.STRIPE_PRICE_YEARLY;
+    const tier = req.body?.tier;
+    if (tier !== undefined && !TIERS.includes(tier)) {
+      return res.status(400).json({ error: 'Invalid subscription tier' });
+    }
+
+    const trial = req.body?.trial === true;
+
+    const priceId = priceIdFor(tier, plan);
 
     if (!priceId) {
       throw new Error('Stripe price configuration missing');
@@ -48,7 +72,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    const origin = 'https://quotenoblev13stripeintegrationprevi.vercel.app';
+    const origin = (process.env.APP_BASE_URL || 'https://www.quotenoble.com').replace(/\/+$/, '');
 
     const session = await st.checkout.sessions.create({
       mode: 'subscription',
@@ -59,7 +83,8 @@ module.exports = async (req, res) => {
       cancel_url: origin + '/?checkout=cancel',
       metadata: { qn_user_id: user.id },
       subscription_data: {
-        metadata: { qn_user_id: user.id }
+        metadata: { qn_user_id: user.id },
+        ...(trial ? { trial_period_days: 7 } : {})
       }
     });
 

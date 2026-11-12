@@ -1,0 +1,14 @@
+/* Tax reports (10/10 fixes, chunk 3) — panel-scoped styles only.
+   Cards, rows and notes reuse money.css (.qn-money-card, .qn-money-row,
+   .qn-money-note); everything here is prefixed for the bolt-on panels. */
+#qn-tax-reports{margin-top:28px}
+#qn-tax-reports h3{margin:26px 0 8px;font-size:19px}
+#qn-tax-reports h3:first-child{margin-top:0}
+.qn-tax-period{display:block;font-weight:650;margin:10px 0 14px}
+.qn-tax-period select{display:block;width:100%;min-height:46px;margin-top:7px}
+#qn-tax-reports .qn-tax-net strong{font-size:25px}
+.qn-tax-sub{color:var(--muted);line-height:1.5;margin:0 0 6px}
+.qn-tax-empty{color:var(--muted);line-height:1.5}
+.qn-tax-job-row span{min-width:0;overflow-wrap:anywhere}
+.qn-tax-job-profit{flex:none;text-align:right}
+.qn-tax-job-profit small{display:block;color:var(--muted);margin-top:4px;font-weight:400}

@@ -1751,6 +1751,7 @@ window.qnFinishStartup=() => {
       <button type="button" class="qn-more-item" data-qn-crew-open=""><span class="qn-more-item-icon" aria-hidden="true">♧</span><span><strong><span data-qn-i18n="">Crew</span> <span class="qn-pro-label">Ultimate</span></strong><small data-qn-i18n="">Invite helpers and manage job access</small></span><b>›</b></button>
       <button type="button" class="qn-more-item" data-qn-more-go="purchases"><span class="qn-more-item-icon" aria-hidden="true">▤</span><span><strong><span data-qn-i18n="">Purchases</span> <span class="qn-pro-label">Pro</span></strong><small data-qn-i18n="">Supplier orders and receipt capture</small></span><b>›</b></button>
 <button type="button" class="qn-more-item" data-money-open=""><span class="qn-more-item-icon" aria-hidden="true">$</span><span><strong>Money &amp; Taxes</strong><small>Expenses, receipts and year-end export</small></span><b>›</b></button>
+<button type="button" class="qn-more-item" data-payments-open><span class="qn-more-item-icon" aria-hidden="true">⇅</span><span><strong>Payments</strong><small>Sort money you received — income or not</small></span><span class="qn-payments-badge" data-payments-badge hidden></span><b>›</b></button>
       
       
     <button type="button" class="qn-more-item" data-qn-company-open=""><span class="qn-more-item-icon">♧</span><span><strong data-qn-i18n="">Company &amp; partners</strong><small data-qn-i18n="">One company, separate logins</small><span class="qn-partner-pro">ULTIMATE</span></span><b>›</b></button></div><details class="qn-simple-section qn-simple-reports" data-qn-section="Reports &amp; business insights"><summary data-qn-i18n="">Reports &amp; business insights</summary><div class="qn-simple-section-body"><button type="button" class="qn-more-item" id="qn-report-open"><span class="qn-more-item-icon">▥</span><span><strong><span data-qn-i18n="">Sales reports</span> <span class="qn-pro-label">Pro</span></strong><small data-qn-i18n="">Revenue, invoices and payments</small></span><b>›</b></button><button type="button" class="qn-more-item" data-qn-more-panel="qn-more-insights"><span class="qn-more-item-icon">◷</span><span><strong><span data-qn-i18n="">Business insights</span> <span class="qn-pro-label">Pro</span></strong><small data-qn-i18n="">Pipeline and follow-ups</small></span><b>›</b></button></div></details>
@@ -1884,6 +1885,7 @@ function seedDB() {
   return {
     profile: { businessName: "", address: "", phone: "", email: "", taxRate: 13, taxLabel: "HST" },
     expenses: [],
+    paymentsInbox: [],
     clients: [],
     quotes: [],
     invoices: [],
@@ -1898,6 +1900,7 @@ DB.quotes=Array.isArray(DB.quotes)?DB.quotes:[];
 DB.invoices=Array.isArray(DB.invoices)?DB.invoices:[];
 DB.jobs=Array.isArray(DB.jobs)?DB.jobs:[];
 DB.expenses=Array.isArray(DB.expenses)?DB.expenses:[];
+DB.paymentsInbox=Array.isArray(DB.paymentsInbox)?DB.paymentsInbox:[];
 DB.smartTemplates=Array.isArray(DB.smartTemplates)?DB.smartTemplates:[];
 DB.seq=DB.seq||{quote:1001,invoice:2001};
 DB.profile=DB.profile||seedDB().profile;
@@ -4050,3 +4053,11 @@ document.addEventListener("click",function(event){
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/noble-flagship.css?v=20261109-bright">
 <script src="/noble-flagship.js?v=20261109-bright" defer></script>
+<link rel="stylesheet" href="/home-dashboard.css?v=20261111-1">
+<script src="/home-dashboard.js?v=20261111-1" defer></script>
+<link rel="stylesheet" href="/tax-reports.css?v=20261111-1">
+<script src="/tax-reports.js?v=20261111-1" defer></script>
+<link rel="stylesheet" href="/payments-sort.css?v=20261111-1">
+<script src="/payments-sort.js?v=20261111-1" defer></script>
+<link rel="stylesheet" href="/dock.css?v=20261111-1">
+<script src="/dock.js?v=20261111-1" defer></script>

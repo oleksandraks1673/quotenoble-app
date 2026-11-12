@@ -1,0 +1,15 @@
+/* Home money dashboard (10/10 fixes, chunk 2) — scoped to the panel.
+   Cards reuse the app's .stat / .stat-grid look; the row rules repeat
+   app.html's inline .qn-attention-item values because index.html does not
+   carry that inline style block. */
+.qn-home-money { margin-bottom: 20px; }
+.qn-home-money h3 { font-size: .95rem; margin: 16px 0 2px; color: #28303b; }
+.qn-home-money-grid { margin-bottom: 2px; }
+.qn-home-money-note { font-size: .72rem; color: var(--muted); margin-top: 4px; }
+.qn-home-money-empty { color: var(--muted); font-size: .88rem; margin: 6px 0 0; }
+#qn-home-money .qn-attention-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 13px 3px; border: 0; border-bottom: 1px solid #eef0f3; background: #fff; text-align: left; cursor: pointer; color: #17212f; }
+#qn-home-money .qn-attention-item:last-child { border-bottom: 0; }
+#qn-home-money .qn-attention-item strong, #qn-home-money .qn-attention-item small { display: block; }
+#qn-home-money .qn-attention-item strong { font-size: .91rem; }
+#qn-home-money .qn-attention-item small { color: #667085; font-size: .78rem; margin-top: 3px; }
+#qn-home-money .qn-task-tag { background: #fff7ed; color: #a4530c; border-radius: 7px; padding: 5px 7px; font-size: .7rem; white-space: nowrap; }
